@@ -23,7 +23,9 @@ function RPC(remote, spec) {
     // scope that this!
     var that = this,
         /** @dict */
-        exposed = Object.create(null),
+        exposedProcedures = Object.create(null),
+        /** @dict */
+        remoteProcedures = Object.create(null),
         /** @type {boolean} */
         localReadyFlag = false,
         /** @type {boolean} */
@@ -114,6 +116,8 @@ function RPC(remote, spec) {
         }
         if (data.ignore) {
         }
+        if (data.expose) {
+        }
     }
 
     /**
@@ -182,6 +186,29 @@ function RPC(remote, spec) {
         return true;
     }
 
+    function sendExposeMessage() {
+
+    }
+
+    function exposeLevel(attr, toExpose, exposedLevel, overWrite) {
+        Object.keys(toExpose).forEach(function (sub) {
+            // if it's an object recurse
+            if ((typeof toExpose[sub] === 'object') && (toExpose[sub])) {
+                // if the entry exists only overwrite if instructed
+                if (exposedLevel[sub]) {
+                    if (overWrite) {
+                        exposedLevel[sub] = exposeLevel(attr + '.' + sub, toExpose[sub], exposedLevel[sub], overWrite);
+                    }
+                }
+            }
+            // if it's a function send an expose message
+            sendExposeMessage(attr, sub);
+            exposedLevel[sub] = toExpose[sub];
+        });
+
+        return exposedLevel;
+    }
+
     /**
      * Exposes an object to the other side of the remote, or returns the exposed
      * @param toExpose {Object}
@@ -190,18 +217,18 @@ function RPC(remote, spec) {
      */
     function expose(toExpose, overWrite) {
         if ((!toExpose) || (typeof toExpose !== 'object')) {
-            return exposed;
+            return exposedProcedures;
         }
 
         Object.keys(toExpose).forEach(function (sub) {
             if (overWrite === true) {
-                exposed[sub] = toExpose[sub];
+                exposedProcedures[sub] = toExpose[sub];
                 return;
             }
-            if (exposed[sub] !== undefined) {
+            if (exposedProcedures[sub] !== undefined) {
                 return;
             }
-            exposed[sub] = toExpose[sub];
+            exposedProcedures[sub] = toExpose[sub];
         });
     }
 
