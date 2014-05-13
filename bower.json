@@ -14,9 +14,9 @@
     "unique",
     "identifier"
   ],
-	"dependencies": {
-	"workular":"git+ssh://dev.higginsregister.com/srv/bower/js-workular.git#v0.5.1"
-},
+  "dependencies": {
+    "workular": "git+ssh://dev.higginsregister.com/srv/bower/js-workular.git#v0.5.1"
+  },
   "license": "?",
   "homepage": "https://higgins.ai",
   "private": true,
@@ -27,5 +27,8 @@
     "lib",
     "test",
     "tests"
-  ]
+  ],
+  "devDependencies": {
+    "socket.io": "~0.9.15"
+  }
 }

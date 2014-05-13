@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/js-login.iml" filepath="$PROJECT_DIR$/.idea/js-login.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/js-rpc.iml" filepath="$PROJECT_DIR$/.idea/js-rpc.iml" />
     </modules>
   </component>
 </project>

@@ -19,7 +19,8 @@ module.exports = function (config) {
                 'src/js-rpc.js',
 
                 'spec/mock*.js',
-                'spec/*Spec.js'
+                'spec/*Spec.js',
+                'spec/*spec.js'
             ],
 
 
