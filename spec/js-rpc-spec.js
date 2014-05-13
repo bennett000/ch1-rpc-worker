@@ -68,6 +68,32 @@ describe('the rpc object has public isReady, and onReady methods that aid in boo
     });
 });
 
+describe('the rpc object has public error function that sends an error over the \'wire\'', function () {
+    var rpc, result;
+    beforeEach(function () {
+        rpc = new RPC(
+        {
+            addEventListener: function () {
+
+            },
+            postMessage: function (data) {
+                result = JSON.parse(data);
+                if (result.error) { result = result.error; }
+            }
+        });
+    });
+
+    it('should have an error method', function () {
+        expect(typeof rpc.error).toBe('function');
+    });
+
+    it('should send errors over the \'wire\'', function () {
+        var msg = 'silly rabit tricks are for kids';
+        rpc.error(msg);
+        expect(result[0]).toBe(msg);
+    });
+});
+
 describe('the rpc object has public setLogger function that overrides the internal logger', function () {
     var rpc;
     beforeEach(function () {

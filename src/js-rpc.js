@@ -27,6 +27,8 @@ function RPC(remote, spec) {
         /** @type {boolean} */
         localReadyFlag = false,
         /** @type {boolean} */
+        remoteReadyFlag = false,
+        /** @type {boolean} */
         isReadyFlag = false,
         /** @type Array.<function()> */
         readyQueue = [],
@@ -97,12 +99,33 @@ function RPC(remote, spec) {
         }
     }
 
+    function onMessage(data) {
+        if (data.error) {
+            log.error.apply(log, data);
+        }
+        if (data.ready) {
+            if (ready === true) {
+                remoteReadyFlag = true;
+            }
+        }
+        if (data.fn) {
+        }
+        if (data.listen) {
+        }
+        if (data.ignore) {
+        }
+    }
+
+    /**
+     * Attaches an internal listener
+     */
     function initListener() {
         that.listen(function onMessage(data) {
             try {
                 data = JSON.parse(data);
+                onMessage(data);
             } catch (err) {
-
+                log.warn('RPC: received invalid data');
             }
         });
     }
@@ -115,7 +138,8 @@ function RPC(remote, spec) {
         if (setReady === true) {
             localReadyFlag = true;
         }
-        return isReadyFlag && localReadyFlag;
+        isReadyFlag = remoteReadyFlag && localReadyFlag;
+        return isReadyFlag;
     }
 
     /**
@@ -125,6 +149,21 @@ function RPC(remote, spec) {
     function onReady(fn) {
         if (!isFunction(fn)) {
             readyQueue.push(fn);
+        }
+    }
+
+    /**
+     * Takes any number of parameters and sends them to the remote as an error
+     * This function is meant for 'emergency' error reporting.  Normal errors
+     * should occur through node.js style callbacks, or promises
+     */
+    function error() {
+        var args = Array.prototype.slice.call(arguments, 0);
+        try {
+            that.post(JSON.stringify({ error:args }));
+        } catch (err) {
+            // notify the error, but fail over
+            log.error(err.message);
         }
     }
 
@@ -184,6 +223,7 @@ function RPC(remote, spec) {
         that.isReady = isReady;
         that.onReady = onReady;
         that.setLogger = setLogger;
+        that.error = error;
 
         // listen!
         initListener(spec);
