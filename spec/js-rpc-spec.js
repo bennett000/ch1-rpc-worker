@@ -39,7 +39,7 @@ describe('the js-rpc object is initialized with a \'remote\' object, like a work
         var p1 = false, msg = 'messagio',
             rpc = new RPC(
             {
-                addEventListener: function (msg) { console.log(arguments); p1 = msg; },
+                addEventListener: function (msg) { p1 = msg; },
                 postMessage: function () {}
             }, {
                 message: msg
@@ -48,13 +48,7 @@ describe('the js-rpc object is initialized with a \'remote\' object, like a work
         expect(typeof rpc.listen).toBe('function');
         expect(typeof rpc.post).toBe('function');
 
-        // this should do nothing as 'ooga' is not a function
-        rpc.listen('oooga');
-        expect(p1).toBe(false);
-        rpc.listen(function () {
-            // noop
-        });
-
+        // this function should be called as part of the RPC bootstrapping
         expect(p1).toBe(msg);
     });
 });
@@ -72,6 +66,17 @@ describe('the rpc object has public isReady, and onReady methods that aid in boo
     it ('should have an onReady method', function () {
         expect(typeof rpc.onReady).toBe('function');
     });
+});
+
+describe('the rpc object has public setLogger function that overrides the internal logger', function () {
+    /*var rpc;
+    beforeEach(function () {
+        rpc = new RPC(validDefaultRemote);
+    });
+
+    it ('should have a setLogger method', function () {
+        expect(typeof rpc.setLogger).toBe('function');
+    });*/
 });
 
 describe('the rpc object has a public expose method that allows objects to \'register\' ', function () {

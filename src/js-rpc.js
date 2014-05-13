@@ -25,9 +25,28 @@ function RPC(remote, spec) {
         /** @dict */
         exposed = Object.create(null),
         /** @type {boolean} */
+        localReadyFlag = false,
+        /** @type {boolean} */
         isReadyFlag = false,
         /** @type Array.<function()> */
-        readyQueue = [];
+        readyQueue = [],
+        /** @const */
+        noop = function () {},
+        log = console || {
+            log: noop,
+            info: noop,
+            assert: noop,
+            warn: noop,
+            error: noop
+        };
+
+    /**
+     * @param fn
+     * @returns {boolean}
+     */
+    function isFunction(fn) {
+        return typeof fn === 'function';
+    }
 
     /**
      * Ensures that a spec object is valid, and true to its remote
@@ -51,11 +70,11 @@ function RPC(remote, spec) {
             spec.message = false;
         }
 
-        if (typeof remote[spec.post] !== 'function') {
+        if (isFunction(remote[spec.post]) === false) {
             throw new TypeError('RPC: remote has invalid post method');
         }
 
-        if (typeof remote[spec.listen] !== 'function') {
+        if (isFunction(remote[spec.listen]) === false) {
             throw new TypeError('RPC: remote has invalid listen method');
         }
 
@@ -69,7 +88,7 @@ function RPC(remote, spec) {
         that.post = remote[spec.post];
         if (spec.message) {
             that.listen = function wrapAddEvent(fn) {
-                if (typeof fn !== 'function') { return; }
+                if (isFunction(fn) === false) { return; }
 
                 remote[spec.listen].call(that, spec.message, fn);
             }
@@ -78,30 +97,25 @@ function RPC(remote, spec) {
         }
     }
 
-    /**
-     * initialize the RPC object
-     * @param r {Object} remote object, like socket.io, or a web worker
-     * @param spec {Object=} defines remote functions to use
-     */
-    function init(r, spec) {
-        if ((typeof r !== 'object') || (r === null)) {
-            throw new TypeError('RPC: Parameter one must be an object with valid listen/post methods');
-        }
+    function initListener() {
+        that.listen(function onMessage(data) {
+            try {
+                data = JSON.parse(data);
+            } catch (err) {
 
-        spec = validateSpec(spec);
-
-        // expose
-        exposePostListen(spec);
-        that.expose = expose;
-        that.isReady = isReady;
-        that.onReady = onReady;
+            }
+        });
     }
 
     /**
+     * @param setReady {boolean=} will set 'this side' to ready
      * @returns {boolean}
      */
-    function isReady() {
-        return isReadyFlag;
+    function isReady(setReady) {
+        if (setReady === true) {
+            localReadyFlag = true;
+        }
+        return isReadyFlag && localReadyFlag;
     }
 
     /**
@@ -109,9 +123,24 @@ function RPC(remote, spec) {
      * @param fn {function(Error|null,...)}
      */
     function onReady(fn) {
-        if (typeof fn === 'function') {
+        if (!isFunction(fn)) {
             readyQueue.push(fn);
         }
+    }
+
+    /** overrides the local logging mechanism */
+    function setLogger(l) {
+        // installs a new logger!
+        if (!l) { return false; }
+        if (!isFunction(l.log)) { return false; }
+        if (!isFunction(l.info)) { return false; }
+        if (!isFunction(l.assert)) { return false; }
+        if (!isFunction(l.warn)) { return false; }
+        if (!isFunction(l.error)) { return false; }
+
+        log = l;
+
+        return true;
     }
 
     /**
@@ -135,6 +164,29 @@ function RPC(remote, spec) {
             }
             exposed[sub] = toExpose[sub];
         });
+    }
+
+    /**
+     * initialize the RPC object
+     * @param r {Object} remote object, like socket.io, or a web worker
+     * @param spec {Object=} defines remote functions to use
+     */
+    function init(r, spec) {
+        if ((typeof r !== 'object') || (r === null)) {
+            throw new TypeError('RPC: Parameter one must be an object with valid listen/post methods');
+        }
+
+        spec = validateSpec(spec);
+
+        // expose
+        exposePostListen(spec);
+        that.expose = expose;
+        that.isReady = isReady;
+        that.onReady = onReady;
+        that.setLogger = setLogger;
+
+        // listen!
+        initListener(spec);
     }
 
     // start the ball rolling!
