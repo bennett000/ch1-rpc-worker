@@ -69,16 +69,50 @@ describe('the rpc object has public isReady, and onReady methods that aid in boo
 });
 
 describe('the rpc object has public error function that sends an error over the \'wire\'', function () {
-    var rpc, result;
+    var rpc, rpcA, rpcB, listenersA = [], listenersB = [], result;
     beforeEach(function () {
+        listenersA = [];
+        listenersB = [];
         rpc = new RPC(
         {
-            addEventListener: function () {
-
-            },
-            postMessage: function (data) {
+            addEventListener: function () {},
+            postMessage     : function (data) {
                 result = JSON.parse(data);
                 if (result.error) { result = result.error; }
+            }
+        });
+
+        rpcA = new RPC(
+        {
+            addEventListener: function (fn) {
+                if (typeof fn !== 'function') {
+                    console.warn('wrong type of listener');
+                    return;
+                }
+                listenersA.push(fn);
+            },
+            postMessage     : function (data) {
+                console.log('invoking b listeners', data);
+                listenersB.forEach(function (fn) {
+                    fn(data);
+                });
+            }
+        });
+
+        rpcB = new RPC(
+        {
+            addEventListener: function (fn) {
+                if (typeof fn !== 'function') {
+                    console.warn('wrong type of listener');
+                    return;
+                }
+                listenersB.push(fn);
+            },
+            postMessage     : function (data) {
+                console.log('invoking a listeners', data);
+                listenersA.forEach(function (fn) {
+                    fn(data);
+                });
             }
         });
     });
@@ -91,6 +125,26 @@ describe('the rpc object has public error function that sends an error over the 
         var msg = 'silly rabit tricks are for kids';
         rpc.error(msg);
         expect(result[0]).toBe(msg);
+    });
+
+    it('should send errors over the \'wire\', and the remote should log the error', function () {
+        var msg1 = 'aaa', msg2 = 'bbb', errorA, errorB;
+
+        rpcB.setLogger(
+        {
+            log: function () {},
+            info: function () {},
+            assert: function () {},
+            warn: function () {},
+            error: function (a, b) {
+                errorA = a;
+                errorB = b;
+            }
+        });
+
+        rpcA.error(msg1, msg2);
+        expect(errorA).toBe(msg1);
+        expect(errorB).toBe(msg2);
     });
 });
 
@@ -133,12 +187,12 @@ describe('the rpc object has public setLogger function that overrides the intern
         })).toBe(false);
         expect(rpc.setLogger(
         {
-            log   : function () {},
-            info  : function () {}
+            log : function () {},
+            info: function () {}
         })).toBe(false);
         expect(rpc.setLogger(
         {
-            log   : function () {}
+            log: function () {}
         })).toBe(false);
         expect(rpc.setLogger({})).toBe(false);
     });

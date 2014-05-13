@@ -99,9 +99,9 @@ function RPC(remote, spec) {
         }
     }
 
-    function onMessage(data) {
+    function handleMessage(data) {
         if (data.error) {
-            log.error.apply(log, data);
+            log.error.apply(log, data.error);
         }
         if (data.ready) {
             if (ready === true) {
@@ -123,9 +123,9 @@ function RPC(remote, spec) {
         that.listen(function onMessage(data) {
             try {
                 data = JSON.parse(data);
-                onMessage(data);
+                handleMessage(data);
             } catch (err) {
-                log.warn('RPC: received invalid data');
+                log.warn('RPC: received invalid data ' + err.message, data);
             }
         });
     }
