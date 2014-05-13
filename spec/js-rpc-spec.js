@@ -59,6 +59,21 @@ describe('the js-rpc object is initialized with a \'remote\' object, like a work
     });
 });
 
+describe('the rpc object has public isReady, and onReady methods that aid in bootstrapping', function () {
+    var rpc;
+    beforeEach(function () {
+        rpc = new RPC(validDefaultRemote);
+    });
+
+    it ('should have an isReady method', function () {
+        expect(typeof rpc.isReady).toBe('function');
+    });
+
+    it ('should have an onReady method', function () {
+        expect(typeof rpc.onReady).toBe('function');
+    });
+});
+
 describe('the rpc object has a public expose method that allows objects to \'register\' ', function () {
     var rpc;
     beforeEach(function () {

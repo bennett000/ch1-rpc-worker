@@ -23,7 +23,11 @@ function RPC(remote, spec) {
     // scope that this!
     var that = this,
         /** @dict */
-        exposed = Object.create(null);
+        exposed = Object.create(null),
+        /** @type {boolean} */
+        isReadyFlag = false,
+        /** @type Array.<function()> */
+        readyQueue = [];
 
     /**
      * Ensures that a spec object is valid, and true to its remote
@@ -89,6 +93,25 @@ function RPC(remote, spec) {
         // expose
         exposePostListen(spec);
         that.expose = expose;
+        that.isReady = isReady;
+        that.onReady = onReady;
+    }
+
+    /**
+     * @returns {boolean}
+     */
+    function isReady() {
+        return isReadyFlag;
+    }
+
+    /**
+     * callbacks to run when ready
+     * @param fn {function(Error|null,...)}
+     */
+    function onReady(fn) {
+        if (typeof fn === 'function') {
+            readyQueue.push(fn);
+        }
     }
 
     /**

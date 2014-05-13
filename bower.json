@@ -1,34 +1,35 @@
 {
-  "name": "js-rpc",
-  "version": "0.1.0",
-  "authors": [
-    "Michael J. Bennett <dev@michaeljbennett.info>"
-  ],
-  "description": "JavaScript Remote Procedure Call (RPC)",
-  "moduleType": [
-    "globals"
-  ],
-  "keywords": [
-    "universal",
-    "global",
-    "unique",
-    "identifier"
-  ],
-  "dependencies": {
-    "workular": "git+ssh://dev.higginsregister.com/srv/bower/js-workular.git#v0.5.1"
-  },
-  "license": "?",
-  "homepage": "https://higgins.ai",
-  "private": true,
-  "ignore": [
-    "**/.*",
-    "node_modules",
-    "bower_components",
-    "lib",
-    "test",
-    "tests"
-  ],
-  "devDependencies": {
-    "socket.io": "~0.9.15"
-  }
+    "name"           : "js-rpc",
+    "version"        : "0.1.0",
+    "authors"        : [
+        "Michael J. Bennett <dev@michaeljbennett.info>"
+    ],
+    "description"    : "JavaScript Remote Procedure Call (RPC)",
+    "moduleType"     : [
+        "globals"
+    ],
+    "keywords"       : [
+        "universal",
+        "global",
+        "unique",
+        "identifier"
+    ],
+    "dependencies"   : {
+        "workular": "git+ssh://dev.higginsregister.com/srv/bower/js-workular.git#v0.5.1",
+        "angular" : "1.2.14"
+    },
+    "license"        : "?",
+    "homepage"       : "https://higgins.ai",
+    "private"        : true,
+    "ignore"         : [
+        "**/.*",
+        "node_modules",
+        "bower_components",
+        "lib",
+        "test",
+        "tests"
+    ],
+    "devDependencies": {
+        "socket.io": "~0.9.15"
+    }
 }
