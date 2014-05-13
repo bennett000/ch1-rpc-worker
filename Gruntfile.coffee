@@ -25,8 +25,8 @@ module.exports = (grunt) ->
 
     replace:
       angular:
-        src: 'tmp/ruuid-browser-workular.js'
-        dest: 'tmp/ruuid-browser-angular.js'
+        src: 'tmp/js-rpc-browser-workular.js'
+        dest: 'tmp/js-rpc-browser-angular.js'
         replacements: [{from:'workular', to:'angular'}]
 
     mkdir:
@@ -48,15 +48,15 @@ module.exports = (grunt) ->
       buildWorkular:
         options:
           sourceMap: true,
-          sourceMapName: 'build/browser-workular/ruuid.min.js.map'
+          sourceMapName: 'build/browser-workular/js-rpc.min.js.map'
         files:
-          'build/browser-workular/ruuid.min.js': ['tmp/ruuid-browser-workular.js']
+          'build/browser-workular/js-rpc.min.js': ['tmp/js-rpc-browser-workular.js']
       buildAngular:
         options:
           sourceMap: true,
-          sourceMapName: 'build/browser-angular/ruuid.min.js.map'
+          sourceMapName: 'build/browser-angular/js-rpc.min.js.map'
         files:
-          'build/browser-angular/ruuid.min.js': ['tmp/ruuid-browser-angular.js']
+          'build/browser-angular/js-rpc.min.js': ['tmp/js-rpc-browser-angular.js']
       pristine:
         options:
           mangle: false
@@ -64,15 +64,15 @@ module.exports = (grunt) ->
           beautify: true
           preserveComments: true
         files:
-          'build/browser-workular/ruuid.js': ['tmp/ruuid-browser-workular.js']
-          'build/browser-angular/ruuid.js': ['tmp/ruuid-browser-angular.js']
+          'build/browser-workular/js-rpc.js': ['tmp/js-rpc-browser-workular.js']
+          'build/browser-angular/js-rpc.js': ['tmp/js-rpc-browser-angular.js']
 
     copy:
       asyncNodeWorkular:
         expand: true
         flatten: true
         filter: 'isFile'
-        src: 'src/ruuid.js'
+        src: 'src/js-rpc.js'
         dest: 'build/node-workular/'
       packageNodeWorkular:
         expand: true
@@ -93,13 +93,13 @@ module.exports = (grunt) ->
           context:
             NODE: true
         files:
-          'tmp/ruuid-node.js': ['src/ruuid.js']
+          'tmp/js-rpc-node.js': ['src/js-rpc.js']
       browser:
         options:
           context:
             BROWSER: true
         files:
-          'tmp/ruuid-browser-workular.js': ['src/ruuid.js']
+          'tmp/js-rpc-browser-workular.js': ['src/js-rpc.js']
 
 
   grunt.loadNpmTasks 'grunt-contrib-uglify'

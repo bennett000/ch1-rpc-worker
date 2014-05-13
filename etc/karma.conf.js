@@ -16,7 +16,7 @@ module.exports = function (config) {
             files: [
                 'lib/workular/workular.min.js',
 
-                'src/ruuid.js',
+                'src/js-rpc.js',
 
                 'spec/mock*.js',
                 'spec/*Spec.js'

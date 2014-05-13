@@ -1,11 +1,11 @@
 {
-    "name": "ruuid",
-    "description": "Real(ly) Universal Unique Identifier",
-    "version": "0.2.0",
+    "name": "js-rpc",
+    "description": "JavaScript Remote Procedure Call (RPC)",
+    "version": "0.1.0",
     "private": true,
     "repository": {
         "type": "git",
-        "url": "ssh://dev.higginsregister.com/srv/repo/js-ruuid.git"
+        "url": "ssh://dev.higginsregister.com/srv/repo/js-rpc.git"
     },
     "dependencies": {
         "workular": "git+ssh://dev.higginsregister.com/srv/npm/js-workular.git#v0.5.1"

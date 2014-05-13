@@ -5,7 +5,7 @@
     "moduleType"  : [
         "globals"
     ],
-    "main": ["ruuid.min.js", "ruuid.min.js.map", "ruuid.js"],
+    "main": ["js-rpc.min.js", "js-rpc.min.map", "js-rpc.js"],
     "dependencies": {
         "<%= target %>":"<%= targetSrc %>"
     },

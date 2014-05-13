@@ -1,10 +1,10 @@
 {
-  "name": "ruuid",
-  "version": "0.2.0",
+  "name": "js-rpc",
+  "version": "0.1.0",
   "authors": [
     "Michael J. Bennett <dev@michaeljbennett.info>"
   ],
-  "description": "Real(ly) Universal Unique IDentifiers",
+  "description": "JavaScript Remote Procedure Call (RPC)",
   "moduleType": [
     "globals"
   ],
