@@ -21,7 +21,9 @@ function RPC(remote, spec) {
     }
 
     // scope that this!
-    var that = this;
+    var that = this,
+        /** @dict */
+        exposed = Object.create(null);
 
     /**
      * Ensures that a spec object is valid, and true to its remote
@@ -57,18 +59,9 @@ function RPC(remote, spec) {
     }
 
     /**
-     * initialize the RPC object
-     * @param r {Object} remote object, like socket.io, or a web worker
-     * @param spec {Object=} defines remote functions to use
+     * Exposes the post/listen methods
      */
-    function init(r, spec) {
-        if ((typeof r !== 'object') || (r === null)) {
-            throw new TypeError('RPC: Parameter one must be an object with valid listen/post methods');
-        }
-
-        spec = validateSpec(spec);
-
-        // expose
+    function exposePostListen(spec) {
         that.post = remote[spec.post];
         if (spec.message) {
             that.listen = function wrapAddEvent(fn) {
@@ -81,5 +74,46 @@ function RPC(remote, spec) {
         }
     }
 
+    /**
+     * initialize the RPC object
+     * @param r {Object} remote object, like socket.io, or a web worker
+     * @param spec {Object=} defines remote functions to use
+     */
+    function init(r, spec) {
+        if ((typeof r !== 'object') || (r === null)) {
+            throw new TypeError('RPC: Parameter one must be an object with valid listen/post methods');
+        }
+
+        spec = validateSpec(spec);
+
+        // expose
+        exposePostListen(spec);
+        that.expose = expose;
+    }
+
+    /**
+     * Exposes an object to the other side of the remote, or returns the exposed
+     * @param toExpose {Object}
+     * @param overWrite {Boolean=}
+     * @returns {Object|undefined}
+     */
+    function expose(toExpose, overWrite) {
+        if ((!toExpose) || (typeof toExpose !== 'object')) {
+            return exposed;
+        }
+
+        Object.keys(toExpose).forEach(function (sub) {
+            if (overWrite === true) {
+                exposed[sub] = toExpose[sub];
+                return;
+            }
+            if (exposed[sub] !== undefined) {
+                return;
+            }
+            exposed[sub] = toExpose[sub];
+        });
+    }
+
+    // start the ball rolling!
     init(remote, spec);
 }

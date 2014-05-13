@@ -5,24 +5,24 @@
 
 /*global window, jasmine, beforeEach, describe, expect, waitsFor, spyOn, runs, it, module,inject, workular */
 
+var invalidRemote = {
+    postMessage: function () {}
+}, validDefaultRemote = {
+    addEventListener: function () {},
+    postMessage: function () {}
+}, validCustomRemote = {
+    listen: function () {
+
+    }, post: function () {
+
+    }
+}, customDesc = {
+    listen: 'listen',
+    post: 'post'
+};
 
 describe('the js-rpc object is initialized with a \'remote\' object, like a worker, or a socket.io connection', function () {
     'use strict';
-    var invalidRemote = {
-        postMessage: function () {}
-    }, validDefaultRemote = {
-        addEventListener: function () {},
-        postMessage: function () {}
-    }, validCustomRemote = {
-        listen: function () {
-
-        }, post: function () {
-
-        }
-    }, customDesc = {
-        listen: 'listen',
-        post: 'post'
-    };
 
     it('Should be a constructor that accepts one or more *valid* arguments', function () {
         expect(typeof RPC).toBe('function');
@@ -56,5 +56,53 @@ describe('the js-rpc object is initialized with a \'remote\' object, like a work
         });
 
         expect(p1).toBe(msg);
+    });
+});
+
+describe('the rpc object has a public expose method that allows objects to \'register\' ', function () {
+    var rpc;
+    beforeEach(function () {
+        rpc = new RPC(validDefaultRemote);
+    });
+
+    it('should have an expose method!', function () {
+        expect(typeof rpc.expose).toBe('function');
+    });
+
+    it('should return undefined given an object', function () {
+        expect(rpc.expose({})).toBe(undefined);
+        expect(rpc.expose({a:{}})).toBe(undefined);
+        expect(rpc.expose({a:{b:function () {}}})).toBe(undefined);
+    });
+
+    it('should return an empty object (technically the exposed objects) given invalid parameters', function () {
+        expect(typeof rpc.expose()).toBe('object');
+        expect(typeof rpc.expose(null)).toBe('object');
+        expect(typeof rpc.expose(235)).toBe('object');
+        expect(typeof rpc.expose('tomato')).toBe('object');
+        expect(typeof rpc.expose(function () {})).toBe('object');
+    });
+
+    it('should expose the expected objects, even with overwrite', function () {
+        rpc.expose({
+            'tomato':'red'
+                   });
+        expect(rpc.expose().tomato).toBe('red');
+
+        rpc.expose({
+            'banana':'yellow'
+                   });
+        expect(rpc.expose().tomato).toBe('red');
+        expect(rpc.expose().banana).toBe('yellow');
+
+        rpc.expose({
+                       'tomato':'blue'
+                   });
+        expect(rpc.expose().tomato).toBe('red');
+
+        rpc.expose({
+                       'tomato':'blue'
+                   }, true);
+        expect(rpc.expose().tomato).toBe('blue');
     });
 });
