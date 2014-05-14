@@ -34,6 +34,8 @@ function RPC(remote, spec) {
         isReadyFlag = false,
         /** @type Array.<function()> */
         readyQueue = [],
+        /** @type {number} */
+        uidCount = 0,
         /** @const */
         noop = function () {},
         log = console || {
@@ -118,6 +120,16 @@ function RPC(remote, spec) {
         }
         if (data.expose) {
         }
+    }
+
+
+    function uid() {
+        // increment the counter
+        uidCount += 1;
+        // reset it if it's 'high'
+        uidCount = uidCount > 1000 ? 0 : uidCount;
+        // return a uid
+        return ['uid-', parseInt(Date.now(), 16), uidCount, Math.random()].join('');
     }
 
     /**
@@ -251,6 +263,7 @@ function RPC(remote, spec) {
         that.onReady = onReady;
         that.setLogger = setLogger;
         that.error = error;
+        that.uid = uid;
 
         // listen!
         initListener(spec);

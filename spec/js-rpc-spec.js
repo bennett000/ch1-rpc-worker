@@ -68,6 +68,27 @@ describe('the rpc object has public isReady, and onReady methods that aid in boo
     });
 });
 
+describe('there should be a unique id function', function () {
+    var rpc;
+    beforeEach(function () {
+        rpc = new RPC(validDefaultRemote);
+    });
+
+    it('should have a function called uid', function () {
+        expect(typeof rpc.uid).toBe('function');
+    });
+
+    it('should generate unique ids', function () {
+        var i, cur, last = 0;
+
+        for (i = 0; i < 10000; i += 1) {
+            cur = rpc.uid();
+            expect(last === cur).toBe(false);
+            last = cur;
+        }
+    });
+});
+
 describe('the rpc object has public error function that sends an error over the \'wire\'', function () {
     var rpc, rpcA, rpcB, listenersA = [], listenersB = [], result;
     beforeEach(function () {
