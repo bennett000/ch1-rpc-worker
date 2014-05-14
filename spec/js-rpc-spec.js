@@ -388,3 +388,84 @@ describe('the rpc object has a public expose method that allows objects to \'reg
         expect(rpc.expose().tomato).toBe('blue');
     });
 });
+
+describe('the rpc object should correctly handle its expected dialect', function () {
+    'use strict';
+    var rpc, listenersA = [], listenersB = [], errorTest = { error: false };
+
+    // helper function for testing error logs
+    function attachLogger(remote, errorObj) {
+        rpc.setLogger({
+                          log: function () {},
+                          info: function () {},
+                          assert: function () {},
+                          warn: function () {},
+                          error: function () {
+                              errorObj.error = true;
+                          }
+                      });
+
+    }
+
+    beforeEach(function () {
+        listenersA = [];
+        listenersB = [];
+        errorTest = { error: false }
+
+        rpc = new RPC(
+        {
+            addEventListener: function (fn) {
+                if (typeof fn !== 'function') {
+                    console.warn('wrong type of listener');
+                    return;
+                }
+                listenersA.push(fn);
+            },
+            postMessage     : function (data) {
+                listenersB.forEach(function (fn) {
+                    fn(data);
+                });
+            }
+        });
+    });
+
+    describe('results', function () {
+        it('should log errors if given a malformed response (bad JSON) (really testing handler)', function () {
+            attachLogger(rpc, errorTest);
+            listenersA[0]('someData');
+            expect(errorTest.error).toBe(true);
+        });
+
+        it('should log errors if given a malformed response (non-array)', function () {
+            attachLogger(rpc, errorTest);
+            listenersA[0]('{"results":"I am not an array"}');
+            expect(errorTest.error).toBe(true);
+        });
+
+        it('should log errors if given a malformed response (no results)', function () {
+            attachLogger(rpc, errorTest);
+            listenersA[0]('{"results":[]}');
+            expect(errorTest.error).toBe(true);
+        });
+
+        it('should log errors if given a malformed response (no uid)', function () {
+            attachLogger(rpc, errorTest);
+            listenersA[0]('{"results":[{}]}');
+            expect(errorTest.error).toBe(true);
+        });
+
+        it('should log errors if RPC has no appropriate callback', function () {
+            attachLogger(rpc, errorTest);
+            listenersA[0]('{"results":[{"uid":"2352352"}]}');
+            expect(errorTest.error).toBe(true);
+        });
+
+    });
+
+    describe('invoke', function () {});
+    describe('listen', function () {});
+    describe('ignore', function () {});
+    describe('promise', function () {});
+    describe('callback', function () {});
+    describe('expose', function () {});
+});

@@ -105,21 +105,60 @@ function RPC(remote, spec) {
         }
     }
 
-    function onResults(data) {
+    /**
+     * validates a set of results (invoke,callback, listen...)
+     * @param data {Array.<Object>}
+     * @returns {boolean}
+     */
+    function validateMessageData(data) {
         if (!Array.isArray(data)) {
-            log.error('RPC: onResults: invalid data');
+            log.error('RPC: resultHandler: invalid data');
+            return false;
+        }
+        if (data.length === 0) {
+            log.error('RPC: resultHandler: empty result');
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * validates a result callback
+     * @param datum {Object}
+     * @returns {boolean}
+     */
+    function validateMessageDatum(datum) {
+        if (!resultCallbacks[datum.uid]) {
+            log.error('RPC: resultHandler: no callbacks for uid: ' + datum.uid);
+            return false;
+        }
+        if (!isFunction (resultCallbacks[datum.uid].t)) {
+            log.error('RPC: resultHandler: no callback for uid: ' + datum.uid);
+            return false;
+        }
+        return true;
+    }
+
+    function onResults(data) {
+        if (!validateMessageData(data)) {
             return;
         }
         data.forEach(function (result) {
-            if (typeof resultCallbacks[result.uid] !== 'function') {
-                log.error('RPC: onResults: no callback function given uid ' + result.uid);
+            if (!validateMessageDatum(result)) {
                 return;
             }
             if (result.error) {
-                resultCallbacks[result.uid](new Error(result.error));
+                if (isFunction(resultCallbacks[result.uid].f)) {
+                    // promise case
+                    resultCallbacks[result.uid].f(new Error(result.error));
+                } else {
+                    // callback case
+                    resultCallbacks[result.uid].t(new Error(result.error));
+                }
                 return;
             }
-            resultCallbacks[result.uid]();
+            // success!
+            resultCallbacks[result.uid].t();
         });
     }
 
@@ -202,7 +241,7 @@ function RPC(remote, spec) {
                 data = JSON.parse(data);
                 handleMessage(data);
             } catch (err) {
-                log.warn('RPC: received invalid data ' + err.message, data);
+                log.error('RPC: received invalid data ' + err.message, data);
             }
         });
     }
