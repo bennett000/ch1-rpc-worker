@@ -113,7 +113,6 @@ describe('the rpc object has public error function that sends an error over the 
                 listenersA.push(fn);
             },
             postMessage     : function (data) {
-                console.log('invoking b listeners', data);
                 listenersB.forEach(function (fn) {
                     fn(data);
                 });

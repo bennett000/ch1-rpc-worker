@@ -129,7 +129,7 @@ function RPC(remote, spec) {
         // reset it if it's 'high'
         uidCount = uidCount > 1000 ? 0 : uidCount;
         // return a uid
-        return ['uid-', parseInt(Date.now(), 16), uidCount, Math.random()].join('');
+        return ['u', Date.now().toString(16).substring(4), uidCount, Math.floor(Math.random()*100000).toString(32)].join('');
     }
 
     /**
