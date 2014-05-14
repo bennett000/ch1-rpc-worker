@@ -38,6 +38,7 @@ function RPC(remote, spec) {
     uidCount = 0,
     /** @const */
     noop = function () {},
+    /*global console*/
     log = console || {
         log   : noop,
         info  : noop,
@@ -97,10 +98,38 @@ function RPC(remote, spec) {
                 if (isFunction(fn) === false) { return; }
 
                 remote[spec.listen].call(that, spec.message, fn);
-            }
+            };
         } else {
             that.listen = remote[spec.listen];
         }
+    }
+
+    function onResults(data) {
+
+    }
+
+    function onInvoke(data) {
+
+    }
+
+    function onListen(data) {
+
+    }
+
+    function onIgnore(data) {
+
+    }
+
+    function onPromise(data) {
+
+    }
+
+    function onCallback(data) {
+
+    }
+
+    function onExpose(data) {
+
     }
 
     /**
@@ -112,23 +141,30 @@ function RPC(remote, spec) {
             log.error.apply(log, data.error);
         }
         if (data.ready) {
-            if (ready === true) {
+            if (data.ready === true) {
                 remoteReadyFlag = true;
             }
         }
         if (data.results) {
+            onResults(data.results);
         }
         if (data.invoke) {
+            onInvoke(data.invoke);
         }
         if (data.listen) {
+            onListen(data.listen);
         }
         if (data.ignore) {
+            onIgnore(data.ignore);
         }
         if (data.promise) {
+            onPromise(data.promise);
         }
         if (data.callback) {
+            onCallback(data.callback);
         }
         if (data.expose) {
+            onExpose(data.expose);
         }
     }
 
