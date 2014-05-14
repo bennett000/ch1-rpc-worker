@@ -298,31 +298,45 @@ function RPC(remote, spec) {
         return true;
     }
 
-    function sendExposeMessage() {
-
+    /**
+     * Sends an expose message to the other side of the wire
+     * @param hierarchy {string} '.' separated string describing the hierarchy
+     * @param fnName {string} the name of the function to expose
+     */
+    function sendExposeMessage(hierarchy, fnName) {
+        that.post(JSON.stringify(
+        {
+        
+        }));
     }
 
-    function exposeLevel(attr, toExpose, exposedLevel, overWrite) {
-        Object.keys(toExpose).forEach(function (sub) {
+    /**
+     * Recursively iterates over a given object, and sends expose messages
+     * @param toExpose {Object} object to iterate over
+     * @param attr {string} the identifying attributes (root.object.subobject)
+     */
+    function exposeByLevel(toExpose, attr) {
+        attr = attr || 'root';
+
+        Object.keys(toExpose).forEach(function (eAttr) {
             // if it's an object recurse
-            if ((typeof toExpose[sub] === 'object') && (toExpose[sub])) {
-                // if the entry exists only overwrite if instructed
-                if (exposedLevel[sub]) {
-                    if (overWrite) {
-                        exposedLevel[sub] = exposeLevel(attr + '.' + sub, toExpose[sub], exposedLevel[sub], overWrite);
-                    }
-                }
+            if ((typeof toExpose[eAttr] === 'object') && (toExpose[eAttr])) {
+                // recurse
+                exposeByLevel(toExpose[eAttr], attr + '.' + eAttr);
             }
             // if it's a function send an expose message
-            sendExposeMessage(attr, sub);
-            exposedLevel[sub] = toExpose[sub];
+            if (typeof toExpose[eAttr] === 'function') {
+                sendExposeMessage(attr, eAttr);
+            }
         });
-
-        return exposedLevel;
     }
 
     /**
      * Exposes an object to the other side of the remote, or returns the exposed
+     * This function _can_ be destructive if the overwrite flag is set.  This
+     * function will _always_ overwrite references on the remote.  This behaviour
+     * may change in the future.  Stay tuned.
+     *
      * @param toExpose {Object}
      * @param overWrite {Boolean=}
      * @returns {Object|undefined}
@@ -342,6 +356,8 @@ function RPC(remote, spec) {
             }
             exposedProcedures[sub] = toExpose[sub];
         });
+
+        exposeByLevel(toExpose);
     }
 
     /**
