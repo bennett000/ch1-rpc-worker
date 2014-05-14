@@ -3,7 +3,7 @@
  * Created by michael on 13/05/14
  */
 
-/*global window, jasmine, beforeEach, describe, expect, waitsFor, spyOn, runs, it, module,inject, workular */
+/*global window, jasmine, beforeEach, describe, expect, waitsFor, spyOn, runs, it, module,inject, workular, RPC, console, Q*/
 
 var invalidRemote = {
     postMessage: function () {}
@@ -26,11 +26,11 @@ describe('the js-rpc object is initialized with a \'remote\' object, like a work
 
     it('Should be a constructor that accepts one or more *valid* arguments', function () {
         expect(typeof RPC).toBe('function');
-        expect(function () { new RPC(); }).toThrow();
-        expect(function () { new RPC({}); }).toThrow();
-        expect(function () { new RPC(invalidRemote); }).toThrow();
-        expect(function () { new RPC(validDefaultRemote); }).not.toThrow();
-        expect(function () { new RPC(validCustomRemote, customDesc); }).not.toThrow();
+        expect(function () { RPC(); }).toThrow();
+        expect(function () { RPC({}); }).toThrow();
+        expect(function () { RPC(invalidRemote); }).toThrow();
+        expect(function () { RPC(validDefaultRemote); }).not.toThrow();
+        expect(function () { RPC(validCustomRemote, customDesc); }).not.toThrow();
         expect(new RPC(validDefaultRemote) instanceof RPC);
         expect(RPC(validDefaultRemote) instanceof RPC);
     });
@@ -54,6 +54,7 @@ describe('the js-rpc object is initialized with a \'remote\' object, like a work
 });
 
 describe('the rpc object has public isReady, and onReady methods that aid in bootstrapping', function () {
+    'use strict';
     var rpc;
     beforeEach(function () {
         rpc = new RPC(validDefaultRemote);
@@ -66,9 +67,63 @@ describe('the rpc object has public isReady, and onReady methods that aid in boo
     it('should have an onReady method', function () {
         expect(typeof rpc.onReady).toBe('function');
     });
+
+    it('should return the ready status of the object', function () {
+        expect(rpc.isReady()).toBe(false);
+        expect(rpc.isReady(true)).toBe(false);
+    });
+
+    it('on ready should accept functions, and fail silently for other data', function () {
+        expect(function () {
+            rpc.onReady(function () {});
+        }).not.toThrow();
+
+        expect(function () {
+            rpc.onReady('tomato');
+        }).not.toThrow();
+    });
+});
+
+describe('the rpc object has a public setPromiseLib function that allows for a promise interface', function () {
+    'use strict';
+    var rpc;
+    beforeEach(function () {
+        rpc = new RPC(validDefaultRemote);
+    });
+
+    it('should have an isReady method', function () {
+        expect(typeof rpc.setPromiseLib).toBe('function');
+    });
+
+    it('should throw given an invalid promise lib', function () {
+        var fp = []; fp.push({});
+        fp.push({ defer: function () {} });
+        fp.push({ defer: function () { return {}; } });
+        fp.push({ defer: function () { return { reject: function () {} }; } });
+        fp.push({ defer: function () { return { resolve: function () {} }; } });
+        fp.push({ defer: function () { return { resolve: function () {}, reject: function () {} }; } });
+        fp.push({ defer: function () { return {
+            resolve: function () {},
+            reject: function () {},
+            promise: {}
+        }; } });
+
+        fp.forEach(function (falsePromise) {
+            expect(function () {
+                rpc.setPromiseLib(falsePromise);
+            }).toThrow();
+        });
+    });
+
+    it('should accept a valid promise lib', function () {
+        expect(function () {
+            rpc.setPromiseLib(Q);
+        }).not.toThrow();
+    });
 });
 
 describe('there should be a unique id function', function () {
+    'use strict';
     var rpc;
     beforeEach(function () {
         rpc = new RPC(validDefaultRemote);
@@ -89,7 +144,56 @@ describe('there should be a unique id function', function () {
     });
 });
 
+describe('the rpc object should be able to handle string messages without failing', function () {
+    'use strict';
+    var rpcA, rpcB, listenersA = [], listenersB = [];
+    beforeEach(function () {
+        listenersA = [];
+        listenersB = [];
+
+        rpcA = new RPC(
+        {
+            addEventListener: function (fn) {
+                if (typeof fn !== 'function') {
+                    console.warn('wrong type of listener');
+                    return;
+                }
+                listenersA.push(fn);
+            },
+            postMessage     : function (data) {
+                listenersB.forEach(function (fn) {
+                    fn(data);
+                });
+            }
+        });
+
+        rpcB = new RPC(
+        {
+            addEventListener: function (fn) {
+                if (typeof fn !== 'function') {
+                    console.warn('wrong type of listener');
+                    return;
+                }
+                listenersB.push(fn);
+            },
+            postMessage     : function (data) {
+                console.log('invoking a listeners', data);
+                listenersA.forEach(function (fn) {
+                    fn(data);
+                });
+            }
+        });
+    });
+
+    it('should be able to handle junk messages wihthout throwing', function () {
+        expect(function () {
+            rpcA.post('{sdfs', 2352, NaN, window);
+        }).not.toThrow();
+    });
+});
+
 describe('the rpc object has public error function that sends an error over the \'wire\'', function () {
+    'use strict';
     var rpc, rpcA, rpcB, listenersA = [], listenersB = [], result;
     beforeEach(function () {
         listenersA = [];
@@ -147,6 +251,23 @@ describe('the rpc object has public error function that sends an error over the 
         expect(result[0]).toBe(msg);
     });
 
+    it ('should use its own logger to note an error if error JSONing fails', function () {
+        var errorCalled = false;
+        rpc.setLogger({
+                          log: function () {},
+                          info: function () {},
+                          assert: function () {},
+                          warn: function () {},
+                          error: function () {
+                              errorCalled = true;
+                          }
+                      });
+        expect(function () {
+            rpc.error('blah', undefined, function () {}, 'craig', null, new Error(), NaN, ['blah', undefined, function () {}, 'craig', null, new Error(), NaN], window);
+        }).not.toThrow();
+        expect(errorCalled).toBe(true);
+    });
+
     it('should send errors over the \'wire\', and the remote should log the error', function () {
         var msg1 = 'aaa', msg2 = 'bbb', errorA, errorB;
 
@@ -169,6 +290,7 @@ describe('the rpc object has public error function that sends an error over the 
 });
 
 describe('the rpc object has public setLogger function that overrides the internal logger', function () {
+    'use strict';
     var rpc;
     beforeEach(function () {
         rpc = new RPC(validDefaultRemote);
@@ -219,6 +341,7 @@ describe('the rpc object has public setLogger function that overrides the intern
 });
 
 describe('the rpc object has a public expose method that allows objects to \'register\' ', function () {
+    'use strict';
     var rpc;
     beforeEach(function () {
         rpc = new RPC(validDefaultRemote);

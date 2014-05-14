@@ -15,6 +15,7 @@ module.exports = function (config) {
             // list of files / patterns to load in the browser
             files: [
                 'lib/workular/workular.min.js',
+                'lib/q/q.js',
 
                 'src/js-rpc.js',
 

@@ -22,6 +22,7 @@ function RPC(remote, spec) {
 
     // scope that this!
     var that = this,
+    Q = false,
     /** @dict */
     exposedProcedures = Object.create(null),
     /** @dict */
@@ -105,7 +106,21 @@ function RPC(remote, spec) {
     }
 
     function onResults(data) {
-
+        if (!Array.isArray(data)) {
+            log.error('RPC: onResults: invalid data');
+            return;
+        }
+        data.forEach(function (result) {
+            if (typeof resultCallbacks[result.uid] !== 'function') {
+                log.error('RPC: onResults: no callback function given uid ' + result.uid);
+                return;
+            }
+            if (result.error) {
+                resultCallbacks[result.uid](new Error(result.error));
+                return;
+            }
+            resultCallbacks[result.uid]();
+        });
     }
 
     function onInvoke(data) {
@@ -291,6 +306,44 @@ function RPC(remote, spec) {
     }
 
     /**
+     * Sets JS RPC to use promises instead of callbacks, using the given promise
+     * library
+     * @param lib {Object} a promise library like Q
+     * @returns {boolean}
+     *
+     * Promise library must support:
+     * lib.defer()
+     * lib.defer().resolve()
+     * lib.defer().reject()
+     * lib.defer().promise
+     * lib.defer().promise.then()
+     */
+    function setPromiseLib(lib) {
+        if (!isFunction(lib.defer)) {
+            throw new TypeError('RPC: setPromiseLib: expecting a library with a root level defer function');
+        }
+        var test = lib.defer();
+
+        if (!isFunction(test.resolve)) {
+            throw new TypeError('RPC: setPromiseLib: expecting defers to have a resolve method');
+        }
+
+        if (!isFunction(test.reject)) {
+            throw new TypeError('RPC: setPromiseLib: expecting defers to have a reject method');
+        }
+
+        if (!test.promise) {
+            throw new TypeError('RPC: setPromiseLib: expecting defer objects to have a promise');
+        }
+
+        if (!isFunction(test.promise.then)) {
+            throw new TypeError('RPC: setPromiseLib: expecting promises to have a then method');
+        }
+
+        return true;
+    }
+
+    /**
      * initialize the RPC object
      * @param r {Object} remote object, like socket.io, or a web worker
      * @param spec {Object=} defines remote functions to use
@@ -305,6 +358,7 @@ function RPC(remote, spec) {
         // expose
         exposePostListen(spec);
         that.remotes = Object.create(null);
+        that.setPromiseLib = setPromiseLib;
         that.expose = expose;
         that.isReady = isReady;
         that.onReady = onReady;
