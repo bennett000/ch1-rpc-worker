@@ -22,29 +22,29 @@ function RPC(remote, spec) {
 
     // scope that this!
     var that = this,
-        /** @dict */
-        exposedProcedures = Object.create(null),
-        /** @dict */
-        remoteProcedures = Object.create(null),
-        /** @type {boolean} */
-        localReadyFlag = false,
-        /** @type {boolean} */
-        remoteReadyFlag = false,
-        /** @type {boolean} */
-        isReadyFlag = false,
-        /** @type Array.<function()> */
-        readyQueue = [],
-        /** @type {number} */
-        uidCount = 0,
-        /** @const */
-        noop = function () {},
-        log = console || {
-            log: noop,
-            info: noop,
-            assert: noop,
-            warn: noop,
-            error: noop
-        };
+    /** @dict */
+    exposedProcedures = Object.create(null),
+    /** @dict */
+    resultCallbacks = Object.create(null),
+    /** @type {boolean} */
+    localReadyFlag = false,
+    /** @type {boolean} */
+    remoteReadyFlag = false,
+    /** @type {boolean} */
+    isReadyFlag = false,
+    /** @type Array.<function()> */
+    readyQueue = [],
+    /** @type {number} */
+    uidCount = 0,
+    /** @const */
+    noop = function () {},
+    log = console || {
+        log   : noop,
+        info  : noop,
+        assert: noop,
+        warn  : noop,
+        error : noop
+    };
 
     /**
      * @param fn
@@ -103,6 +103,10 @@ function RPC(remote, spec) {
         }
     }
 
+    /**
+     * Handles messages sent from 'the other side'
+     * @param data {Object}
+     */
     function handleMessage(data) {
         if (data.error) {
             log.error.apply(log, data.error);
@@ -112,11 +116,17 @@ function RPC(remote, spec) {
                 remoteReadyFlag = true;
             }
         }
-        if (data.fn) {
+        if (data.results) {
+        }
+        if (data.invoke) {
         }
         if (data.listen) {
         }
         if (data.ignore) {
+        }
+        if (data.promise) {
+        }
+        if (data.callback) {
         }
         if (data.expose) {
         }
@@ -129,7 +139,7 @@ function RPC(remote, spec) {
         // reset it if it's 'high'
         uidCount = uidCount > 1000 ? 0 : uidCount;
         // return a uid
-        return ['u', Date.now().toString(16).substring(4), uidCount, Math.floor(Math.random()*100000).toString(32)].join('');
+        return ['u', Date.now().toString(16).substring(4), uidCount, Math.floor(Math.random() * 100000).toString(32)].join('');
     }
 
     /**
@@ -176,7 +186,7 @@ function RPC(remote, spec) {
     function error() {
         var args = Array.prototype.slice.call(arguments, 0);
         try {
-            that.post(JSON.stringify({ error:args }));
+            that.post(JSON.stringify({ error: args }));
         } catch (err) {
             // notify the error, but fail over
             log.error(err.message);
@@ -258,6 +268,7 @@ function RPC(remote, spec) {
 
         // expose
         exposePostListen(spec);
+        that.remotes = Object.create(null);
         that.expose = expose;
         that.isReady = isReady;
         that.onReady = onReady;
