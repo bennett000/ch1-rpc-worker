@@ -22,6 +22,7 @@ describe('Simple fake promises', function () {
     describe('defer API', function () {
         it('should return defer objects', function () {
             expect(Q.defer() instanceof SimpleDefer).toBe(true);
+            expect(SimpleDefer() instanceof SimpleDefer).toBe(true);
         });
 
         it('should provide resolve/reject methods', function () {
@@ -135,6 +136,36 @@ describe('Simple fake promises', function () {
             });
 
             expect(isDone).toBe('failure!');
+        });
+
+        it('first resolve/reject should \'win\' (resolve->reject case, and resolve->resolve case)', function () {
+            d.promise.then(function () {
+                isDone = true;
+            }, function () {
+                isDone = 'green';
+            });
+
+            d.resolve();
+            expect(isDone).toBe(true);
+            d.reject(new Error('test'));
+            expect(isDone).toBe(true);
+            d.resolve();
+            expect(isDone).toBe(true);
+        });
+
+        it('first resolve/reject should \'win\' (reject->resolve case, and reject->reject case)', function () {
+            d.promise.then(function () {
+                isDone = 'blue';
+            }, function () {
+                isDone = true;
+            });
+
+            d.reject(new Error('test'));
+            expect(isDone).toBe(true);
+            d.reject(new Error('test'));
+            expect(isDone).toBe(true);
+            d.resolve();
+            expect(isDone).toBe(true);
         });
     });
 });
