@@ -23,6 +23,8 @@ function RPC(remote, spec) {
     // scope that this!
     var that = this,
     Q = false,
+    /** @const */
+    ROOTNODE = 'root',
     /** @dict */
     exposedProcedures = Object.create(null),
     /** @dict */
@@ -132,13 +134,17 @@ function RPC(remote, spec) {
             log.error('RPC: resultHandler: no callbacks for uid: ' + datum.uid);
             return false;
         }
-        if (!isFunction (resultCallbacks[datum.uid].t)) {
+        if (!isFunction(resultCallbacks[datum.uid].t)) {
             log.error('RPC: resultHandler: no callback for uid: ' + datum.uid);
             return false;
         }
         return true;
     }
 
+    /**
+     * Handles results arriving from 'the other side'
+     * @param data {Array.<Object>} collection of results
+     */
     function onResults(data) {
         if (!validateMessageData(data)) {
             return;
@@ -158,7 +164,13 @@ function RPC(remote, spec) {
                 return;
             }
             // success!
-            resultCallbacks[result.uid].t();
+            if (isFunction(resultCallbacks[result.uid].f)) {
+                // promise callback
+                resultCallbacks[result.uid].t(result.result);
+            } else {
+                // callback callback
+                resultCallbacks[result.uid].t(null, result.result);
+            }
         });
     }
 
@@ -182,8 +194,26 @@ function RPC(remote, spec) {
 
     }
 
-    function onExpose(data) {
+    function getChildObject(parent, child) {
 
+    }
+
+    function onExpose(data) {
+        if (!validateMessageData(data)) {
+            return;
+        }
+        data.forEach(function (result) {
+            if (!validateMessageDatum(result)) {
+                return;
+            }
+            if ((!result.loc) || (!result.fn)) {
+                log.error('RPC: onExpose: invalid expose request (location, fn)', result.loc, result.fn);
+                return;
+            }
+            if (result.loc === ROOTNODE) {
+                that.remotes[result.fn] = new RemoteProcedure();
+            }
+        });
     }
 
     /**
@@ -300,13 +330,15 @@ function RPC(remote, spec) {
 
     /**
      * Sends an expose message to the other side of the wire
-     * @param hierarchy {string} '.' separated string describing the hierarchy
+     * @param location {string} '.' separated string describing the object hierarchy
      * @param fnName {string} the name of the function to expose
      */
-    function sendExposeMessage(hierarchy, fnName) {
+    function sendExposeMessage(location, fnName) {
         that.post(JSON.stringify(
         {
-        
+            expose: [
+                { loc: location, fn: fnName}
+            ]
         }));
     }
 
@@ -316,7 +348,7 @@ function RPC(remote, spec) {
      * @param attr {string} the identifying attributes (root.object.subobject)
      */
     function exposeByLevel(toExpose, attr) {
-        attr = attr || 'root';
+        attr = attr || ROOTNODE;
 
         Object.keys(toExpose).forEach(function (eAttr) {
             // if it's an object recurse

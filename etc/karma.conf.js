@@ -17,6 +17,8 @@ module.exports = function (config) {
                 'lib/workular/workular.min.js',
                 'lib/q/q.js',
 
+                'src/remote-procedure.js',
+                'src/simple-fake-promise.js',
                 'src/js-rpc.js',
 
                 'spec/mock*.js',
