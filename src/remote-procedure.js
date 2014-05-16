@@ -51,9 +51,9 @@ RemoteProcedure.prototype.uid = function uid() {
  * @param defer {Object} defer/promise/future
  * @param uid {string} uid of the callback
  */
-RemoteProcedure.registerCallback = function registerCallback(defer, uid) {
+RemoteProcedure.prototype.registerCallback = function registerCallback(defer, uid) {
     'use strict';
-    if (this.callbacks.uid) {
+    if (this.callbacks[uid]) {
         throw new RangeError('Remote Procedure: callback uid already exists!');
     }
     this.callbacks[uid] = {
@@ -69,7 +69,7 @@ RemoteProcedure.registerCallback = function registerCallback(defer, uid) {
  * @param callback {function(...)}
  * @param uid {string}
  */
-RemoteProcedure.registerListener = function registerListener(callback, uid) {
+RemoteProcedure.prototype.registerListener = function registerListener(callback, uid) {
     'use strict';
     if (typeof callback !== 'function') {
         throw new TypeError('Remote Procedure: register listener: expecting callback function');
@@ -88,20 +88,19 @@ RemoteProcedure.registerListener = function registerListener(callback, uid) {
  */
 RemoteProcedure.prototype.callRemote = function callRemote (type, registerFunction, args) {
     'use strict';
-    var uid = this.uid(), d = this.Q.defer(), that = this;
+    var uid = this.uid(), d = this.Q.defer(), that = this,
+    postObj = {};
+    postObj[type] = [
+        {
+            fn: that.fn,
+            uid: uid,
+            args: args
+        }
+    ];
 
-    this.postMethod(JSON.stringify(
-    {
-        type: [
-            {
-                fn: that.fn,
-                uid: uid,
-                args: args
-            }
-        ]
-    }));
+    this.postMethod(JSON.stringify(postObj));
 
-    return registerFunction(d, uid);
+    return registerFunction.call(this, d, uid);
 };
 
 /**

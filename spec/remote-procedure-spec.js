@@ -3,13 +3,13 @@
  * Created by michael on 15/05/14.
  */
 
-/*global window, jasmine, beforeEach, describe, expect, waitsFor, spyOn, runs, it, module,inject, workular, RemoteProcedure, console, Q*/
+/*global window, jasmine, beforeEach, describe, expect, waitsFor, spyOn, runs, it, module,inject, workular, RemoteProcedure, console, Q, afterEach*/
 
 describe('there should be a unique id function', function () {
     'use strict';
     var rp;
     beforeEach(function () {
-        rp = new RemoteProcedure(function () {}, {});
+        rp = new RemoteProcedure(function () {}, {}, 'fn');
     });
 
     it('should have a function called uid', function () {
@@ -27,7 +27,7 @@ describe('there should be a unique id function', function () {
     });
 
     it('should have a uidCount that is a \'static\' member', function () {
-        var rp2 = new RemoteProcedure(function () {}, {});
+        var rp2 = new RemoteProcedure(function () {}, {}, 'fn');
 
         expect(rp2.statics.uidCount).toBe(rp.statics.uidCount);
         rp2.uid();
@@ -36,3 +36,57 @@ describe('there should be a unique id function', function () {
         expect(rp2.statics.uidCount).toBe(rp.statics.uidCount);
     });
 });
+
+describe('there should be the expected remote procedure interfaces', function () {
+    'use strict';
+    var rp;
+    beforeEach(function () {
+        rp = new RemoteProcedure(function () {}, {}, 'fn');
+    });
+
+    it('should have an invoke function', function () {
+        expect(typeof rp.invoke).toBe('function');
+    });
+
+    it('should have a callback function', function () {
+        expect(typeof rp.callback).toBe('function');
+    });
+
+    it('should have a promise function', function () {
+        expect(typeof rp.promise).toBe('function');
+    });
+
+    it('should have a listen function', function () {
+        expect(typeof rp.listen).toBe('function');
+    });
+
+    it('should have an ignore function', function () {
+        expect(typeof rp.ignore).toBe('function');
+    });
+});
+
+describe('the function callers should post the expected messages', function () {
+    'use strict';
+    var postData = '', callbacks = {}, rp;
+
+    beforeEach(function () {
+        callbacks = {};
+        postData = '';
+        rp = new RemoteProcedure(function testPost(message) {
+            postData = JSON.parse(message);
+        }, callbacks, 'fn');
+    });
+
+    it ('should send invoke messages', function () {
+        rp.invoke('hello');
+
+        expect(postData.invoke).toBeTruthy();
+        expect(Array.isArray(postData.invoke)).toBe(true);
+        expect(postData.invoke[0]).toBeTruthy();
+        expect(postData.invoke[0].fn).toBe('fn');
+        expect(Array.isArray(postData.invoke[0].args)).toBe(true);
+        expect(postData.invoke[0].args[0]).toBe('hello');
+    });
+
+});
+
