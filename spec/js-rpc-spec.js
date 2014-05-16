@@ -122,28 +122,6 @@ describe('the rpc object has a public setPromiseLib function that allows for a p
     });
 });
 
-describe('there should be a unique id function', function () {
-    'use strict';
-    var rpc;
-    beforeEach(function () {
-        rpc = new RPC(validDefaultRemote);
-    });
-
-    it('should have a function called uid', function () {
-        expect(typeof rpc.uid).toBe('function');
-    });
-
-    it('should generate unique ids', function () {
-        var i, cur, last = 0;
-
-        for (i = 0; i < 10000; i += 1) {
-            cur = rpc.uid();
-            expect(last === cur).toBe(false);
-            last = cur;
-        }
-    });
-});
-
 describe('the rpc object should be able to handle string messages without failing', function () {
     'use strict';
     var rpcA, rpcB, listenersA = [], listenersB = [];

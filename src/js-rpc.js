@@ -1,3 +1,4 @@
+/*global RemoteProcedure, SimpleFakePromise */
 /**
  * Returns an RPC Object which will allow the user to invoke functions on the given remote procedure
  * @param remote {Object} interface to a remote procedure has a post, and listen function
@@ -22,7 +23,7 @@ function RPC(remote, spec) {
 
     // scope that this!
     var that = this,
-    Q = false,
+    Q = SimpleFakePromise(),
     /** @const */
     ROOTNODE = 'root',
     /** @dict */
@@ -37,8 +38,6 @@ function RPC(remote, spec) {
     isReadyFlag = false,
     /** @type Array.<function()> */
     readyQueue = [],
-    /** @type {number} */
-    uidCount = 0,
     /** @const */
     noop = function () {},
     /*global console*/
@@ -252,16 +251,6 @@ function RPC(remote, spec) {
         }
     }
 
-
-    function uid() {
-        // increment the counter
-        uidCount += 1;
-        // reset it if it's 'high'
-        uidCount = uidCount > 1000 ? 0 : uidCount;
-        // return a uid
-        return ['u', Date.now().toString(16).substring(4), uidCount, Math.floor(Math.random() * 100000).toString(32)].join('');
-    }
-
     /**
      * Attaches an internal listener
      */
@@ -345,7 +334,7 @@ function RPC(remote, spec) {
     /**
      * Recursively iterates over a given object, and sends expose messages
      * @param toExpose {Object} object to iterate over
-     * @param attr {string} the identifying attributes (root.object.subobject)
+     * @param attr {string=} the identifying attributes (root.object.subobject)
      */
     function exposeByLevel(toExpose, attr) {
         attr = attr || ROOTNODE;
@@ -427,6 +416,8 @@ function RPC(remote, spec) {
             throw new TypeError('RPC: setPromiseLib: expecting promises to have a then method');
         }
 
+        Q = lib;
+        RemoteProcedure.prototype.Q = lib;
         return true;
     }
 
@@ -451,7 +442,6 @@ function RPC(remote, spec) {
         that.onReady = onReady;
         that.setLogger = setLogger;
         that.error = error;
-        that.uid = uid;
 
         // listen!
         initListener(spec);
