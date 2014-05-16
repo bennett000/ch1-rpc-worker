@@ -98,6 +98,9 @@ RemoteProcedure.prototype.callRemote = function callRemote (type, registerFuncti
         }
     ];
 
+    // listener case
+    if (typeof args === 'function') { d = args; }
+
     this.postMethod(JSON.stringify(postObj));
 
     return registerFunction.call(this, d, uid);
@@ -136,7 +139,7 @@ RemoteProcedure.prototype.promise = function remotePromise() {
  */
 RemoteProcedure.prototype.listen = function remotePromise(callback) {
     'use strict';
-    return this.callRemote('listen', this.registerListener, [callback]);
+    return this.callRemote('listen', this.registerListener, callback);
 };
 
 /**
@@ -145,5 +148,5 @@ RemoteProcedure.prototype.listen = function remotePromise(callback) {
  */
 RemoteProcedure.prototype.ignore = function remotePromise(uid) {
     'use strict';
-    return this.callRemote('listen', this.registerListener, [uid]);
+    return this.callRemote('ignore', this.registerCallback, [uid]);
 };

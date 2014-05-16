@@ -5,6 +5,20 @@
 
 /*global window, jasmine, beforeEach, describe, expect, waitsFor, spyOn, runs, it, module,inject, workular, RemoteProcedure, console, Q, afterEach*/
 
+describe('remote procedure object', function () {
+    'use strict';
+
+    it('should always function as a constructor function', function () {
+        var rp = RemoteProcedure(function () {}, {}, 'fn');
+        expect(rp instanceof RemoteProcedure).toBe(true);
+    });
+
+    it('should be an object', function () {
+        var rp = new RemoteProcedure(function () {}, {}, 'fn');
+        expect(rp instanceof RemoteProcedure).toBe(true);
+    });
+});
+
 describe('there should be a unique id function', function () {
     'use strict';
     var rp;
@@ -115,3 +129,43 @@ describe('the function callers should post the expected messages', function () {
     testCallbackRegistry('promise');
 });
 
+describe('the function listeners should operate as expected', function () {
+    'use strict';
+    var postData = '', callbacks = {}, rp;
+
+    beforeEach(function () {
+        callbacks = {};
+        postData = '';
+        rp = new RemoteProcedure(function testPost(message) {
+            postData = JSON.parse(message);
+        }, callbacks, 'fn');
+    });
+
+    it('listeners should return valid uids', function () {
+        var listenFn1 = function lfn() {
+            console.log('word');
+        }, listenFn2 = function lfn() {
+            var cheese = 'cheddar';
+            console.log(cheese);
+        }, uid = rp.listen(listenFn1);
+
+        expect(callbacks[uid].toString()).toBe(listenFn1.toString());
+
+        uid = rp.listen(listenFn2);
+
+        expect(callbacks[uid].toString()).toBe(listenFn2.toString());
+    });
+
+    it('should throw without a callback', function () {
+        expect(function () {
+            rp.listen();
+        }).toThrow();
+    });
+
+    it('ignores should return promises', function () {
+        var r = rp.ignore('234523');
+
+        expect(typeof r.then).toBe('function');
+    });
+
+});
