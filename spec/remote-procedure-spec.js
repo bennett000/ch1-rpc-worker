@@ -77,16 +77,41 @@ describe('the function callers should post the expected messages', function () {
         }, callbacks, 'fn');
     });
 
-    it ('should send invoke messages', function () {
-        rp.invoke('hello');
+    function testMessageResult(type) {
+        it ('should send ' + type + ' messages', function () {
+            rp[type]('hello');
 
-        expect(postData.invoke).toBeTruthy();
-        expect(Array.isArray(postData.invoke)).toBe(true);
-        expect(postData.invoke[0]).toBeTruthy();
-        expect(postData.invoke[0].fn).toBe('fn');
-        expect(Array.isArray(postData.invoke[0].args)).toBe(true);
-        expect(postData.invoke[0].args[0]).toBe('hello');
-    });
+            expect(postData[type]).toBeTruthy();
+            expect(Array.isArray(postData[type])).toBe(true);
+            expect(postData[type][0]).toBeTruthy();
+            expect(postData[type][0].fn).toBe('fn');
+            expect(Array.isArray(postData[type][0].args)).toBe(true);
+            expect(postData[type][0].args[0]).toBe('hello');
+        });
+    }
 
+    testMessageResult('invoke');
+    testMessageResult('promise');
+    testMessageResult('callback');
+
+    function testCallbackRegistry(type) {
+        it ('should register callbacks for ' + type + ' messages', function () {
+            rp[type]('hello');
+
+            Object.keys(callbacks).forEach(function (uid) {
+                expect(typeof callbacks[uid]).toBe('object');
+                expect(typeof callbacks[uid].t).toBe('function');
+                expect(typeof callbacks[uid].f).toBe('function');
+            });
+
+            expect(Object.keys(callbacks).length).toBe(1);
+            rp[type]('goodbye');
+            expect(Object.keys(callbacks).length).toBe(2);
+        });
+    }
+
+    testCallbackRegistry('invoke');
+    testCallbackRegistry('callback');
+    testCallbackRegistry('promise');
 });
 
