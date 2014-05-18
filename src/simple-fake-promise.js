@@ -16,9 +16,9 @@ function SimpleDefer() {
 
     var that = this, passes = [], fails = [], resolution, resultArgs;
 
-    that.promise = Object.create(null);
+    that['promise'] = Object.create(null);
 
-    that.promise.then = function simpleThen(pass, fail) {
+    that.promise['then'] = function simpleThen(pass, fail) {
         if (typeof pass !== 'function') {
             throw new TypeError('then\'s first parameter must be a function');
         }
@@ -42,7 +42,7 @@ function SimpleDefer() {
         }
     };
 
-    that.resolve = function simpleResolve () {
+    that['resolve'] = function simpleResolve () {
         // resolve the promise if it has not already been resolved
         if (resolution === undefined) {
             resolution = true;
@@ -61,7 +61,7 @@ function SimpleDefer() {
      * rejects a promise
      * @param err {Error}
      */
-    that.reject = function simpleReject (err) {
+    that['reject'] = function simpleReject (err) {
         if (!(err instanceof Error)) {
             throw new Error('promise rejections must be Error objects');
         }

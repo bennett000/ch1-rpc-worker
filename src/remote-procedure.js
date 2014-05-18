@@ -1,8 +1,9 @@
 /*global SimpleFakePromise */
 /**
  * Encapsulates the grunt functions that make the RPC work
- * @param postMethod {function(...)}
- * @param callbackDictionary {Object}
+ * @param postMethod {function(...)} method for sending remote procedure call strings
+ * @param callbackDictionary {Object} dictionary object that will hold the callbacks
+ * @param remoteFn {string} the remote function to call
  * @returns {RemoteProcedure}
  * @constructor
  */
@@ -22,9 +23,9 @@ function RemoteProcedure(postMethod, callbackDictionary, remoteFn) {
     that.fn = remoteFn;
 }
 
-RemoteProcedure.prototype.Q = SimpleFakePromise();
+RemoteProcedure.prototype['Q'] = SimpleFakePromise();
 
-RemoteProcedure.prototype.statics = Object.create(null, {
+RemoteProcedure.prototype['statics'] = Object.create(null, {
     uidCount: {
         value       : 0,
         configurable: false,
@@ -36,7 +37,7 @@ RemoteProcedure.prototype.statics = Object.create(null, {
  * Generates a relatively unique string
  * @returns {string}
  */
-RemoteProcedure.prototype.uid = function uid() {
+RemoteProcedure.prototype['uid'] = function uid() {
     'use strict';
     // increment the counter
     this.statics.uidCount += 1;
@@ -51,7 +52,7 @@ RemoteProcedure.prototype.uid = function uid() {
  * @param defer {Object} defer/promise/future
  * @param uid {string} uid of the callback
  */
-RemoteProcedure.prototype.registerCallback = function registerCallback(defer, uid) {
+RemoteProcedure.prototype['registerCallback'] = function registerCallback(defer, uid) {
     'use strict';
     if (this.callbacks[uid]) {
         throw new RangeError('Remote Procedure: callback uid already exists!');
@@ -69,7 +70,7 @@ RemoteProcedure.prototype.registerCallback = function registerCallback(defer, ui
  * @param callback {function(...)}
  * @param uid {string}
  */
-RemoteProcedure.prototype.registerListener = function registerListener(callback, uid) {
+RemoteProcedure.prototype['registerListener'] = function registerListener(callback, uid) {
     'use strict';
     if (typeof callback !== 'function') {
         throw new TypeError('Remote Procedure: register listener: expecting callback function');
@@ -86,7 +87,7 @@ RemoteProcedure.prototype.registerListener = function registerListener(callback,
  * @param args {Array}
  * @returns {*}
  */
-RemoteProcedure.prototype.callRemote = function callRemote (type, registerFunction, args) {
+RemoteProcedure.prototype['callRemote'] = function callRemote (type, registerFunction, args) {
     'use strict';
     var uid = this.uid(), d = this.Q.defer(), that = this,
     postObj = {};
@@ -110,7 +111,7 @@ RemoteProcedure.prototype.callRemote = function callRemote (type, registerFuncti
  * posts an invoke message
  * @returns {Object}
  */
-RemoteProcedure.prototype.invoke = function remoteInvoke() {
+RemoteProcedure.prototype['invoke'] = function remoteInvoke() {
     'use strict';
     return this.callRemote('invoke', this.registerCallback, Array.prototype.slice.call(arguments, 0));
 };
@@ -119,7 +120,7 @@ RemoteProcedure.prototype.invoke = function remoteInvoke() {
  * posts an callback message
  * @returns {Object}
  */
-RemoteProcedure.prototype.callback = function remoteCallback() {
+RemoteProcedure.prototype['callback'] = function remoteCallback() {
     'use strict';
     return this.callRemote('callback', this.registerCallback, Array.prototype.slice.call(arguments, 0));
 };
@@ -128,7 +129,7 @@ RemoteProcedure.prototype.callback = function remoteCallback() {
  * posts a promise message
  * @returns {Object}
  */
-RemoteProcedure.prototype.promise = function remotePromise() {
+RemoteProcedure.prototype['promise'] = function remotePromise() {
     'use strict';
     return this.callRemote('promise', this.registerCallback, Array.prototype.slice.call(arguments, 0));
 };
@@ -137,7 +138,7 @@ RemoteProcedure.prototype.promise = function remotePromise() {
  * posts a listen message
  * @returns {Object}
  */
-RemoteProcedure.prototype.listen = function remotePromise(callback) {
+RemoteProcedure.prototype['listen'] = function remotePromise(callback) {
     'use strict';
     return this.callRemote('listen', this.registerListener, callback);
 };
@@ -146,7 +147,7 @@ RemoteProcedure.prototype.listen = function remotePromise(callback) {
  * posts an ignore message
  * @returns {Object}
  */
-RemoteProcedure.prototype.ignore = function remotePromise(uid) {
+RemoteProcedure.prototype['ignore'] = function remotePromise(uid) {
     'use strict';
     return this.callRemote('ignore', this.registerCallback, [uid]);
 };
