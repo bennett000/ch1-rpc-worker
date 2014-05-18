@@ -81,6 +81,12 @@ function SimpleDefer() {
     };
 }
 
+/**
+ * Fake promise, works like a promise, but is only really useful when used with
+ * a source of asynchronicity, like an XHR request, or a postMessage
+ * @returns {SimpleFakePromise}
+ * @constructor
+ */
 function SimpleFakePromise() {
     'use strict';
 
@@ -89,7 +95,11 @@ function SimpleFakePromise() {
         return new SimpleFakePromise();
     }
 
-    this.defer = function simpleDefer() {
+    /**
+     * This is pretty much the fake promise library's only 'interface'
+     * @returns {SimpleDefer}
+     */
+    this['defer'] = function simpleDefer() {
         return new SimpleDefer();
     };
 }
