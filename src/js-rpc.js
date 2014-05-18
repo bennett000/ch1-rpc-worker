@@ -23,31 +23,31 @@ function RPC(remote, spec) {
 
     // scope that this!
     var that = this,
-    Q = SimpleFakePromise(),
-    /** @const */
-    ROOTNODE = 'root',
-    /** @dict */
-    exposedProcedures = Object.create(null),
-    /** @dict */
-    resultCallbacks = Object.create(null),
-    /** @type {boolean} */
-    localReadyFlag = false,
-    /** @type {boolean} */
-    remoteReadyFlag = false,
-    /** @type {boolean} */
-    isReadyFlag = false,
-    /** @type Array.<function()> */
-    readyQueue = [],
-    /** @const */
-    noop = function () {},
-    /*global console*/
-    log = console || {
-        log   : noop,
-        info  : noop,
-        assert: noop,
-        warn  : noop,
-        error : noop
-    };
+        Q = SimpleFakePromise(),
+        /** @const */
+        DOT = '.',
+        /** @dict */
+        exposedProcedures = Object.create(null),
+        /** @dict */
+        resultCallbacks = Object.create(null),
+        /** @type {boolean} */
+        localReadyFlag = false,
+        /** @type {boolean} */
+        remoteReadyFlag = false,
+        /** @type {boolean} */
+        isReadyFlag = false,
+        /** @type Array.<function()> */
+        readyQueue = [],
+        /** @const */
+        noop = function () {},
+        /*global console*/
+        log = console || {
+            log: noop,
+            info: noop,
+            assert: noop,
+            warn: noop,
+            error: noop
+        };
 
     /**
      * @param fn
@@ -94,15 +94,15 @@ function RPC(remote, spec) {
      * Exposes the post/listen methods
      */
     function exposePostListen(spec) {
-        that.post = remote[spec.post];
+        that['post'] = remote[spec.post];
         if (spec.message) {
-            that.listen = function wrapAddEvent(fn) {
+            that['listen'] = function wrapAddEvent(fn) {
                 if (isFunction(fn) === false) { return; }
 
                 remote[spec.listen].call(that, spec.message, fn);
             };
         } else {
-            that.listen = remote[spec.listen];
+            that['listen'] = remote[spec.listen];
         }
     }
 
@@ -193,24 +193,85 @@ function RPC(remote, spec) {
 
     }
 
-    function getChildObject(parent, child) {
 
+    /**
+     * Given a dictionary of objects, and string describing objects in dot notation
+     * this function attempt to retrieve a nested object.  Returns the object, or
+     * null
+     * @param dictionary {Object} collection of objects
+     * @param tree {string} reference to an object in standard oop dot notation
+     * @param doCreate {boolean=} should we make the object if it's not there?
+     * @returns {Object} returns the object, or null
+     * @throws {TypeError} on invalid input
+     */
+    function getNestedObject(dictionary, tree, doCreate) {
+        if ((typeof tree !== 'string') || (tree === '')) {
+            throw new TypeError('RPC: getNested Object: tree is not a string');
+        }
+        if ((!dictionary) || (typeof dictionary !== 'object')) {
+            throw new TypeError('RPC: getNested Object: dictionary is not an object');
+        }
+        var result = null,
+            nextDict;
+
+        tree = tree.split(DOT);
+        doCreate = doCreate || false;
+
+
+        if (tree.length === 1) {
+            if (!dictionary[tree[0]]) {
+                if (doCreate) {
+                    dictionary[tree[0]] = Object.create(null);
+                    result = dictionary[tree[0]];
+                }
+            } else {
+                result = dictionary[tree[0]];
+            }
+        } else if (tree.length > 1) {
+            nextDict = tree.shift();
+            if (!dictionary[nextDict]) {
+                if (doCreate) {
+                    dictionary[nextDict] = Object.create(null);
+                    result = getNestedObject(dictionary[nextDict], tree.join(DOT), doCreate);
+                }
+            } else {
+                result = getNestedObject(dictionary[nextDict], tree.join(DOT), doCreate);
+            }
+        }
+
+        return result;
     }
 
+    /**
+     * Handles exposure requests by building up the 'remotes' object
+     * @param data {string}
+     */
     function onExpose(data) {
         if (!validateMessageData(data)) {
             return;
         }
-        data.forEach(function (result) {
-            if (!validateMessageDatum(result)) {
+        data.forEach(function (exposeFn) {
+            if (typeof exposeFn !== 'string') {
                 return;
             }
-            if ((!result.loc) || (!result.fn)) {
-                log.error('RPC: onExpose: invalid expose request (location, fn)', result.loc, result.fn);
-                return;
+            var splitFns = exposeFn.split(DOT), obj, fn;
+            // scrub fenceposts
+            if (splitFns[0] === '') {
+                splitFns.shift();
+                exposeFn = splitFns.join(DOT);
             }
-            if (result.loc === ROOTNODE) {
-                that.remotes[result.fn] = new RemoteProcedure();
+
+            if (splitFns.length === 1) {
+                that.remotes[exposeFn] = RemoteProcedure(that.post, resultCallbacks, exposeFn);
+            } else if (splitFns.length > 1) {
+                fn = splitFns.pop();
+                obj = getNestedObject(that.remotes, splitFns.join(DOT), true);
+
+                if (obj) {
+                    obj[fn] = RemoteProcedure(that.post, resultCallbacks, exposeFn);
+                } else {
+                    log.error('RPC: expose error, invalid object');
+                }
             }
         });
     }
@@ -319,14 +380,13 @@ function RPC(remote, spec) {
 
     /**
      * Sends an expose message to the other side of the wire
-     * @param location {string} '.' separated string describing the object hierarchy
-     * @param fnName {string} the name of the function to expose
+     * @param fnName {string} the fully qualified name of the function to expose
      */
-    function sendExposeMessage(location, fnName) {
+    function sendExposeMessage(fnName) {
         that.post(JSON.stringify(
         {
             expose: [
-                { loc: location, fn: fnName}
+                fnName
             ]
         }));
     }
@@ -337,17 +397,17 @@ function RPC(remote, spec) {
      * @param attr {string=} the identifying attributes (root.object.subobject)
      */
     function exposeByLevel(toExpose, attr) {
-        attr = attr || ROOTNODE;
+        attr = attr || '';
 
         Object.keys(toExpose).forEach(function (eAttr) {
             // if it's an object recurse
             if ((typeof toExpose[eAttr] === 'object') && (toExpose[eAttr])) {
                 // recurse
-                exposeByLevel(toExpose[eAttr], attr + '.' + eAttr);
+                exposeByLevel(toExpose[eAttr], attr + DOT + eAttr);
             }
             // if it's a function send an expose message
             if (typeof toExpose[eAttr] === 'function') {
-                sendExposeMessage(attr, eAttr);
+                sendExposeMessage(attr + DOT + eAttr);
             }
         });
     }
@@ -435,13 +495,13 @@ function RPC(remote, spec) {
 
         // expose
         exposePostListen(spec);
-        that.remotes = Object.create(null);
-        that.setPromiseLib = setPromiseLib;
-        that.expose = expose;
-        that.isReady = isReady;
-        that.onReady = onReady;
-        that.setLogger = setLogger;
-        that.error = error;
+        that['remotes'] = Object.create(null);
+        that['setPromiseLib'] = setPromiseLib;
+        that['expose'] = expose;
+        that['isReady'] = isReady;
+        that['onReady'] = onReady;
+        that['setLogger'] = setLogger;
+        that['error'] = error;
 
         // listen!
         initListener(spec);

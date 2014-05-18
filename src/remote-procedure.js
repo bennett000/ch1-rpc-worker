@@ -3,7 +3,7 @@
  * Encapsulates the grunt functions that make the RPC work
  * @param postMethod {function(...)} method for sending remote procedure call strings
  * @param callbackDictionary {Object} dictionary object that will hold the callbacks
- * @param remoteFn {string} the remote function to call
+ * @param remoteFn {string} the fully qualified remote function to call
  * @returns {RemoteProcedure}
  * @constructor
  */
@@ -23,8 +23,16 @@ function RemoteProcedure(postMethod, callbackDictionary, remoteFn) {
     that.fn = remoteFn;
 }
 
+/**
+ * Reference to a promise library
+ * @type {SimpleFakePromise}
+ */
 RemoteProcedure.prototype['Q'] = SimpleFakePromise();
 
+/**
+ * Object that holds 'static' (classical oop) properties
+ * @type {null}
+ */
 RemoteProcedure.prototype['statics'] = Object.create(null, {
     uidCount: {
         value       : 0,

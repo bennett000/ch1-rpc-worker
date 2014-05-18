@@ -3,22 +3,22 @@
  * Created by michael on 13/05/14
  */
 
-/*global window, jasmine, beforeEach, describe, expect, waitsFor, spyOn, runs, it, module,inject, workular, RPC, console, Q*/
+/*global window, jasmine, beforeEach, describe, expect, waitsFor, spyOn, runs, it, module,inject, workular, RPC, console, Q, RemoteProcedure */
 
 var invalidRemote = {
     postMessage: function () {}
 }, validDefaultRemote = {
     addEventListener: function () {},
-    postMessage     : function () {}
+    postMessage: function () {}
 }, validCustomRemote = {
-    listen : function () {
+    listen: function () {
 
     }, post: function () {
 
     }
 }, customDesc = {
     listen: 'listen',
-    post  : 'post'
+    post: 'post'
 };
 
 describe('the js-rpc object is initialized with a \'remote\' object, like a worker, or a socket.io connection', function () {
@@ -37,13 +37,13 @@ describe('the js-rpc object is initialized with a \'remote\' object, like a work
 
     it('Should have post/listen methods after construction', function () {
         var p1 = false, msg = 'messagio',
-        rpc = new RPC(
-        {
-            addEventListener: function (msg) { p1 = msg; },
-            postMessage     : function () {}
-        }, {
-            message: msg
-        });
+            rpc = new RPC(
+            {
+                addEventListener: function (msg) { p1 = msg; },
+                postMessage: function () {}
+            }, {
+                message: msg
+            });
 
         expect(typeof rpc.listen).toBe('function');
         expect(typeof rpc.post).toBe('function');
@@ -96,17 +96,20 @@ describe('the rpc object has a public setPromiseLib function that allows for a p
     });
 
     it('should throw given an invalid promise lib', function () {
-        var fp = []; fp.push({});
+        var fp = [];
+        fp.push({});
         fp.push({ defer: function () {} });
         fp.push({ defer: function () { return {}; } });
         fp.push({ defer: function () { return { reject: function () {} }; } });
         fp.push({ defer: function () { return { resolve: function () {} }; } });
         fp.push({ defer: function () { return { resolve: function () {}, reject: function () {} }; } });
-        fp.push({ defer: function () { return {
-            resolve: function () {},
-            reject: function () {},
-            promise: {}
-        }; } });
+        fp.push({ defer: function () {
+            return {
+                resolve: function () {},
+                reject: function () {},
+                promise: {}
+            };
+        } });
 
         fp.forEach(function (falsePromise) {
             expect(function () {
@@ -138,7 +141,7 @@ describe('the rpc object should be able to handle string messages without failin
                 }
                 listenersA.push(fn);
             },
-            postMessage     : function (data) {
+            postMessage: function (data) {
                 listenersB.forEach(function (fn) {
                     fn(data);
                 });
@@ -154,7 +157,7 @@ describe('the rpc object should be able to handle string messages without failin
                 }
                 listenersB.push(fn);
             },
-            postMessage     : function (data) {
+            postMessage: function (data) {
                 console.log('invoking a listeners', data);
                 listenersA.forEach(function (fn) {
                     fn(data);
@@ -179,7 +182,7 @@ describe('the rpc object has public error function that sends an error over the 
         rpc = new RPC(
         {
             addEventListener: function () {},
-            postMessage     : function (data) {
+            postMessage: function (data) {
                 result = JSON.parse(data);
                 if (result.error) { result = result.error; }
             }
@@ -194,7 +197,7 @@ describe('the rpc object has public error function that sends an error over the 
                 }
                 listenersA.push(fn);
             },
-            postMessage     : function (data) {
+            postMessage: function (data) {
                 listenersB.forEach(function (fn) {
                     fn(data);
                 });
@@ -210,7 +213,7 @@ describe('the rpc object has public error function that sends an error over the 
                 }
                 listenersB.push(fn);
             },
-            postMessage     : function (data) {
+            postMessage: function (data) {
                 console.log('invoking a listeners', data);
                 listenersA.forEach(function (fn) {
                     fn(data);
@@ -229,7 +232,7 @@ describe('the rpc object has public error function that sends an error over the 
         expect(result[0]).toBe(msg);
     });
 
-    it ('should use its own logger to note an error if error JSONing fails', function () {
+    it('should use its own logger to note an error if error JSONing fails', function () {
         var errorCalled = false;
         rpc.setLogger({
                           log: function () {},
@@ -281,11 +284,11 @@ describe('the rpc object has public setLogger function that overrides the intern
     it('should replace the default logger if the given logger is valid', function () {
         expect(rpc.setLogger(
         {
-            log   : function () {},
-            info  : function () {},
+            log: function () {},
+            info: function () {},
             assert: function () {},
-            warn  : function () {},
-            error : function () {}
+            warn: function () {},
+            error: function () {}
         })).toBe(true);
 
     });
@@ -294,20 +297,20 @@ describe('the rpc object has public setLogger function that overrides the intern
         expect(rpc.setLogger()).toBe(false);
         expect(rpc.setLogger(
         {
-            log   : function () {},
-            info  : function () {},
+            log: function () {},
+            info: function () {},
             assert: function () {},
-            warn  : function () {}
+            warn: function () {}
         })).toBe(false);
         expect(rpc.setLogger(
         {
-            log   : function () {},
-            info  : function () {},
+            log: function () {},
+            info: function () {},
             assert: function () {}
         })).toBe(false);
         expect(rpc.setLogger(
         {
-            log : function () {},
+            log: function () {},
             info: function () {}
         })).toBe(false);
         expect(rpc.setLogger(
@@ -365,6 +368,113 @@ describe('the rpc object has a public expose method that allows objects to \'reg
                    }, true);
         expect(rpc.expose().tomato).toBe('blue');
     });
+
+    it('should expose nested objects', function () {
+        rpc.expose({
+                       'tomatoes': {
+                           'green': true,
+                           'red': true
+                       }
+                   });
+        expect(rpc.expose().tomatoes.green).toBe(true);
+    });
+
+});
+
+describe('the rpc object should handle onexpose messages, and build objects that can be called', function () {
+    'use strict';
+    var rpcA, rpcB, listenersA = [], listenersB = [], errorTest = { error: false };
+
+    beforeEach(function () {
+        listenersA = [];
+        listenersB = [];
+        errorTest = { error: false }
+
+        rpcA = new RPC(
+        {
+            addEventListener: function (fn) {
+                if (typeof fn !== 'function') {
+                    console.warn('wrong type of listener');
+                    return;
+                }
+                listenersA.push(fn);
+            },
+            postMessage: function (data) {
+                listenersB.forEach(function (fn) {
+                    fn(data);
+                });
+            }
+        });
+
+        rpcB = new RPC(
+        {
+            addEventListener: function (fn) {
+                if (typeof fn !== 'function') {
+                    console.warn('wrong type of listener');
+                    return;
+                }
+                listenersB.push(fn);
+            },
+            postMessage: function (data) {
+                listenersA.forEach(function (fn) {
+                    fn(data);
+                });
+            }
+        });
+    });
+
+    it('should generate an exposed function on the other side', function () {
+
+        rpcA.expose({
+                        test: function () {
+                            console.log('Je suis test 1');
+                        }
+                    });
+        expect(rpcB.remotes.test).toBeTruthy();
+        expect(rpcB.remotes.test instanceof RemoteProcedure).toBe(true);
+    });
+
+    it('should generate a nested exposed function on the other side', function () {
+
+        rpcA.expose({
+                        test1: {
+                            test2: function () {
+                                console.log('Je suis test 1');
+                            }
+                        }
+                    });
+        expect(rpcB.remotes.test1).toBeTruthy();
+        expect(rpcB.remotes.test1.test2).toBeTruthy();
+        expect(rpcB.remotes.test1.test2 instanceof RemoteProcedure).toBe(true);
+
+        rpcA.expose({
+                        test3: {
+                            test4: {
+                                test5: function () {
+                                    console.log('Je suis test 5');
+                                }
+                            }
+                        },
+                        test6: {
+                            test7: function () {
+                                console.log('Je suis test 7');
+                            }
+                        }
+                    });
+
+        expect(rpcB.remotes.test1).toBeTruthy();
+        expect(rpcB.remotes.test1.test2).toBeTruthy();
+        expect(rpcB.remotes.test1.test2 instanceof RemoteProcedure).toBe(true);
+
+        expect(rpcB.remotes.test3).toBeTruthy();
+        expect(rpcB.remotes.test3.test4).toBeTruthy();
+        expect(rpcB.remotes.test3.test4.test5).toBeTruthy();
+        expect(rpcB.remotes.test3.test4.test5 instanceof RemoteProcedure).toBe(true);
+
+        expect(rpcB.remotes.test6).toBeTruthy();
+        expect(rpcB.remotes.test6.test7).toBeTruthy();
+        expect(rpcB.remotes.test6.test7 instanceof RemoteProcedure).toBe(true);
+    });
 });
 
 describe('the rpc object should correctly handle its expected dialect', function () {
@@ -374,14 +484,14 @@ describe('the rpc object should correctly handle its expected dialect', function
     // helper function for testing error logs
     function attachLogger(remote, errorObj) {
         rpcA.setLogger({
-                          log: function () {},
-                          info: function () {},
-                          assert: function () {},
-                          warn: function () {},
-                          error: function () {
-                              errorObj.error = true;
-                          }
-                      });
+                           log: function () {},
+                           info: function () {},
+                           assert: function () {},
+                           warn: function () {},
+                           error: function () {
+                               errorObj.error = true;
+                           }
+                       });
 
     }
 
@@ -399,7 +509,7 @@ describe('the rpc object should correctly handle its expected dialect', function
                 }
                 listenersA.push(fn);
             },
-            postMessage     : function (data) {
+            postMessage: function (data) {
                 listenersB.forEach(function (fn) {
                     fn(data);
                 });
@@ -415,7 +525,7 @@ describe('the rpc object should correctly handle its expected dialect', function
                 }
                 listenersB.push(fn);
             },
-            postMessage     : function (data) {
+            postMessage: function (data) {
                 listenersA.forEach(function (fn) {
                     fn(data);
                 });
