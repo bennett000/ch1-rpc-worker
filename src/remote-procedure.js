@@ -12,7 +12,7 @@ function RemoteProcedure(postMethod, callbackDictionary, remoteFn) {
 
     // ensure object constructor
     if (!(this instanceof RemoteProcedure)) {
-        return new RemoteProcedure(postMethod);
+        return new RemoteProcedure(postMethod, callbackDictionary, remoteFn);
     }
 
     // avoid this confusion
