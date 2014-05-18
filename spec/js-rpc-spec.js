@@ -21,6 +21,47 @@ var invalidRemote = {
     post: 'post'
 };
 
+function getRPCPair() {
+    'use strict';
+    var rObj = {}, listenersA = [], listenersB = [];
+    rObj.listenersA = listenersA;
+    rObj.listenersB = listenersB;
+
+    rObj.rpcA = new RPC(
+    {
+        addEventListener: function (fn) {
+            if (typeof fn !== 'function') {
+                console.warn('wrong type of listener');
+                return;
+            }
+            listenersA.push(fn);
+        },
+        postMessage: function (data) {
+            listenersB.forEach(function (fn) {
+                fn(data);
+            });
+        }
+    });
+
+    rObj.rpcB = new RPC(
+    {
+        addEventListener: function (fn) {
+            if (typeof fn !== 'function') {
+                console.warn('wrong type of listener');
+                return;
+            }
+            listenersB.push(fn);
+        },
+        postMessage: function (data) {
+            listenersA.forEach(function (fn) {
+                fn(data);
+            });
+        }
+    });
+
+    return rObj;
+}
+
 describe('the js-rpc object is initialized with a \'remote\' object, like a worker, or a socket.io connection', function () {
     'use strict';
 
@@ -127,43 +168,11 @@ describe('the rpc object has a public setPromiseLib function that allows for a p
 
 describe('the rpc object should be able to handle string messages without failing', function () {
     'use strict';
-    var rpcA, rpcB, listenersA = [], listenersB = [];
+    var rpcA, rpcB;
     beforeEach(function () {
-        listenersA = [];
-        listenersB = [];
-
-        rpcA = new RPC(
-        {
-            addEventListener: function (fn) {
-                if (typeof fn !== 'function') {
-                    console.warn('wrong type of listener');
-                    return;
-                }
-                listenersA.push(fn);
-            },
-            postMessage: function (data) {
-                listenersB.forEach(function (fn) {
-                    fn(data);
-                });
-            }
-        });
-
-        rpcB = new RPC(
-        {
-            addEventListener: function (fn) {
-                if (typeof fn !== 'function') {
-                    console.warn('wrong type of listener');
-                    return;
-                }
-                listenersB.push(fn);
-            },
-            postMessage: function (data) {
-                console.log('invoking a listeners', data);
-                listenersA.forEach(function (fn) {
-                    fn(data);
-                });
-            }
-        });
+        var r = getRPCPair();
+        rpcA = r.rpcA;
+        rpcB = r.rpcB;
     });
 
     it('should be able to handle junk messages wihthout throwing', function () {
@@ -177,8 +186,7 @@ describe('the rpc object has public error function that sends an error over the 
     'use strict';
     var rpc, rpcA, rpcB, listenersA = [], listenersB = [], result;
     beforeEach(function () {
-        listenersA = [];
-        listenersB = [];
+        var r = getRPCPair();
         rpc = new RPC(
         {
             addEventListener: function () {},
@@ -188,38 +196,10 @@ describe('the rpc object has public error function that sends an error over the 
             }
         });
 
-        rpcA = new RPC(
-        {
-            addEventListener: function (fn) {
-                if (typeof fn !== 'function') {
-                    console.warn('wrong type of listener');
-                    return;
-                }
-                listenersA.push(fn);
-            },
-            postMessage: function (data) {
-                listenersB.forEach(function (fn) {
-                    fn(data);
-                });
-            }
-        });
-
-        rpcB = new RPC(
-        {
-            addEventListener: function (fn) {
-                if (typeof fn !== 'function') {
-                    console.warn('wrong type of listener');
-                    return;
-                }
-                listenersB.push(fn);
-            },
-            postMessage: function (data) {
-                console.log('invoking a listeners', data);
-                listenersA.forEach(function (fn) {
-                    fn(data);
-                });
-            }
-        });
+        rpcA = r.rpcA;
+        rpcB = r.rpcB;
+        listenersA = r.listenersA;
+        listenersB = r.listenersB;
     });
 
     it('should have an error method', function () {
@@ -383,44 +363,15 @@ describe('the rpc object has a public expose method that allows objects to \'reg
 
 describe('the rpc object should handle onexpose messages, and build objects that can be called', function () {
     'use strict';
-    var rpcA, rpcB, listenersA = [], listenersB = [], errorTest = { error: false };
+    var rpcA, rpcB, listenersA = [], listenersB = [];
 
     beforeEach(function () {
-        listenersA = [];
-        listenersB = [];
-        errorTest = { error: false }
+        var r = getRPCPair();
 
-        rpcA = new RPC(
-        {
-            addEventListener: function (fn) {
-                if (typeof fn !== 'function') {
-                    console.warn('wrong type of listener');
-                    return;
-                }
-                listenersA.push(fn);
-            },
-            postMessage: function (data) {
-                listenersB.forEach(function (fn) {
-                    fn(data);
-                });
-            }
-        });
-
-        rpcB = new RPC(
-        {
-            addEventListener: function (fn) {
-                if (typeof fn !== 'function') {
-                    console.warn('wrong type of listener');
-                    return;
-                }
-                listenersB.push(fn);
-            },
-            postMessage: function (data) {
-                listenersA.forEach(function (fn) {
-                    fn(data);
-                });
-            }
-        });
+        rpcA = r.rpcA;
+        rpcB = r.rpcB;
+        listenersA = r.listenersA;
+        listenersB = r.listenersB;
     });
 
     it('should generate an exposed function on the other side', function () {
@@ -496,41 +447,14 @@ describe('the rpc object should correctly handle its expected dialect', function
     }
 
     beforeEach(function () {
-        listenersA = [];
-        listenersB = [];
         errorTest = { error: false }
 
-        rpcA = new RPC(
-        {
-            addEventListener: function (fn) {
-                if (typeof fn !== 'function') {
-                    console.warn('wrong type of listener');
-                    return;
-                }
-                listenersA.push(fn);
-            },
-            postMessage: function (data) {
-                listenersB.forEach(function (fn) {
-                    fn(data);
-                });
-            }
-        });
+        var r = getRPCPair();
 
-        rpcB = new RPC(
-        {
-            addEventListener: function (fn) {
-                if (typeof fn !== 'function') {
-                    console.warn('wrong type of listener');
-                    return;
-                }
-                listenersB.push(fn);
-            },
-            postMessage: function (data) {
-                listenersA.forEach(function (fn) {
-                    fn(data);
-                });
-            }
-        });
+        rpcA = r.rpcA;
+        rpcB = r.rpcB;
+        listenersA = r.listenersA;
+        listenersB = r.listenersB;
     });
 
     describe('results', function () {
@@ -572,10 +496,37 @@ describe('the rpc object should correctly handle its expected dialect', function
 
     });
 
-    describe('invoke', function () {});
-    describe('listen', function () {});
+    describe('invoke', function () {
+        var rpcA, rpcB;
+        beforeEach(function () {
+            var r = getRPCPair();
+
+            rpcA = r.rpcA;
+            rpcB = r.rpcB;
+
+            rpcA.expose({pizza:function () {
+                return 'pi';
+            }});
+        });
+
+        it('should invoke a given function', function () {
+            expect(rpcB.remotes.pizza instanceof RemoteProcedure).toBe(true);
+            rpcB.remotes.pizza.invoke().then(function (result) {
+                expect(result).toBe('pi');
+            });
+        });
+    });
+
+    describe('listen', function () {
+        var rpcA, rpcB;
+        beforeEach(function () {
+            var r = getRPCPair();
+
+            rpcA = r.rpcA;
+            rpcB = r.rpcB;
+        });
+    });
     describe('ignore', function () {});
     describe('promise', function () {});
     describe('callback', function () {});
-    describe('expose', function () {});
 });

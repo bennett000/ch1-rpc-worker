@@ -18,9 +18,9 @@ function RemoteProcedure(postMethod, callbackDictionary, remoteFn) {
     // avoid this confusion
     var that = this;
 
-    that.postMethod = postMethod;
-    that.callbacks = callbackDictionary;
-    that.fn = remoteFn;
+    that['postMethod'] = postMethod;
+    that['callbacks'] = callbackDictionary;
+    that['fn'] = remoteFn;
 }
 
 /**
@@ -97,22 +97,22 @@ RemoteProcedure.prototype['registerListener'] = function registerListener(callba
  */
 RemoteProcedure.prototype['callRemote'] = function callRemote (type, registerFunction, args) {
     'use strict';
-    var uid = this.uid(), d = this.Q.defer(), that = this,
+    var d = this.Q.defer(), that = this, msg = {},
     postObj = {};
-    postObj[type] = [
-        {
-            fn: that.fn,
-            uid: uid,
-            args: args
-        }
-    ];
+    postObj[type] = [];
+
+    msg['fn'] = that.fn;
+    msg['uid'] = this.uid();
+    msg['args'] = args;
+
+    postObj[type].push(msg)
 
     // listener case
     if (typeof args === 'function') { d = args; }
 
     this.postMethod(JSON.stringify(postObj));
 
-    return registerFunction.call(this, d, uid);
+    return registerFunction.call(this, d, msg.uid);
 };
 
 /**

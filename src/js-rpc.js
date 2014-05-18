@@ -128,7 +128,7 @@ function RPC(remote, spec) {
      * @param datum {Object}
      * @returns {boolean}
      */
-    function validateMessageDatum(datum) {
+    function validateResultCallbackDatum(datum) {
         if (!resultCallbacks[datum.uid]) {
             log.error('RPC: resultHandler: no callbacks for uid: ' + datum.uid);
             return false;
@@ -141,58 +141,22 @@ function RPC(remote, spec) {
     }
 
     /**
-     * Handles results arriving from 'the other side'
-     * @param data {Array.<Object>} collection of results
+     * validates a call to invoke/promise/callback
+     * @param datum {Object}
+     * @returns {boolean}
      */
-    function onResults(data) {
-        if (!validateMessageData(data)) {
-            return;
+    function validateCallDatum(datum) {
+        if (!datum.uid) {
+            return false;
         }
-        data.forEach(function (result) {
-            if (!validateMessageDatum(result)) {
-                return;
-            }
-            if (result.error) {
-                if (isFunction(resultCallbacks[result.uid].f)) {
-                    // promise case
-                    resultCallbacks[result.uid].f(new Error(result.error));
-                } else {
-                    // callback case
-                    resultCallbacks[result.uid].t(new Error(result.error));
-                }
-                return;
-            }
-            // success!
-            if (isFunction(resultCallbacks[result.uid].f)) {
-                // promise callback
-                resultCallbacks[result.uid].t(result.result);
-            } else {
-                // callback callback
-                resultCallbacks[result.uid].t(null, result.result);
-            }
-        });
+        if (!Array.isArray(datum.args)) {
+            return false;
+        }
+        if (!datum.fn) {
+            return false;
+        }
+        return true;
     }
-
-    function onInvoke(data) {
-
-    }
-
-    function onListen(data) {
-
-    }
-
-    function onIgnore(data) {
-
-    }
-
-    function onPromise(data) {
-
-    }
-
-    function onCallback(data) {
-
-    }
-
 
     /**
      * Given a dictionary of objects, and string describing objects in dot notation
@@ -243,12 +207,147 @@ function RPC(remote, spec) {
     }
 
     /**
+     * Handles results arriving from 'the other side'
+     * @param data {Array.<Object>} collection of results
+     */
+    function onResults(data) {
+        if (!validateMessageData(data)) {
+            return;
+        }
+        data.forEach(function (result) {
+            if (!validateResultCallbackDatum(result)) {
+                return;
+            }
+            if (result.error) {
+                if (isFunction(resultCallbacks[result.uid].f)) {
+                    // promise case
+                    resultCallbacks[result.uid].f(new Error(result.error));
+                } else {
+                    // callback case
+                    resultCallbacks[result.uid].t(new Error(result.error));
+                }
+                return;
+            }
+            // success!
+            if (isFunction(resultCallbacks[result.uid].f)) {
+                // promise callback
+                resultCallbacks[result.uid].t(result.result);
+            } else {
+                // callback callback
+                resultCallbacks[result.uid].t(null, result.result);
+            }
+        });
+    }
+
+    /**
+     * posts an error to a specific callback
+     * @param msg {string} error message
+     * @param uid {string} uid of the callback
+     */
+    function postResultError(msg, uid) {
+        var errorObj = {}, message = {};
+        errorObj['results'] = [];
+
+        message['error'] = msg;
+        message['uid'] = uid;
+        errorObj['results'].push(message);
+
+        that.post(JSON.stringify(errorObj));
+    }
+
+    /**
+     * posts a result to a specific callback
+     * @param result {*}
+     * @param uid {string} uid of the callback
+     */
+    function postResult(result, uid) {
+        var resultObj = {}, data = {};
+        resultObj['results'] = [];
+
+        data['result'] = result;
+        data['uid'] = uid;
+        resultObj['results'].push(data);
+
+        that.post(JSON.stringify(resultObj));
+    }
+
+    /**
+     * runs the function after it's been 'vetted'
+     * @param fn {function (...)}
+     * @param details {Object}
+     */
+    function invokeFunction(fn, details) {
+        try {
+            postResult(fn.apply(null, details.args), details.uid);
+        } catch (err) {
+            postResultError(err.message, details.uid);
+        }
+    }
+
+    /**
+     * handle invocation requests
+     * @param data {Object}
+     */
+    function onInvoke(data) {
+        if (!validateMessageData(data)) {
+            return;
+        }
+        data.forEach(function (invoke) {
+            if (!validateCallDatum(invoke)) {
+                return;
+            }
+            var obj = getNestedObject(exposedProcedures, invoke.fn), err;
+            if (typeof obj !== 'function') {
+                err = ['RPC: onInvoke: error invalid function ', invoke.fn].join();
+                log.error(err);
+                postResultError(err, invoke.uid);
+                return;
+            }
+            // invoke, and callback
+            invokeFunction(obj, invoke);
+        });
+
+    }
+
+    function onListen(data) {
+        if (!validateMessageData(data)) {
+            return;
+        }
+        data.forEach(function (exposeFn) {
+            if (typeof exposeFn !== 'string') {
+                return;
+            }
+        });
+    }
+
+    function onIgnore(data) {
+
+    }
+
+    function onPromise(data) {
+
+    }
+
+    function onCallback(data) {
+        if (!validateMessageData(data)) {
+            return;
+        }
+        data.forEach(function (exposeFn) {
+            if (typeof exposeFn !== 'string') {
+                return;
+            }
+        });
+    }
+
+
+    /**
      * Handles exposure requests by building up the 'remotes' object
      * @param data {string}
+     * @throws {TypeError} on invalid data
      */
     function onExpose(data) {
         if (!validateMessageData(data)) {
-            return;
+            throw new TypeError('RPC: expose: unexpected data');
         }
         data.forEach(function (exposeFn) {
             if (typeof exposeFn !== 'string') {
@@ -281,33 +380,33 @@ function RPC(remote, spec) {
      * @param data {Object}
      */
     function handleMessage(data) {
-        if (data.error) {
+        if (data['error']) {
             log.error.apply(log, data.error);
         }
-        if (data.ready) {
+        if (data['ready']) {
             if (data.ready === true) {
                 remoteReadyFlag = true;
             }
         }
-        if (data.results) {
+        if (data['results']) {
             onResults(data.results);
         }
-        if (data.invoke) {
+        if (data['invoke']) {
             onInvoke(data.invoke);
         }
-        if (data.listen) {
+        if (data['listen']) {
             onListen(data.listen);
         }
-        if (data.ignore) {
+        if (data['ignore']) {
             onIgnore(data.ignore);
         }
-        if (data.promise) {
+        if (data['promise']) {
             onPromise(data.promise);
         }
-        if (data.callback) {
+        if (data['callback']) {
             onCallback(data.callback);
         }
-        if (data.expose) {
+        if (data['expose']) {
             onExpose(data.expose);
         }
     }
