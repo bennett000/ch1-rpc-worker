@@ -58,13 +58,7 @@ function RPC(remote, spec) {
         /** @const */
         noop = function () {},
         /*global console*/
-        log = console || {
-            log: noop,
-            info: noop,
-            assert: noop,
-            warn: noop,
-            error: noop
-        };
+    log;
 
     /**
      * @param fn
@@ -740,6 +734,18 @@ function RPC(remote, spec) {
         if ((typeof r !== 'object') || (r === null)) {
             throw new TypeError('RPC: Parameter one must be an object with valid listen/post methods');
         }
+
+	if (typeof console !== 'undefined') {
+	    log = console;
+	} else {
+	    log = {
+		log: noop,
+		info: noop,
+		assert: noop,
+		warn: noop,
+		error: noop
+            };
+	}
 
         spec = validateSpec(spec);
 
