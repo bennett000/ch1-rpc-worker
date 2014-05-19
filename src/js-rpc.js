@@ -331,13 +331,13 @@ function RPC(remote, spec) {
 
     callingFunctions['callback'] = function onCallback(fn, details) {
         try {
-            fn.apply(null, details.args.concat(function (err) {
+            fn.apply(null, details.args.concat([function (err) {
                 if (err) {
                     postResultError(err.message, details.uid);
                     return;
                 }
-                postResult(Array.prototype.slice.call(arguments, 1), details.uid);
-            }));
+                postResult(arguments[1], details.uid);
+            }]));
         } catch (err) {
             postResultError(err.message, details.uid);
         }
@@ -350,6 +350,7 @@ function RPC(remote, spec) {
      */
     function onCalling(type, data) {
         if (!validateMessageData(data)) {
+            console.log('CALLING INVALID, CALLING INVALID', type, data)
             return;
         }
         data.forEach(function (calling) {
@@ -438,7 +439,7 @@ function RPC(remote, spec) {
             onCalling('promise', data.promise);
         }
         if (data['callback']) {
-            onCalling('callback', data.invoke);
+            onCalling('callback', data.callback);
         }
         if (data['expose']) {
             onExpose(data.expose);

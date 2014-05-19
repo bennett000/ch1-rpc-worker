@@ -109,6 +109,7 @@ RemoteProcedure.prototype['callRemote'] = function callRemote (type, registerFun
 
     // listener case
     if (typeof args === 'function') { d = args; }
+
     this.postMethod(JSON.stringify(postObj));
     return registerFunction.call(this, d, msg.uid);
 };

@@ -630,7 +630,96 @@ describe('the rpc object should correctly handle its expected dialect', function
             });
         });
     });
-    describe('callback', function () {});
+
+    describe('callback', function () {
+        var rpcA, rpcB, array = [1,2,3,4,5,'1234124',2424],
+            errorMsg = 'broken callbacks';
+        beforeEach(function () {
+            var r = getRPCPairAsync(),  nextTurn = false;
+
+            rpcA = r.rpcA;
+            rpcB = r.rpcB;
+
+            rpcA.expose({callbackTrue:function (next) {
+                setTimeout(function () {
+                    next(null, true);
+                }, 35);
+            }});
+
+            rpcB.expose({callbackArray:function (next) {
+                setTimeout(function () {
+                    next(null, array);
+                }, 25);
+            }});
+
+            rpcB.expose({callbackFail:function (next) {
+                setTimeout(function () {
+                    next(new Error(errorMsg));
+                }, 15);
+            }});
+
+            // fast forward a turn so A, and B can catch each other's expose
+            // methods
+            setTimeout(function () {
+                nextTurn = true;
+            }, 0)
+
+            waitsFor(function () {
+                return nextTurn;
+            });
+        });
+
+        it('should be able to call a callback on the remote (true)', function () {
+            var done = false, result = false;
+
+            rpcB.remotes.callbackTrue.callback().then(function (r) {
+                done = true;
+                result = r;
+            }, function () {
+                done = true;
+            });
+
+            waitsFor(function () { return done; });
+
+            runs(function () {
+                expect(result).toBe(true);
+            });
+        });
+
+        it('should be able to call a callback on the remote (array)', function () {
+            var done = false, result = false;
+
+            rpcA.remotes.callbackArray.callback().then(function (r) {
+                done = true;
+                result = r;
+            }, function () {
+                done = true;
+            });
+
+            waitsFor(function () { return done; });
+
+            runs(function () {
+                expect(result.toString()).toBe(array.toString());
+            });
+        });
+
+        it('should be able to call a callback on the remote (error)', function () {
+            var done = false, result = false;
+
+            rpcA.remotes.callbackFail.callback().then(function (r) {
+                done = true;
+            }, function (r) {
+                done = true;
+                result = r.message;
+            });
+
+            waitsFor(function () { return done; });
+
+            runs(function () {
+                expect(result).toBe(errorMsg);
+            });
+        });
+    });
 
     describe('listen', function () {
         var rpcA, rpcB;
