@@ -441,7 +441,7 @@ describe('the rpc object should correctly handle its expected dialect', function
     });
 
     describe('invoke', function () {
-        var rpcA, rpcB;
+        var rpcA, rpcB, array = [235,'2352',5, true];
         beforeEach(function () {
             var r = getRPCPairAsync(),  nextTurn = false;
 
@@ -454,6 +454,10 @@ describe('the rpc object should correctly handle its expected dialect', function
 
             rpcB.expose({fail:function () {
                 throw new Error('feel my wrath fool');
+            }});
+
+            rpcA.expose({array:function () {
+                return array;
             }});
 
             // fast forward a turn so A, and B can catch each other's expose
@@ -486,6 +490,25 @@ describe('the rpc object should correctly handle its expected dialect', function
             });
         });
 
+        it('should invoke a given function (array)', function () {
+            var pass = false;
+            expect(rpcB.remotes.array instanceof RemoteProcedure).toBe(true);
+            rpcB.remotes.array.invoke().then(function (result) {
+                pass = result;
+                expect(result.toString()).toBe(array.toString());
+            }, function () {
+                pass = true;
+            });
+
+            waitsFor(function () {
+                return pass;
+            });
+
+            runs(function () {
+                expect(pass.toString()).toBe(array.toString());
+            });
+        });
+
         it('should catch exceptions from function executed', function () {
             var pass = false, f = false;
             expect(rpcA.remotes.fail instanceof RemoteProcedure).toBe(true);
@@ -508,6 +531,107 @@ describe('the rpc object should correctly handle its expected dialect', function
         });
     });
 
+    describe('promise', function () {
+        var rpcA, rpcB, array = [1,2,3,4,5,'1234124',2424],
+            errorMsg = 'broken promises';
+        beforeEach(function () {
+            var r = getRPCPairAsync(),  nextTurn = false;
+
+            rpcA = r.rpcA;
+            rpcB = r.rpcB;
+
+            rpcA.expose({promiseTrue:function () {
+                var d = Q.defer();
+
+                setTimeout(function () {
+                    d.resolve(true);
+                }, 35);
+
+                return d.promise;
+            }});
+
+            rpcB.expose({promiseArray:function () {
+                var d = Q.defer();
+
+                setTimeout(function () {
+                    d.resolve(array);
+                }, 25);
+
+                return d.promise;
+            }});
+
+            rpcB.expose({promiseFail:function () {
+                var d = Q.defer();
+                setTimeout(function () {
+                    d.reject(new Error(errorMsg));
+                }, 15);
+                return d.promise;
+            }});
+
+            // fast forward a turn so A, and B can catch each other's expose
+            // methods
+            setTimeout(function () {
+                nextTurn = true;
+            }, 0)
+
+            waitsFor(function () {
+                return nextTurn;
+            });
+        });
+
+        it('should be able to call a promise on the remote (true)', function () {
+            var done = false, result = false;
+
+            rpcB.remotes.promiseTrue.promise().then(function (r) {
+                done = true;
+                result = r;
+            }, function () {
+                done = true;
+            });
+
+            waitsFor(function () { return done; });
+
+            runs(function () {
+                expect(result).toBe(true);
+            });
+        });
+
+        it('should be able to call a promise on the remote (fail)', function () {
+            var done = false, result = false;
+
+            rpcA.remotes.promiseFail.promise().then(function (r) {
+                done = true;
+            }, function (reason) {
+                done = true;
+                result = reason.message;
+            });
+
+            waitsFor(function () { return done; });
+
+            runs(function () {
+                expect(result).toBe(errorMsg);
+            });
+        });
+
+        it('should be able to call a promise on the remote (array)', function () {
+            var done = false, result = false;
+
+            rpcA.remotes.promiseArray.promise().then(function (r) {
+                done = true;
+                result = r;
+            }, function () {
+                done = true;
+            });
+
+            waitsFor(function () { return done; });
+
+            runs(function () {
+                expect(result.toString()).toBe(array.toString());
+            });
+        });
+    });
+    describe('callback', function () {});
+
     describe('listen', function () {
         var rpcA, rpcB;
         beforeEach(function () {
@@ -518,6 +642,5 @@ describe('the rpc object should correctly handle its expected dialect', function
         });
     });
     describe('ignore', function () {});
-    describe('promise', function () {});
-    describe('callback', function () {});
+
 });

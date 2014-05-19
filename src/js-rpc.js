@@ -38,15 +38,17 @@ function RPC(remote, spec) {
         /** @const */
         DOT = '.',
         /** @dict */
-        exposedProcedures = Object.create(null),
+        exposedProcedures = Object.create(null), // references to functions that are called onmessage
         /** @dict */
-        resultCallbacks = Object.create(null),
+        resultCallbacks = Object.create(null),  // waiting for return message to be called
         /** @type {boolean} */
         localReadyFlag = false,
         /** @type {boolean} */
         remoteReadyFlag = false,
         /** @type {boolean} */
         isReadyFlag = false,
+        /** @dict */
+        callingFunctions = Object.create(null),  // case statement
         /** @type Array.<function()> */
         readyQueue = [],
         /** @const */
@@ -287,37 +289,12 @@ function RPC(remote, spec) {
      * @param fn {function (...)}
      * @param details {Object}
      */
-    function invokeFunction(fn, details) {
+    callingFunctions['invoke'] = function onInvoke(fn, details) {
         try {
             postResult(fn.apply(null, details.args), details.uid);
         } catch (err) {
             postResultError(err.message, details.uid);
         }
-    }
-
-    /**
-     * handle invocation requests
-     * @param data {Object}
-     */
-    function onInvoke(data) {
-        if (!validateMessageData(data)) {
-            return;
-        }
-        data.forEach(function (invoke) {
-            if (!validateCallDatum(invoke)) {
-                return;
-            }
-            var obj = getNestedObject(exposedProcedures, invoke.fn), err;
-            if (typeof obj !== 'function') {
-                err = ['RPC: onInvoke: error invalid function ', invoke.fn].join();
-                log.error(err);
-                postResultError(err, invoke.uid);
-                return;
-            }
-            // invoke, and callback
-            invokeFunction(obj, invoke);
-        });
-
     }
 
     function onListen(data) {
@@ -335,17 +312,63 @@ function RPC(remote, spec) {
 
     }
 
-    function onPromise(data) {
+    callingFunctions['promise'] = function onPromise(fn, details) {
+        var promise;
+        try {
+            promise = fn.apply(null, details.args).then(function onPromiseVictory(result) {
+                postResult(result, details.uid);
+            }, function onPromiseFailure(reason) {
+                postResultError(reason.message, details.uid);
+            });
+            // if the promise has a done mechanism, use it
+            if (isFunction(promise.done)) {
+                promise.done();
+            }
+        } catch (err) {
+            postResultError(err.message, details.uid);
+        }
+    };
 
-    }
+    callingFunctions['callback'] = function onCallback(fn, details) {
+        try {
+            fn.apply(null, details.args.concat(function (err) {
+                if (err) {
+                    postResultError(err.message, details.uid);
+                    return;
+                }
+                postResult(Array.prototype.slice.call(arguments, 1), details.uid);
+            }));
+        } catch (err) {
+            postResultError(err.message, details.uid);
+        }
+    };
 
-    function onCallback(data) {
+    /**
+     * Handles the invoke/callback/promise switch
+     * @param type {string} invoke/callback/pro...
+     * @param data {Array<Object>}
+     */
+    function onCalling(type, data) {
         if (!validateMessageData(data)) {
             return;
         }
-        data.forEach(function (exposeFn) {
-            if (typeof exposeFn !== 'string') {
+        data.forEach(function (calling) {
+            if (!validateCallDatum(calling)) {
                 return;
+            }
+            var obj = getNestedObject(exposedProcedures, calling.fn), err;
+
+            if (typeof obj !== 'function') {
+                err = ['RPC: onCalling: error invalid function ', calling.fn].join();
+                log.error(err);
+                postResultError(err, calling.uid);
+                return;
+            }
+            // call, and callback
+            if (isFunction(callingFunctions[type])) {
+                callingFunctions[type](obj, calling);
+            } else {
+                log.error('RPC: onCalling no handler for ', type);
             }
         });
     }
@@ -403,7 +426,7 @@ function RPC(remote, spec) {
             onResults(data.results);
         }
         if (data['invoke']) {
-            onInvoke(data.invoke);
+            onCalling('invoke', data.invoke);
         }
         if (data['listen']) {
             onListen(data.listen);
@@ -412,10 +435,10 @@ function RPC(remote, spec) {
             onIgnore(data.ignore);
         }
         if (data['promise']) {
-            onPromise(data.promise);
+            onCalling('promise', data.promise);
         }
         if (data['callback']) {
-            onCallback(data.callback);
+            onCalling('callback', data.invoke);
         }
         if (data['expose']) {
             onExpose(data.expose);
