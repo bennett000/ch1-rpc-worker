@@ -3,64 +3,8 @@
  * Created by michael on 13/05/14
  */
 
-/*global window, jasmine, beforeEach, describe, expect, waitsFor, spyOn, runs, it, module,inject, workular, RPC, console, Q, RemoteProcedure */
+/*global window, jasmine, beforeEach, describe, expect, waitsFor, spyOn, runs, it, module,inject, workular, RPC, console, Q, RemoteProcedure, invalidRemote, getRPCPair, getRPCPairAsync, validDefaultRemote, setTimeout */
 
-var invalidRemote = {
-    postMessage: function () {}
-}, validDefaultRemote = {
-    addEventListener: function () {},
-    postMessage: function () {}
-}, validCustomRemote = {
-    listen: function () {
-
-    }, post: function () {
-
-    }
-}, customDesc = {
-    listen: 'listen',
-    post: 'post'
-};
-
-function getRPCPair() {
-    'use strict';
-    var rObj = {}, listenersA = [], listenersB = [];
-    rObj.listenersA = listenersA;
-    rObj.listenersB = listenersB;
-
-    rObj.rpcA = new RPC(
-    {
-        addEventListener: function (fn) {
-            if (typeof fn !== 'function') {
-                console.warn('wrong type of listener');
-                return;
-            }
-            listenersA.push(fn);
-        },
-        postMessage: function (data) {
-            listenersB.forEach(function (fn) {
-                fn(data);
-            });
-        }
-    });
-
-    rObj.rpcB = new RPC(
-    {
-        addEventListener: function (fn) {
-            if (typeof fn !== 'function') {
-                console.warn('wrong type of listener');
-                return;
-            }
-            listenersB.push(fn);
-        },
-        postMessage: function (data) {
-            listenersA.forEach(function (fn) {
-                fn(data);
-            });
-        }
-    });
-
-    return rObj;
-}
 
 describe('the js-rpc object is initialized with a \'remote\' object, like a worker, or a socket.io connection', function () {
     'use strict';
@@ -499,7 +443,7 @@ describe('the rpc object should correctly handle its expected dialect', function
     describe('invoke', function () {
         var rpcA, rpcB;
         beforeEach(function () {
-            var r = getRPCPair();
+            var r = getRPCPairAsync(),  nextTurn = false;
 
             rpcA = r.rpcA;
             rpcB = r.rpcB;
@@ -507,12 +451,59 @@ describe('the rpc object should correctly handle its expected dialect', function
             rpcA.expose({pizza:function () {
                 return 'pi';
             }});
+
+            rpcB.expose({fail:function () {
+                throw new Error('feel my wrath fool');
+            }});
+
+            // fast forward a turn so A, and B can catch each other's expose
+            // methods
+            setTimeout(function () {
+                nextTurn = true;
+            }, 0)
+
+            waitsFor(function () {
+                return nextTurn;
+            });
         });
 
         it('should invoke a given function', function () {
+            var pass = false;
             expect(rpcB.remotes.pizza instanceof RemoteProcedure).toBe(true);
             rpcB.remotes.pizza.invoke().then(function (result) {
+                pass = result;
                 expect(result).toBe('pi');
+            }, function () {
+                pass = true;
+            });
+
+            waitsFor(function () {
+                return pass;
+            });
+
+            runs(function () {
+                expect(pass).toBe('pi');
+            });
+        });
+
+        it('should catch exceptions from function executed', function () {
+            var pass = false, f = false;
+            expect(rpcA.remotes.fail instanceof RemoteProcedure).toBe(true);
+            rpcA.remotes.fail.invoke().then(function (result) {
+                // shouldn't happen
+                pass = true;
+            }, function badIsGood (reason) {
+                f = true;
+                pass = true;
+                expect(reason.message).toBe('feel my wrath fool');
+            });
+
+            waitsFor(function () {
+                return pass;
+            });
+
+            runs(function () {
+                expect(f).toBe(true);
             });
         });
     });

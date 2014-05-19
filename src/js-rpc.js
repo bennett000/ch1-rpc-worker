@@ -1,6 +1,17 @@
 /*global RemoteProcedure, SimpleFakePromise */
 /**
- * Returns an RPC Object which will allow the user to invoke functions on the given remote procedure
+ * Returns an RPC Object which will allow the user to invoke functions on the
+ * given remote procedure.  This module assumes the given remote procedures
+ * operate asynchronously.
+ *
+ * One of the implications of this is that two RPCs cannot operate in the same
+ * process unless their listen/post calls operate with some form of asynchronous
+ * mechanism, like a setTimeout/setImmediate, a nextTick, animations frames,
+ * message loopbacks, etc...
+ *
+ * Please have an understanding of JavaScript asynchronicity before using this
+ * module
+ *
  * @param remote {Object} interface to a remote procedure has a post, and listen function
  * @param spec {Object=} optionally specifies alternate post/listen functions on the remote
  * @returns {RPC}
@@ -248,7 +259,7 @@ function RPC(remote, spec) {
         var errorObj = {}, message = {};
         errorObj['results'] = [];
 
-        message['error'] = msg;
+        message['error'] = msg || 'undefined error message';
         message['uid'] = uid;
         errorObj['results'].push(message);
 
