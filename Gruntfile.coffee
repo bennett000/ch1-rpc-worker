@@ -59,7 +59,7 @@ module.exports = (grunt) ->
           beautify: true
           preserveComments: true
         files:
-          'build/browser-angular/js-rpc.js': ['tmp/angular-shell  .js']
+          'build/browser-angular/js-rpc.js': ['tmp/angular-shell.js']
 
     concat:
       code:
