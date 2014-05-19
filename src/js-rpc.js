@@ -22,6 +22,8 @@
  *      "listen":"addEventListener",
  *      "post":"postMessage",
  *      "message":"message"
+ *      "listenAttr":"data"
+ *      "error":"error"
  * }
  */
 function RPC(remote, spec) {
@@ -106,6 +108,14 @@ function RPC(remote, spec) {
             spec.message = false;
         }
 
+        if ((!spec.error) || (spec.error === '') || (typeof spec.error !== 'string')) {
+            spec.error = false;
+        }
+
+        if ((!spec.listenAttr) || (spec.listenAttr === '') || (typeof spec.listenAttr !== 'string')) {
+            spec.listenAttr = false;
+        }
+
         if (isFunction(remote[spec.post]) === false) {
             throw new TypeError('RPC: remote has invalid post method');
         }
@@ -121,15 +131,29 @@ function RPC(remote, spec) {
      * Exposes the post/listen methods
      */
     function exposePostListen(spec) {
-        that['post'] = remote[spec.post];
+        that['post'] = function() {
+            remote[spec.post].apply(remote, Array.prototype.slice.call(arguments, 0));
+        };
+
         if (spec.message) {
             that['listen'] = function wrapAddEvent(fn) {
                 if (isFunction(fn) === false) { return; }
 
-                remote[spec.listen].call(that, spec.message, fn);
+                remote[spec.listen].call(remote, spec.message, fn);
             };
         } else {
-            that['listen'] = remote[spec.listen];
+            that['listen'] = function () {
+                remote[spec.listen].apply(remote, Array.prototype.slice.call(arguments, 0));
+            };
+        }
+        if(spec.error) {
+            remote[spec.listen].call(remote, spec.error, function (msg) {
+                if (spec.listenAttr) {
+                    log.error('RPC: remote error: ', msg.message);
+                } else {
+                    log.error(msg);
+                }
+            });
         }
     }
 
@@ -527,10 +551,14 @@ function RPC(remote, spec) {
     /**
      * Attaches an internal listener
      */
-    function initListener() {
+    function initListener(spec) {
         that.listen(function onMessage(data) {
             try {
-                data = JSON.parse(data);
+                if ((spec) && (spec.listenAttr)) {
+                    data = JSON.parse(data[spec.listenAttr]);
+                } else {
+                    data = JSON.parse(data);
+                }
                 handleMessage(data);
             } catch (err) {
                 log.error('RPC: received invalid data ' + err.message, data);
@@ -701,10 +729,6 @@ function RPC(remote, spec) {
         Q = lib;
         RemoteProcedure.prototype.Q = lib;
         return true;
-    }
-
-    function getReady() {
-
     }
 
     /**

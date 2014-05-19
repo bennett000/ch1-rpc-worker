@@ -3,11 +3,11 @@
  * Created by michael on 19/05/14.
  */
 
-/*global self, RPC*/
+/*global self, RPC, Q*/
 
-self.importScripts('js/simple-fake-promises.js', 'js/remote-procedure.js', 'js/js-rpc.js');
+self.importScripts('lib/q/q.js', 'js/simple-fake-promise.js', 'js/remote-procedure.js', 'js/js-rpc.js');
 
-var rpc = RPC(self);
+var rpc = new RPC(self, { message: 'message', listenAttr: 'data'});
 
 rpc.expose({
     dummy: function () {
