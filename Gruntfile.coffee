@@ -13,7 +13,7 @@ module.exports = (grunt) ->
           data:
             pkg: grunt.file.readJSON 'package.json'
             target: 'angular'
-            targetSrc: '1.2.9'
+            targetSrc: '1.2.14'
       workular:
         options:
           bowerJsonTemplate: 'etc/bower.json'
@@ -23,11 +23,12 @@ module.exports = (grunt) ->
             target: 'workular'
             targetSrc:"git+ssh://dev.higginsregister.com/srv/bower/js-workular.git#v0.5.1"
 
-    replace:
+    insert:
+      options: {}
       angular:
-        src: 'tmp/js-rpc-browser-workular.js'
-        dest: 'tmp/js-rpc-browser-angular.js'
-        replacements: [{from:'workular', to:'angular'}]
+        src: 'tmp/intermediate.js'
+        dest: 'tmp/angular-shell.js'
+        match: '//###RPCCODE'
 
     mkdir:
       buildEnvironement:
@@ -45,18 +46,12 @@ module.exports = (grunt) ->
       all: 'tmp/*.js'
 
     uglify:
-      buildWorkular:
-        options:
-          sourceMap: true,
-          sourceMapName: 'build/browser-workular/js-rpc.min.js.map'
-        files:
-          'build/browser-workular/js-rpc.min.js': ['tmp/js-rpc-browser-workular.js']
       buildAngular:
         options:
           sourceMap: true,
-          sourceMapName: 'build/browser-angular/js-rpc.min.js.map'
+          sourceMapName: 'build/browser-angular/js-rpc.min.map'
         files:
-          'build/browser-angular/js-rpc.min.js': ['tmp/js-rpc-browser-angular.js']
+          'build/browser-angular/js-rpc.min.js': ['tmp/angular-shell.js']
       pristine:
         options:
           mangle: false
@@ -64,52 +59,24 @@ module.exports = (grunt) ->
           beautify: true
           preserveComments: true
         files:
-          'build/browser-workular/js-rpc.js': ['tmp/js-rpc-browser-workular.js']
-          'build/browser-angular/js-rpc.js': ['tmp/js-rpc-browser-angular.js']
+          'build/browser-angular/js-rpc.js': ['tmp/angular-shell  .js']
 
-    copy:
-      asyncNodeWorkular:
-        expand: true
-        flatten: true
-        filter: 'isFile'
-        src: 'src/js-rpc.js'
-        dest: 'build/node-workular/'
-      packageNodeWorkular:
-        expand: true
-        flatten: true
-        filter: 'isFile'
-        src: 'package.json'
-        dest: 'build/node-workular/'
-      readmeNodeWorkular:
-        expand: true
-        flatten: true
-        filter: 'isFile'
-        src: 'README.md'
-        dest: 'build/node-workular/'
-
-    preprocessor:
-      node:
-        options:
-          context:
-            NODE: true
-        files:
-          'tmp/js-rpc-node.js': ['src/js-rpc.js']
-      browser:
-        options:
-          context:
-            BROWSER: true
-        files:
-          'tmp/js-rpc-browser-workular.js': ['src/js-rpc.js']
+    concat:
+      code:
+        src: ['src/simple-fake-promise.js', 'src/remote-procedure.js', 'src/js-rpc.js']
+        dest: 'tmp/intermediate.js'
+      container:
+        src: ['src/angular-shell.js']
+        dest: 'tmp/angular-shell.js'
 
 
   grunt.loadNpmTasks 'grunt-contrib-uglify'
   grunt.loadNpmTasks 'grunt-contrib-jshint'
+  grunt.loadNpmTasks 'grunt-contrib-concat'
   grunt.loadNpmTasks 'grunt-mkdir'
-  grunt.loadNpmTasks 'grunt-contrib-copy'
-  grunt.loadNpmTasks 'grunt-text-replace'
-  grunt.loadNpmTasks 'grunt-preprocessor'
+  grunt.loadNpmTasks 'grunt-insert'
   grunt.loadNpmTasks 'grunt-write-bower-json'
 
-  grunt.registerTask('build', ['mkdir', 'preprocessor', 'replace', 'uglify', 'copy', 'writeBowerJson'])
+  grunt.registerTask('build', ['mkdir', 'concat', 'insert', 'uglify', 'writeBowerJson'])
   grunt.registerTask('default', ['build'])
 
