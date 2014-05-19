@@ -336,7 +336,7 @@ function RPC(remote, spec) {
                     postResultError(err.message, details.uid);
                     return;
                 }
-                postResult(arguments[1], details.uid);
+                postResult(Array.prototype.slice.call(arguments, 1), details.uid);
             }]));
         } catch (err) {
             postResultError(err.message, details.uid);

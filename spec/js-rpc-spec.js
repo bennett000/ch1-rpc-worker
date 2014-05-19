@@ -658,6 +658,18 @@ describe('the rpc object should correctly handle its expected dialect', function
                 }, 15);
             }});
 
+            rpcB.expose({callbackArgs1:function (p1, next) {
+                setTimeout(function () {
+                    next(null, p1);
+                }, 15);
+            }});
+
+            rpcB.expose({callbackArgs2:function (p1, p2, next) {
+                setTimeout(function () {
+                    next(null, p1, p2);
+                }, 15);
+            }});
+
             // fast forward a turn so A, and B can catch each other's expose
             // methods
             setTimeout(function () {
@@ -674,7 +686,7 @@ describe('the rpc object should correctly handle its expected dialect', function
 
             rpcB.remotes.callbackTrue.callback().then(function (r) {
                 done = true;
-                result = r;
+                result = r[0];
             }, function () {
                 done = true;
             });
@@ -691,7 +703,7 @@ describe('the rpc object should correctly handle its expected dialect', function
 
             rpcA.remotes.callbackArray.callback().then(function (r) {
                 done = true;
-                result = r;
+                result = r[0];
             }, function () {
                 done = true;
             });
@@ -717,6 +729,41 @@ describe('the rpc object should correctly handle its expected dialect', function
 
             runs(function () {
                 expect(result).toBe(errorMsg);
+            });
+        });
+
+        it('should be able to call a callback with a parameter', function () {
+            var done = false, result = false;
+
+            rpcA.remotes.callbackArgs1.callback('hi').then(function (r) {
+                done = true;
+                result = r;
+            }, function () {
+                done = true;
+            });
+
+            waitsFor(function () { return done; });
+
+            runs(function () {
+                expect(result[0]).toBe('hi');
+            });
+        });
+
+        it('should be able to call a callback with parameters', function () {
+            var done = false, result = false;
+
+            rpcA.remotes.callbackArgs2T.callback('hi', 'there').then(function (r) {
+                done = true;
+                result = r;
+            }, function () {
+                done = true;
+            });
+
+            waitsFor(function () { return done; });
+
+            runs(function () {
+                expect(result[0]).toBe('hi');
+                expect(result[1]).toBe('there');
             });
         });
     });
