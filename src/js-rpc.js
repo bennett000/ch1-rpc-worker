@@ -543,6 +543,9 @@ function RPC(remote, spec) {
     function isReady(setReady) {
         if (setReady === true) {
             localReadyFlag = true;
+            that.post(JSON.stringify({
+                                         ready: true
+                                     }));
         }
         isReadyFlag = remoteReadyFlag && localReadyFlag;
         return isReadyFlag;
@@ -689,6 +692,10 @@ function RPC(remote, spec) {
         Q = lib;
         RemoteProcedure.prototype.Q = lib;
         return true;
+    }
+
+    function getReady() {
+
     }
 
     /**

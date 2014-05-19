@@ -67,6 +67,66 @@ describe('the rpc object has public isReady, and onReady methods that aid in boo
             rpc.onReady('tomato');
         }).not.toThrow();
     });
+
+    describe('async ready tests', function () {
+        var rpcA, rpcB;
+        beforeEach(function () {
+            var r = getRPCPairAsync(), nextTurn = false;
+
+            rpcA = r.rpcA;
+            rpcB = r.rpcB;
+
+            // fast forward a turn so A, and B can catch each other's expose
+            // methods
+            setTimeout(function () {
+                nextTurn = true;
+            }, 0)
+
+            waitsFor(function () {
+                return nextTurn;
+            });
+        });
+
+        it('should be initiall unready', function () {
+            expect(rpcA.isReady()).toBe(false);
+            expect(rpcB.isReady()).toBe(false);
+        });
+
+        it('should be unready if only one side is ready', function () {
+            var done = false;
+            expect(rpcA.isReady()).toBe(false);
+            expect(rpcB.isReady()).toBe(false);
+
+            rpcA.isReady(true);
+
+            // skip a turn
+            setTimeout(function () { done = true; }, 0);
+            waitsFor(function () { return done; });
+
+            runs(function () {
+                expect(rpcA.isReady()).toBe(false);
+                expect(rpcB.isReady()).toBe(false);
+            });
+        });
+
+        it('should be ready if both sides are ready', function () {
+            var done = false;
+            expect(rpcA.isReady()).toBe(false);
+            expect(rpcB.isReady()).toBe(false);
+
+            rpcA.isReady(true);
+            rpcB.isReady(true);
+
+            // skip a turn
+            setTimeout(function () { done = true; }, 0);
+            waitsFor(function () { return done; });
+
+            runs(function () {
+                expect(rpcA.isReady()).toBe(true);
+                expect(rpcB.isReady()).toBe(true);
+            });
+        });
+    });
 });
 
 describe('the rpc object has a public setPromiseLib function that allows for a promise interface', function () {
