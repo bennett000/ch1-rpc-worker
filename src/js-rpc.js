@@ -42,7 +42,7 @@ function RPC(remote, spec) {
         /** @dict */
         resultCallbacks = Object.create(null),  // waiting for return message to be called
         /** @dict */
-        noticeCallbacks = Object.create(null),  // waiting for notice (emit) message to be called
+        listenerIds = Object.create(null),  // waiting for return message to be called
         /** @type {boolean} */
         localReadyFlag = false,
         /** @type {boolean} */
@@ -78,7 +78,8 @@ function RPC(remote, spec) {
      */
     function status() {
         return {
-            resultCallbacks: Object.keys(resultCallbacks).length
+            resultCallbacks: Object.keys(resultCallbacks).length,
+            listenerIds: Object.keys(listenerIds).length
         };
     }
 
@@ -232,16 +233,6 @@ function RPC(remote, spec) {
     }
 
     /**
-     * safely removes a listener
-     * @param uid {string}
-     */
-    function removeListener(uid) {
-        if (noticeCallbacks[uid]) {
-            delete noticeCallbacks[uid];
-        }
-    }
-
-    /**
      * safely removes a callback
      * @param uid {string}
      */
@@ -249,6 +240,19 @@ function RPC(remote, spec) {
         if (resultCallbacks[uid]) {
             delete resultCallbacks[uid];
         }
+    }
+
+    function onNotices(data) {
+        if (!validateMessageData(data)) {
+            return;
+        }
+        data.forEach(function (notice) {
+            if (isFunction(resultCallbacks[notice.uid])) {
+                resultCallbacks.apply(null, notice.notice);
+            } else {
+                log.warn('RPC: notice has no callback for ', notice.uid);
+            }
+        });
     }
 
     /**
@@ -307,6 +311,22 @@ function RPC(remote, spec) {
     }
 
     /**
+     * posts a notice to a specific callback
+     * @param noticeData {*}
+     * @param uid {string} uid of the callback
+     */
+    function postNotice(noticeData, uid) {
+        var noticeObj = {}, data = {};
+        noticeObj['notices'] = [];
+
+        data['notice'] = noticeData;
+        data['uid'] = uid;
+        noticeObj['notices'].push(data);
+
+        that.post(JSON.stringify(noticeObj));
+    }
+
+    /**
      * posts a result to a specific callback
      * @param result {*}
      * @param uid {string} uid of the callback
@@ -333,22 +353,35 @@ function RPC(remote, spec) {
         } catch (err) {
             postResultError(err.message, details.uid);
         }
-    }
+    };
 
-    function onListen(data) {
-        if (!validateMessageData(data)) {
-            return;
+    callingFunctions['listen'] = function onListen(fn, details) {
+        try {
+            listenerIds[details.uid] = fn.apply(null, details.args.concat(
+            [
+                function () {
+                    postNotice(Array.prototype.slice.call(arguments, 0), details.uid);
+                }]));
+
+        } catch (err) {
+            postResultError(err.message, details.uid);
         }
-        data.forEach(function (exposeFn) {
-            if (typeof exposeFn !== 'string') {
+    };
+
+    callingFunctions['ignore'] = function onIgnore(fn, details) {
+        try {
+            if (!listenerIds[details.uid]) {
+                log.error('RPC: ignore: no registered listener');
                 return;
             }
-        });
-    }
 
-    function onIgnore(data) {
-
-    }
+            fn.call(null, listenerIds[details.uid]);
+            delete listenerIds[details.uid];
+            postResult(true, details.uid);
+        } catch (err) {
+            postResultError(err.message, details.uid);
+        }
+    };
 
     callingFunctions['promise'] = function onPromise(fn, details) {
         var promise;
@@ -464,14 +497,17 @@ function RPC(remote, spec) {
         if (data['results']) {
             onResults(data.results);
         }
+        if (data['notices']) {
+            onNotices(data.notices);
+        }
         if (data['invoke']) {
             onCalling('invoke', data.invoke);
         }
         if (data['listen']) {
-            onListen(data.listen);
+            onCalling('listen', data.listen);
         }
         if (data['ignore']) {
-            onIgnore(data.ignore);
+            onCalling('ignore', data.ignore);
         }
         if (data['promise']) {
             onCalling('promise', data.promise);
