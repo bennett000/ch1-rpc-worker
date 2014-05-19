@@ -535,22 +535,22 @@ describe('the rpc object should correctly handle its expected dialect', function
     });
 
     describe('invoke', function () {
-        var rpcA, rpcB, array = [235,'2352',5, true];
+        var rpcA, rpcB, array = [235, '2352', 5, true];
         beforeEach(function () {
-            var r = getRPCPairAsync(),  nextTurn = false;
+            var r = getRPCPairAsync(), nextTurn = false;
 
             rpcA = r.rpcA;
             rpcB = r.rpcB;
 
-            rpcA.expose({pizza:function () {
+            rpcA.expose({pizza: function () {
                 return 'pi';
             }});
 
-            rpcB.expose({fail:function () {
+            rpcB.expose({fail: function () {
                 throw new Error('feel my wrath fool');
             }});
 
-            rpcA.expose({array:function () {
+            rpcA.expose({array: function () {
                 return array;
             }});
 
@@ -609,7 +609,7 @@ describe('the rpc object should correctly handle its expected dialect', function
             rpcA.remotes.fail.invoke().then(function (result) {
                 // shouldn't happen
                 pass = true;
-            }, function badIsGood (reason) {
+            }, function badIsGood(reason) {
                 f = true;
                 pass = true;
                 expect(reason.message).toBe('feel my wrath fool');
@@ -626,15 +626,15 @@ describe('the rpc object should correctly handle its expected dialect', function
     });
 
     describe('promise', function () {
-        var rpcA, rpcB, array = [1,2,3,4,5,'1234124',2424],
+        var rpcA, rpcB, array = [1, 2, 3, 4, 5, '1234124', 2424],
             errorMsg = 'broken promises';
         beforeEach(function () {
-            var r = getRPCPairAsync(),  nextTurn = false;
+            var r = getRPCPairAsync(), nextTurn = false;
 
             rpcA = r.rpcA;
             rpcB = r.rpcB;
 
-            rpcA.expose({promiseTrue:function () {
+            rpcA.expose({promiseTrue: function () {
                 var d = Q.defer();
 
                 setTimeout(function () {
@@ -644,7 +644,7 @@ describe('the rpc object should correctly handle its expected dialect', function
                 return d.promise;
             }});
 
-            rpcB.expose({promiseArray:function () {
+            rpcB.expose({promiseArray: function () {
                 var d = Q.defer();
 
                 setTimeout(function () {
@@ -654,7 +654,7 @@ describe('the rpc object should correctly handle its expected dialect', function
                 return d.promise;
             }});
 
-            rpcB.expose({promiseFail:function () {
+            rpcB.expose({promiseFail: function () {
                 var d = Q.defer();
                 setTimeout(function () {
                     d.reject(new Error(errorMsg));
@@ -726,39 +726,39 @@ describe('the rpc object should correctly handle its expected dialect', function
     });
 
     describe('callback', function () {
-        var rpcA, rpcB, array = [1,2,3,4,5,'1234124',2424],
+        var rpcA, rpcB, array = [1, 2, 3, 4, 5, '1234124', 2424],
             errorMsg = 'broken callbacks';
         beforeEach(function () {
-            var r = getRPCPairAsync(),  nextTurn = false;
+            var r = getRPCPairAsync(), nextTurn = false;
 
             rpcA = r.rpcA;
             rpcB = r.rpcB;
 
-            rpcA.expose({callbackTrue:function (next) {
+            rpcA.expose({callbackTrue: function (next) {
                 setTimeout(function () {
                     next(null, true);
                 }, 35);
             }});
 
-            rpcB.expose({callbackArray:function (next) {
+            rpcB.expose({callbackArray: function (next) {
                 setTimeout(function () {
                     next(null, array);
                 }, 25);
             }});
 
-            rpcB.expose({callbackFail:function (next) {
+            rpcB.expose({callbackFail: function (next) {
                 setTimeout(function () {
                     next(new Error(errorMsg));
                 }, 15);
             }});
 
-            rpcB.expose({callbackArgs1:function (p1, next) {
+            rpcB.expose({callbackArgs1: function (p1, next) {
                 setTimeout(function () {
                     next(null, p1);
                 }, 15);
             }});
 
-            rpcB.expose({callbackArgs2:function (p1, p2, next) {
+            rpcB.expose({callbackArgs2: function (p1, p2, next) {
                 setTimeout(function () {
                     next(null, p1, p2);
                 }, 15);
@@ -862,15 +862,110 @@ describe('the rpc object should correctly handle its expected dialect', function
         });
     });
 
-    describe('listen', function () {
+    describe('listen, and ignore!', function () {
         var rpcA, rpcB;
         beforeEach(function () {
-            var r = getRPCPair();
+            var r = getRPCPairAsync(), nextTurn = false, listeners = {};
+            listeners['catInBox'] = {};
 
             rpcA = r.rpcA;
             rpcB = r.rpcB;
+
+            rpcA.expose(
+            {
+                catInBox: {
+                    listen: function (msg, fn) {
+                        if (!listeners.catInBox[msg]) {
+                            listeners.catInBox[msg] = {};
+                        }
+
+                        var uid = 'i' + Math.random();
+                        listeners.catInBox[msg][uid] = fn;
+
+                        return uid;
+                    }, ignore: function (uid) {
+
+                    }
+                }
+            });
+
+            rpcA.notice = function (msg, data) {
+                Object.keys(listeners).forEach(function (fnKey) {
+                    Object.keys(listeners[fnKey]).forEach(function (msgKey) {
+                        if (msgKey !== msg) {
+                            return;
+                        }
+                        Object.keys(listeners[fnKey][msgKey]).forEach(function (callbackKey) {
+                            listeners[fnKey][msgKey][callbackKey](data);
+                        });
+                    });
+                });
+            };
+
+            // fast forward a turn so A, and B can catch each other's expose
+            // methods
+            setTimeout(function () {
+                nextTurn = true;
+            }, 0)
+
+            waitsFor(function () {
+                return nextTurn;
+            });
+        });
+
+        it('should register listeners', function () {
+            var done = false, listenId, done2, done3;
+            listenId = rpcB.remotes.catInBox.listen.listen('doc', function (data) {
+                if (!done) {
+                    done = data;
+                } else {
+                    done2 = data;
+                }
+            });
+
+            expect(listenId).toBeTruthy();
+
+            // wait a turn so the listener can register
+            setTimeout(function () {
+                // notify
+                rpcA.notice('doc', 'marty');
+            }, 0);
+
+            waitsFor(function () {
+                return done;
+            });
+
+            runs(function () {
+                expect(done).toBe('marty');
+                expect(rpcA.status().listenerIds).toBe(1);
+                expect(rpcB.status().resultCallbacks).toBe(1);
+                rpcA.notice('doc', 'delorean');
+            });
+
+            waitsFor(function () {
+                return done2;
+            });
+
+            runs(function () {
+                expect(done2).toBe('delorean');
+                expect(rpcA.status().listenerIds).toBe(1);
+                expect(rpcB.status().resultCallbacks).toBe(1);
+                rpcB.remotes.catInBox.listen.ignore(listenId);
+                setTimeout(function () {
+                    done3 = true;
+                }, 15);
+            });
+
+            waitsFor(function () {
+                return done3;
+            });
+
+            runs(function () {
+                expect(done3).toBe(true);
+                expect(rpcA.status().listenerIds).toBe(0);
+                expect(rpcB.status().resultCallbacks).toBe(0);
+            });
         });
     });
-    describe('ignore', function () {});
 
 });

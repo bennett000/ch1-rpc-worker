@@ -248,7 +248,7 @@ function RPC(remote, spec) {
         }
         data.forEach(function (notice) {
             if (isFunction(resultCallbacks[notice.uid])) {
-                resultCallbacks.apply(null, notice.notice);
+                resultCallbacks[notice.uid].apply(null, notice.notice);
             } else {
                 log.warn('RPC: notice has no callback for ', notice.uid);
             }
@@ -362,21 +362,24 @@ function RPC(remote, spec) {
                 function () {
                     postNotice(Array.prototype.slice.call(arguments, 0), details.uid);
                 }]));
-
         } catch (err) {
-            postResultError(err.message, details.uid);
+            log.error('RPC: Error registering listen function ', err.message, details.uid);
         }
     };
 
     callingFunctions['ignore'] = function onIgnore(fn, details) {
         try {
-            if (!listenerIds[details.uid]) {
+            if (!details.args[0]) {
+                log.error('RPC: ignore: expects at least one argument');
+                return;
+            }
+            if (!listenerIds[details.args[0]]) {
                 log.error('RPC: ignore: no registered listener');
                 return;
             }
 
-            fn.call(null, listenerIds[details.uid]);
-            delete listenerIds[details.uid];
+            fn.call(null, listenerIds[details.args[0]]);
+            delete listenerIds[details.args[0]];
             postResult(true, details.uid);
         } catch (err) {
             postResultError(err.message, details.uid);
@@ -421,7 +424,6 @@ function RPC(remote, spec) {
      */
     function onCalling(type, data) {
         if (!validateMessageData(data)) {
-            console.log('CALLING INVALID, CALLING INVALID', type, data)
             return;
         }
         data.forEach(function (calling) {

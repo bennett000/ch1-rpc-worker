@@ -83,6 +83,7 @@ RemoteProcedure.prototype['registerListener'] = function registerListener(callba
     if (typeof callback !== 'function') {
         throw new TypeError('Remote Procedure: register listener: expecting callback function');
     }
+
     this.callbacks[uid] = callback;
 
     return uid;
@@ -101,14 +102,19 @@ RemoteProcedure.prototype['callRemote'] = function callRemote (type, registerFun
     postObj = {};
     postObj[type] = [];
 
+    // listener case
+    if (type === 'listen') {
+        if (args.length === 0) {
+            throw new TypeError('RPC: Invalid Listener');
+        }
+        d = args.pop();
+    }
+
     msg['fn'] = that.fn;
     msg['uid'] = this.uid();
     msg['args'] = args;
 
-    postObj[type].push(msg)
-
-    // listener case
-    if (typeof args === 'function') { d = args; }
+    postObj[type].push(msg);
 
     this.postMethod(JSON.stringify(postObj));
     return registerFunction.call(this, d, msg.uid);
@@ -145,9 +151,9 @@ RemoteProcedure.prototype['promise'] = function remotePromise() {
  * posts a listen message
  * @returns {Object}
  */
-RemoteProcedure.prototype['listen'] = function remotePromise(callback) {
+RemoteProcedure.prototype['listen'] = function remoteListen() {
     'use strict';
-    return this.callRemote('listen', this.registerListener, callback);
+    return this.callRemote('listen', this.registerListener, Array.prototype.slice.call(arguments, 0));
 };
 
 /**
@@ -156,5 +162,9 @@ RemoteProcedure.prototype['listen'] = function remotePromise(callback) {
  */
 RemoteProcedure.prototype['ignore'] = function remotePromise(uid) {
     'use strict';
-    return this.callRemote('ignore', this.registerCallback, [uid]);
+    var rVal = this.callRemote('ignore', this.registerCallback, [uid]);
+    if (this.callbacks[uid]) {
+        delete this.callbacks[uid];
+    }
+    return rVal;
 };
