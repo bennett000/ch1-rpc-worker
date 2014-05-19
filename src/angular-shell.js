@@ -14,7 +14,12 @@ angular.module('js-rpc', []).provider('jsRPC', function () {
         if (!rpc) {
             throw new Error('RPC not constructed!!!');
         }
+        // upgrade the promise library, ensuring callbacks fall in the
+        // angular event loop
         rpc.setPromiseLib($q);
+
+        // this init function is meant to be used in a route provider
+        // http://stackoverflow.com/questions/16286605/initialize-angularjs-service-with-asynchronous-data
         rpc.init = function initRPC() {
             var d = $q.defer();
             rpc.onReady(d.resolve);

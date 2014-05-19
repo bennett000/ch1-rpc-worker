@@ -38,7 +38,7 @@ module.exports = (grunt) ->
             'build/browser-angular',
             'build/browser-workular',
             'build/node-workular',
-            'build/node-workular/lib'
+            'build/node'
           ]
 
     jshint:
