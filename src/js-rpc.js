@@ -79,7 +79,8 @@ function RPC(remote, spec) {
     function status() {
         return {
             resultCallbacks: Object.keys(resultCallbacks).length,
-            listenerIds: Object.keys(listenerIds).length
+            listenerIds: Object.keys(listenerIds).length,
+            readyQueue: readyQueue.length
         };
     }
 
@@ -494,6 +495,7 @@ function RPC(remote, spec) {
         if (data['ready']) {
             if (data.ready === true) {
                 remoteReadyFlag = true;
+                isReady();
             }
         }
         if (data['results']) {
@@ -548,6 +550,12 @@ function RPC(remote, spec) {
                                      }));
         }
         isReadyFlag = remoteReadyFlag && localReadyFlag;
+        if (isReadyFlag) {
+            readyQueue.forEach(function (readyFn) {
+                try { readyFn(); } catch (err) {}
+            });
+            readyQueue = [];
+        }
         return isReadyFlag;
     }
 
@@ -556,9 +564,10 @@ function RPC(remote, spec) {
      * @param fn {function(Error|null,...)}
      */
     function onReady(fn) {
-        if (!isFunction(fn)) {
+        if (isFunction(fn)) {
             readyQueue.push(fn);
         }
+        isReady();
     }
 
     /**

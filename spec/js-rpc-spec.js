@@ -3,7 +3,7 @@
  * Created by michael on 13/05/14
  */
 
-/*global window, jasmine, beforeEach, describe, expect, waitsFor, spyOn, runs, it, module,inject, workular, RPC, console, Q, RemoteProcedure, invalidRemote, getRPCPair, getRPCPairAsync, validDefaultRemote, setTimeout */
+/*global window, jasmine, beforeEach, describe, expect, waitsFor, spyOn, runs, it, module,inject, workular, RPC, console, Q, RemoteProcedure, invalidRemote, validCustomRemote, customDesc, getRPCPair, getRPCPairAsync, validDefaultRemote, setTimeout */
 
 
 describe('the js-rpc object is initialized with a \'remote\' object, like a worker, or a socket.io connection', function () {
@@ -119,6 +119,29 @@ describe('the rpc object has public isReady, and onReady methods that aid in boo
 
             // skip a turn
             setTimeout(function () { done = true; }, 0);
+            waitsFor(function () { return done; });
+
+            runs(function () {
+                expect(rpcA.isReady()).toBe(true);
+                expect(rpcB.isReady()).toBe(true);
+            });
+        });
+
+        it('should execture onReady functions', function () {
+            var done = false;
+            expect(rpcA.isReady()).toBe(false);
+            expect(rpcB.isReady()).toBe(false);
+
+            rpcA.onReady(function () {
+                done = true;
+            });
+
+            expect(rpcA.status().readyQueue).toBe(1);
+
+            rpcA.isReady(true);
+            rpcB.isReady(true);
+
+            // skip a turn
             waitsFor(function () { return done; });
 
             runs(function () {

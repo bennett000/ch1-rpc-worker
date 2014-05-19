@@ -14,7 +14,7 @@
     "unique",
     "identifier"
   ],
-  "dependencies": {
+  "devDependencies": {
     "workular": "git+ssh://dev.higginsregister.com/srv/bower/js-workular.git#v0.5.1",
     "angular": "1.2.14",
     "q": "q#1.0.1"
