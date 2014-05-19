@@ -41,6 +41,8 @@ function RPC(remote, spec) {
         exposedProcedures = Object.create(null), // references to functions that are called onmessage
         /** @dict */
         resultCallbacks = Object.create(null),  // waiting for return message to be called
+        /** @dict */
+        noticeCallbacks = Object.create(null),  // waiting for notice (emit) message to be called
         /** @type {boolean} */
         localReadyFlag = false,
         /** @type {boolean} */
@@ -68,6 +70,16 @@ function RPC(remote, spec) {
      */
     function isFunction(fn) {
         return typeof fn === 'function';
+    }
+
+    /**
+     * Reports on the status of the object, initially for tracking 'memory'
+     * @returns {Object}
+     */
+    function status() {
+        return {
+            resultCallbacks: Object.keys(resultCallbacks).length
+        };
     }
 
     /**
@@ -220,6 +232,26 @@ function RPC(remote, spec) {
     }
 
     /**
+     * safely removes a listener
+     * @param uid {string}
+     */
+    function removeListener(uid) {
+        if (noticeCallbacks[uid]) {
+            delete noticeCallbacks[uid];
+        }
+    }
+
+    /**
+     * safely removes a callback
+     * @param uid {string}
+     */
+    function removeCallback(uid) {
+        if (resultCallbacks[uid]) {
+            delete resultCallbacks[uid];
+        }
+    }
+
+    /**
      * Handles results arriving from 'the other side'
      * @param data {Array.<Object>} collection of results
      */
@@ -228,9 +260,11 @@ function RPC(remote, spec) {
             return;
         }
         data.forEach(function (result) {
+            // invalid
             if (!validateResultCallbackDatum(result)) {
                 return;
             }
+            // error case
             if (result.error) {
                 if (isFunction(resultCallbacks[result.uid].f)) {
                     // promise case
@@ -239,9 +273,11 @@ function RPC(remote, spec) {
                     // callback case
                     resultCallbacks[result.uid].t(new Error(result.error));
                 }
+                // cleanup
+                removeCallback(result.uid);
                 return;
             }
-            // success!
+            // success case!
             if (isFunction(resultCallbacks[result.uid].f)) {
                 // promise callback
                 resultCallbacks[result.uid].t(result.result);
@@ -249,6 +285,8 @@ function RPC(remote, spec) {
                 // callback callback
                 resultCallbacks[result.uid].t(null, result.result);
             }
+            // cleanup
+            removeCallback(result.uid);
         });
     }
 
@@ -636,6 +674,7 @@ function RPC(remote, spec) {
         that['onReady'] = onReady;
         that['setLogger'] = setLogger;
         that['error'] = error;
+        that['status'] = status;
 
         // listen!
         initListener(spec);

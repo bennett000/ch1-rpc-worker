@@ -110,6 +110,100 @@ describe('the rpc object has a public setPromiseLib function that allows for a p
     });
 });
 
+describe('the object should provide a status update mechanism', function () {
+    'use strict';
+    var rpcA, rpcB;
+    beforeEach(function () {
+        var r = getRPCPairAsync(), nextTurn = false;
+
+        rpcA = r.rpcA;
+        rpcB = r.rpcB;
+
+        rpcA.expose({pizza: function () {
+            return 'pi';
+        }});
+
+        rpcA.expose({cheese: function () {
+            var d = Q.defer();
+            d.reject(new Error('something had to go!'));
+            return d.promise;
+        }});
+
+        rpcA.expose({coffee: function () {
+            var d = Q.defer();
+            d.resolve('tau');
+            return d.promise;
+        }});
+
+        // fast forward a turn so A, and B can catch each other's expose
+        // methods
+        setTimeout(function () {
+            nextTurn = true;
+        }, 0)
+
+        waitsFor(function () {
+            return nextTurn;
+        });
+    });
+
+    it('should have a status method', function () {
+        expect(typeof rpcA.status).toBe('function');
+        expect(typeof rpcA.status()).toBe('object');
+        expect(rpcA.status()).toBeTruthy();
+    });
+
+    it('should report the callback queue count', function () {
+        var done = false;
+        expect(rpcA.status().resultCallbacks).toBe(0);
+        expect(rpcB.status().resultCallbacks).toBe(0);
+        rpcB.remotes.coffee.promise().then(function () {
+            done = true;
+        });
+
+        expect(rpcB.status().resultCallbacks).toBe(1);
+
+        waitsFor(function () {
+            return done;
+        });
+
+        runs(function () {
+            expect(rpcA.status().resultCallbacks).toBe(0);
+            expect(rpcB.status().resultCallbacks).toBe(0);
+        });
+    });
+
+    it('should report the callback queue count', function () {
+        var done = false, done2 = false, done3 = false;
+        expect(rpcA.status().resultCallbacks).toBe(0);
+        expect(rpcB.status().resultCallbacks).toBe(0);
+        rpcB.remotes.coffee.promise().then(function () {
+            done = true;
+        });
+
+        expect(rpcB.status().resultCallbacks).toBe(1);
+
+        rpcB.remotes.coffee.promise().then(function () {
+            done2 = true;
+        });
+
+        rpcB.remotes.cheese.promise().then(function () {
+        }, function () {
+            done3 = true;
+        });
+
+        expect(rpcB.status().resultCallbacks).toBe(3);
+
+        waitsFor(function () {
+            return done && done2 && done3;
+        });
+
+        runs(function () {
+            expect(rpcA.status().resultCallbacks).toBe(0);
+            expect(rpcB.status().resultCallbacks).toBe(0);
+        });
+    });
+});
+
 describe('the rpc object should be able to handle string messages without failing', function () {
     'use strict';
     var rpcA, rpcB;
@@ -752,7 +846,7 @@ describe('the rpc object should correctly handle its expected dialect', function
         it('should be able to call a callback with parameters', function () {
             var done = false, result = false;
 
-            rpcA.remotes.callbackArgs2T.callback('hi', 'there').then(function (r) {
+            rpcA.remotes.callbackArgs2.callback('hi', 'there').then(function (r) {
                 done = true;
                 result = r;
             }, function () {
