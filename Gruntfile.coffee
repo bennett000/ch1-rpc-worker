@@ -29,6 +29,10 @@ module.exports = (grunt) ->
         src: 'tmp/intermediate.js'
         dest: 'tmp/angular-shell.js'
         match: '//###RPCCODE'
+      node:
+        src: 'tmp/intermediate.js'
+        dest: 'build/node/js-rpc.js'
+        match: '//###RPCCODE'
 
     mkdir:
       buildEnvironement:
@@ -65,9 +69,12 @@ module.exports = (grunt) ->
       code:
         src: ['src/simple-fake-promise.js', 'src/remote-procedure.js', 'src/js-rpc.js']
         dest: 'tmp/intermediate.js'
-      container:
+      containerAngular:
         src: ['src/angular-shell.js']
         dest: 'tmp/angular-shell.js'
+      containerNode:
+        src: ['src/node-shell.js']
+        dest: 'build/node/js-rpc.js'
 
 
   grunt.loadNpmTasks 'grunt-contrib-uglify'

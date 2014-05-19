@@ -31,6 +31,7 @@
     "grunt-write-bower-json": "git+ssh://dev.higginsregister.com/srv/npm/grunt-write-bower-json.git#v0.0.4",
     "grunt-insert": "~0.1.0",
     "express": "~4.2.0",
-    "connect": "~2.16.2"
+    "connect": "~2.16.2",
+    "socket.io": "~0.9.16"
   }
 }
