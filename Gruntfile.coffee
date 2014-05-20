@@ -29,6 +29,10 @@ module.exports = (grunt) ->
         src: 'tmp/intermediate.js'
         dest: 'tmp/angular-shell.js'
         match: '//###RPCCODE'
+      workular:
+        src: 'tmp/intermediate.js'
+        dest: 'tmp/workular-shell.js'
+        match: '//###RPCCODE'
       node:
         src: 'tmp/intermediate.js'
         dest: 'build/node/js-rpc.js'
@@ -56,6 +60,12 @@ module.exports = (grunt) ->
           sourceMapName: 'build/browser-angular/js-rpc.min.map'
         files:
           'build/browser-angular/js-rpc.min.js': ['tmp/angular-shell.js']
+      buildWorkular:
+        options:
+          sourceMap: true,
+          sourceMapName: 'build/browser-workular/js-rpc.min.map'
+        files:
+          'build/browser-workular/js-rpc.min.js': ['tmp/workular-shell.js']
       pristine:
         options:
           mangle: false
@@ -64,6 +74,7 @@ module.exports = (grunt) ->
           preserveComments: true
         files:
           'build/browser-angular/js-rpc.js': ['tmp/angular-shell.js']
+          'build/browser-workular/js-rpc.js': ['tmp/workular-shell.js']
 
     concat:
       code:
@@ -75,6 +86,9 @@ module.exports = (grunt) ->
       containerNode:
         src: ['src/node-shell.js']
         dest: 'build/node/js-rpc.js'
+      containerWorkular:
+        src: ['src/workular-shell.js']
+        dest: 'tmp/workular-shell.js'
 
 
   grunt.loadNpmTasks 'grunt-contrib-uglify'

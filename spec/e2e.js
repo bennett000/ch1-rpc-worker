@@ -3,7 +3,7 @@
  * Created by michael on 19/05/14.
  */
 
-/*global Worker, RPC, console, window*/
+/*global Worker, RPC, console, window, io, setTimeout*/
 
 (function () {
     'use strict';
@@ -30,7 +30,7 @@
     });
 
 
-    setTimeout(function ( ){
+    setTimeout(function () {
         rpc.isReady(true);
         rpc.expose({output: output});
         output('this side ready');
@@ -42,22 +42,22 @@
     'use strict';
     var socket = io.connect(window.location.hostname + ':' + 8079),
     rpc = new RPC({
-	on: function (msg, fn) {
-	    socket.on(msg, fn);
-	},
-	emit: function (message) {
-	    console.log('exposing message', message);
-	    socket.emit('message', message);
-	}
-    }, {
-	listen: 'on',
-	post: 'emit',
-	message: 'message'
-    }),
+                      on  : function (msg, fn) {
+                          socket.on(msg, fn);
+                      },
+                      emit: function (message) {
+                          console.log('exposing message', message);
+                          socket.emit('message', message);
+                      }
+                  }, {
+                      listen : 'on',
+                      post   : 'emit',
+                      message: 'message'
+                  }),
     outputEl = window.document.getElementById('socket');
 
     socket.on('message', function () {
-	console.log('dude', Array.prototype.join.call(arguments, ', '));
+        console.log('dude', Array.prototype.join.call(arguments, ', '));
     });
 
     function output() {
@@ -79,7 +79,7 @@
     });
 
 
-    setTimeout(function ( ){
+    setTimeout(function () {
         rpc.isReady(true);
         rpc.expose({output: output});
         output('this side ready');
