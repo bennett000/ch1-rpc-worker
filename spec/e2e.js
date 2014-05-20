@@ -36,3 +36,52 @@
         output('this side ready');
     }, 50);
 }());
+
+
+(function () {
+    'use strict';
+    var socket = io.connect(window.location.hostname + ':' + 8079),
+    rpc = new RPC({
+	on: function (msg, fn) {
+	    socket.on(msg, fn);
+	},
+	emit: function (message) {
+	    console.log('exposing message', message);
+	    socket.emit('message', message);
+	}
+    }, {
+	listen: 'on',
+	post: 'emit',
+	message: 'message'
+    }),
+    outputEl = window.document.getElementById('socket');
+
+    socket.on('message', function () {
+	console.log('dude', Array.prototype.join.call(arguments, ', '));
+    });
+
+    function output() {
+        var args = Array.prototype.slice.call(arguments, 0);
+        args.join(' ');
+        outputEl.innerHTML += args + '<br/>';
+    }
+
+    output('initializing socket');
+
+    rpc.onReady(function () {
+        output('Executing on ready');
+
+        rpc.remotes.loopBack.invoke('lalalal').then(function () {
+            output('victory', arguments[0]);
+        }, function (r) {
+            output('failure', r.message);
+        });
+    });
+
+
+    setTimeout(function ( ){
+        rpc.isReady(true);
+        rpc.expose({output: output});
+        output('this side ready');
+    }, 50);
+}());

@@ -17,7 +17,8 @@
   "devDependencies": {
     "workular": "git+ssh://dev.higginsregister.com/srv/bower/js-workular.git#v0.5.1",
     "angular": "1.2.14",
-    "q": "q#1.0.1"
+    "q": "q#1.0.1",
+    "socket.io-client": "~0.9.16"
   },
   "license": "?",
   "homepage": "https://higgins.ai",
@@ -29,8 +30,5 @@
     "lib",
     "test",
     "tests"
-  ],
-  "devDependencies": {
-    "socket.io": "~0.9.15"
-  }
+  ]
 }
