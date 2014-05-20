@@ -40,6 +40,7 @@
 
 (function () {
     'use strict';
+    console.log('opening socket on', window.location.hostname + ':' + 8079);
     var socket = io.connect(window.location.hostname + ':' + 8079),
     rpc = new RPC({
                       on  : function (msg, fn) {
