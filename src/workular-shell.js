@@ -5,7 +5,12 @@
 
 /*global workular*/
 
-workular.module('js-rpc', []).factory('jsRPC', ['global', function (global) {
+workular.module('js-rpc', []).factory('SimpleFakePromise', [function () {
+    'use strict';
+    //###FAKEPROMISE
+    /*global SimpleFakePromise*/
+    return SimpleFakePromise;
+}]).factory('jsRPC', ['global', 'SimpleFakePromise', function (global, SimpleFakePromise) {
     'use strict';
     var rpc;
 

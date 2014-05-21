@@ -29,8 +29,12 @@ module.exports = (grunt) ->
         src: 'tmp/intermediate.js'
         dest: 'tmp/angular-shell.js'
         match: '//###RPCCODE'
-      workular:
-        src: 'tmp/intermediate.js'
+      workularPromise:
+        src: 'src/simple-fake-promise.js'
+        dest: 'tmp/workular-shell.js'
+        match: '//###FAKEPROMISE'
+      workularRPC:
+        src: 'tmp/rpc-only.js'
         dest: 'tmp/workular-shell.js'
         match: '//###RPCCODE'
       node:
@@ -80,6 +84,9 @@ module.exports = (grunt) ->
       code:
         src: ['src/simple-fake-promise.js', 'src/remote-procedure.js', 'src/js-rpc.js']
         dest: 'tmp/intermediate.js'
+      rpcOnly:
+        src: ['src/remote-procedure.js', 'src/js-rpc.js']
+        dest: 'tmp/rpc-only.js'
       containerAngular:
         src: ['src/angular-shell.js']
         dest: 'tmp/angular-shell.js'
