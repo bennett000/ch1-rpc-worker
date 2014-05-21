@@ -36,28 +36,30 @@ function RPC(remote, spec) {
 
     // scope that this!
     var that = this,
-        Q = SimpleFakePromise(),
-        /** @const */
-        DOT = '.',
-        /** @dict */
-        exposedProcedures = Object.create(null), // references to functions that are called onmessage
-        /** @dict */
-        resultCallbacks = Object.create(null),  // waiting for return message to be called
-        /** @dict */
-        listenerIds = Object.create(null),  // waiting for return message to be called
-        /** @type {boolean} */
-        localReadyFlag = false,
-        /** @type {boolean} */
-        remoteReadyFlag = false,
-        /** @type {boolean} */
-        isReadyFlag = false,
-        /** @dict */
-        callingFunctions = Object.create(null),  // case statement
-        /** @type Array.<function()> */
-        readyQueue = [],
-        /** @const */
-        noop = function () {},
-        /*global console*/
+    Q = SimpleFakePromise(),
+    /** @const */
+    DOT = '.',
+    /** @dict */
+    exposedProcedures = Object.create(null), // references to functions that are called onmessage
+    /** @dict */
+    resultCallbacks = Object.create(null),  // waiting for return message to be called
+    /** @dict */
+    listenerIds = Object.create(null),  // waiting for return message to be called
+    /** @type {boolean} */
+    localReadyFlag = false,
+    /** @type {boolean} */
+    remoteReadyFlag = false,
+    /** @type {boolean} */
+    isReadyFlag = false,
+    /** @dict */
+    callingFunctions = Object.create(null),  // case statement
+    /** @type Array.<function()> */
+    readyQueue = [],
+    /** @type Array.<function()> */
+    remoteReadyQueue = [],
+    /** @const */
+    noop = function () {},
+    /*global console*/
     log;
 
     /**
@@ -74,9 +76,10 @@ function RPC(remote, spec) {
      */
     function status() {
         return {
-            resultCallbacks: Object.keys(resultCallbacks).length,
-            listenerIds: Object.keys(listenerIds).length,
-            readyQueue: readyQueue.length
+            resultCallbacks  : Object.keys(resultCallbacks).length,
+            listenerIds      : Object.keys(listenerIds).length,
+            readyQueue       : readyQueue.length,
+            remoteReadyQueue : remoteReadyQueue.length
         };
     }
 
@@ -125,7 +128,7 @@ function RPC(remote, spec) {
      * Exposes the post/listen methods
      */
     function exposePostListen(spec) {
-        that['post'] = function() {
+        that['post'] = function () {
             remote[spec.post].apply(remote, Array.prototype.slice.call(arguments, 0));
         };
 
@@ -140,7 +143,7 @@ function RPC(remote, spec) {
                 remote[spec.listen].apply(remote, Array.prototype.slice.call(arguments, 0));
             };
         }
-        if(spec.error) {
+        if (spec.error) {
             remote[spec.listen].call(remote, spec.error, function (msg) {
                 if (spec.listenAttr) {
                     log.error('RPC: remote error: ', msg.message);
@@ -221,7 +224,7 @@ function RPC(remote, spec) {
             throw new TypeError('RPC: getNested Object: dictionary is not an object');
         }
         var result = null,
-            nextDict;
+        nextDict;
 
         tree = tree.split(DOT);
         doCreate = doCreate || false;
@@ -572,6 +575,12 @@ function RPC(remote, spec) {
                                      }));
         }
         isReadyFlag = remoteReadyFlag && localReadyFlag;
+        if (remoteReadyFlag) {
+            remoteReadyQueue.forEach(function (readyFn) {
+                try { readyFn(); } catch (err) {}
+            });
+            remoteReadyQueue = [];
+        }
         if (isReadyFlag) {
             readyQueue.forEach(function (readyFn) {
                 try { readyFn(); } catch (err) {}
@@ -588,6 +597,17 @@ function RPC(remote, spec) {
     function onReady(fn) {
         if (isFunction(fn)) {
             readyQueue.push(fn);
+        }
+        isReady();
+    }
+
+    /**
+     * callbacks to run when remote is ready, local's status is ignored
+     * @param fn {function(Error|null,...)}
+     */
+    function onRemoteReady(fn) {
+        if (isFunction(fn)) {
+            remoteReadyQueue.push(fn);
         }
         isReady();
     }
@@ -735,17 +755,17 @@ function RPC(remote, spec) {
             throw new TypeError('RPC: Parameter one must be an object with valid listen/post methods');
         }
 
-	if (typeof console !== 'undefined') {
-	    log = console;
-	} else {
-	    log = {
-		log: noop,
-		info: noop,
-		assert: noop,
-		warn: noop,
-		error: noop
+        if (typeof console !== 'undefined') {
+            log = console;
+        } else {
+            log = {
+                log   : noop,
+                info  : noop,
+                assert: noop,
+                warn  : noop,
+                error : noop
             };
-	}
+        }
 
         spec = validateSpec(spec);
 
@@ -756,6 +776,7 @@ function RPC(remote, spec) {
         that['expose'] = expose;
         that['isReady'] = isReady;
         that['onReady'] = onReady;
+        that['onRemoteReady'] = onRemoteReady;
         that['setLogger'] = setLogger;
         that['error'] = error;
         that['status'] = status;
