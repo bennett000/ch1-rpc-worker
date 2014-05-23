@@ -721,7 +721,7 @@ function RPC(remote, spec) {
         }
 
         Q = lib;
-        RemoteProcedure.prototype.Q = lib;
+        RemoteProcedure.prototype['Q'] = lib;
         return true;
     }
 
