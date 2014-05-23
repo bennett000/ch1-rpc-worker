@@ -30,7 +30,7 @@ module.exports = (grunt) ->
         dest: 'tmp/angular-shell.js'
         match: '//###RPCCODE'
       workularPromise:
-        src: 'src/simple-fake-promise.js'
+        src: 'lib/browser-fake-promise/fake-promise.js'
         dest: 'tmp/workular-shell.js'
         match: '//###FAKEPROMISE'
       workularRPC:
@@ -82,7 +82,7 @@ module.exports = (grunt) ->
 
     concat:
       code:
-        src: ['src/simple-fake-promise.js', 'src/remote-procedure.js', 'src/js-rpc.js']
+        src: ['lib/browser-fake-promise/fake-promise.js', 'src/remote-procedure.js', 'src/js-rpc.js']
         dest: 'tmp/intermediate.js'
       rpcOnly:
         src: ['src/remote-procedure.js', 'src/js-rpc.js']
