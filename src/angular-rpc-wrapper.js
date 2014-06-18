@@ -5,7 +5,7 @@
  */
 
 /*global angular*/
-angular.module('js-rpc-wrapper', []).provider('jsRPCWrapper', function () {
+angular.module('js-rpc-wrapper', []).provider('RPCWrapper', function () {
     'use strict';
 
     // not super happy with this solution...

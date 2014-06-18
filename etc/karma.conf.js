@@ -23,6 +23,7 @@ module.exports = function (config) {
 
                 'src/remote-procedure.js',
                 'src/js-rpc.js',
+                'src/angular-rpc-wrapper.js',
 
                 'spec/mock*.js',
                 'spec/*Spec.js',
