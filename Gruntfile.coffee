@@ -87,6 +87,7 @@ module.exports = (grunt) ->
         files:
           'build/browser-angular/js-rpc.js': ['tmp/angular-shell.js']
           'build/browser-workular/js-rpc.js': ['tmp/workular-shell.js']
+          'build/browser-angular/js-rpc-wrapper.js': ['src/angular-rpc-wrapper.js']
 
     concat:
       code:
