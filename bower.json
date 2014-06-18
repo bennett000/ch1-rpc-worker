@@ -20,7 +20,8 @@
     "browser-fake-promise": "git+ssh://dev.higginsregister.com/srv/bower/js-browser-fake-promise.git",
     "angular": "1.2.14",
     "q": "q#1.0.1",
-    "socket.io-client": "~0.9.16"
+    "socket.io-client": "~0.9.16",
+    "angular-mocks": "~1.2.18"
   },
   "license": "?",
   "homepage": "https://higgins.ai",

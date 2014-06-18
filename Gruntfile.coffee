@@ -54,8 +54,16 @@ module.exports = (grunt) ->
             'build/node'
           ]
 
+    karma:
+      unit:
+        configFile: 'etc/karma.conf.js'
+        singleRun: true,
+        browsers: ['Firefox']
+
     jshint:
-      all: 'tmp/*.js'
+      options:
+        sub: true
+      all: ['src/angular-rpc-wrapper.js', 'src/js-rpc.js', 'src/remote-procedure.js']
 
     uglify:
       buildAngular:
@@ -104,7 +112,8 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks 'grunt-mkdir'
   grunt.loadNpmTasks 'grunt-insert'
   grunt.loadNpmTasks 'grunt-write-bower-json'
+  grunt.loadNpmTasks 'grunt-karma'
 
-  grunt.registerTask('build', ['mkdir', 'concat', 'insert', 'uglify', 'writeBowerJson'])
+  grunt.registerTask('build', ['karma', 'mkdir', 'concat', 'insert', 'jshint', 'uglify', 'writeBowerJson'])
   grunt.registerTask('default', ['build'])
 

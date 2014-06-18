@@ -14,6 +14,9 @@ module.exports = function (config) {
 
             // list of files / patterns to load in the browser
             files: [
+                'lib/angular/angular.js',
+                'lib/angular-mocks/angular-mocks.js',
+
                 'lib/workular/workular.min.js',
                 'lib/q/q.js',
                 'lib/browser-fake-promise/fake-promise.js',

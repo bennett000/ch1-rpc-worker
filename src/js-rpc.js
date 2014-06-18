@@ -36,7 +36,7 @@ function RPC(remote, spec) {
 
     // scope that this!
     var that = this,
-    Q = SimpleFakePromise(),
+    Q = new SimpleFakePromise(),
     /** @const */
     DOT = '.',
     /** @dict */
@@ -491,13 +491,13 @@ function RPC(remote, spec) {
             }
 
             if (splitFns.length === 1) {
-                that.remotes[exposeFn] = RemoteProcedure(that.post, resultCallbacks, exposeFn);
+                that.remotes[exposeFn] = new RemoteProcedure(that.post, resultCallbacks, exposeFn);
             } else if (splitFns.length > 1) {
                 fn = splitFns.pop();
                 obj = getNestedObject(that.remotes, splitFns.join(DOT), true);
 
                 if (obj) {
-                    obj[fn] = RemoteProcedure(that.post, resultCallbacks, exposeFn);
+                    obj[fn] = new RemoteProcedure(that.post, resultCallbacks, exposeFn);
                 } else {
                     log.error('RPC: expose error, invalid object');
                 }
