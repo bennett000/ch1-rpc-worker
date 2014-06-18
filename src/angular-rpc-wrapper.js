@@ -167,4 +167,8 @@ angular.module('js-rpc-wrapper', []).provider('jsRPCWrapper', function () {
         init();
         this.origin = getSetOrigin;
     }
+
+    this.$get = function () { return Wrapper; };
+    this.Wrapper = Wrapper;
+    this.SimpleFakePromise = SimpleFakePromise;
 });
