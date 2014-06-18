@@ -16,8 +16,8 @@ module.exports = function (config) {
             files: [
                 'lib/workular/workular.min.js',
                 'lib/q/q.js',
+                'lib/browser-fake-promise/fake-promise.js',
 
-                'src/simple-fake-promise.js',
                 'src/remote-procedure.js',
                 'src/js-rpc.js',
 
@@ -62,7 +62,7 @@ module.exports = function (config) {
             // - Safari (only Mac; has to be installed with `npm install karma-safari-launcher`)
             // - PhantomJS
             // - IE (only Windows; has to be installed with `npm install karma-ie-launcher`)
-            browsers: ['Firefox', 'PhantomJS', 'Chrome'],
+            browsers: ['Firefox', 'PhantomJS'],//, 'Chrome'],
 
 
             // If browser does not capture in given timeout [ms], kill it

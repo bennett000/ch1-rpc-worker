@@ -23,7 +23,6 @@ angular.module('js-rpc', []).provider('jsRPC', function () {
         rpc.init = function initRPC() {
             var d = $q.defer();
             rpc.onReady(d.resolve);
-            rpc.isReady(true);
             return d.promise();
         };
         return rpc;
