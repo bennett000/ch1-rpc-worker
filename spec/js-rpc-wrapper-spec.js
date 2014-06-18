@@ -5,13 +5,14 @@
 /*global window, jasmine, angular, beforeEach, describe, expect, waitsFor, spyOn, runs, it, module,inject, workular, RPC, console, Q, RemoteProcedure, invalidRemote, validCustomRemote, customDesc, getRPCPair, getRPCPairAsync, validDefaultRemote, setTimeout */
 describe('rpc wrapper', function () {
     'use strict';
-    var Wrapper, provider;
+    var Wrapper, provider, wrap;
 
     beforeEach(function () {
         angular.module('test-wrapper', function () {
         }).config(function (RPCWrapperProvider) {
             provider = RPCWrapperProvider;
-            Wrapper = RPCWrapperProvider.Wrapper;
+            Wrapper = RPCWrapperProvider.WrapperEventually;
+            wrap = RPCWrapperProvider.wrapper;
         });
         // Finally setup for test
         module('js-rpc-wrapper', 'test-wrapper');
@@ -21,7 +22,11 @@ describe('rpc wrapper', function () {
 
     describe('provider functions', function () {
         it('should have a wrapper constructor', function () {
-            expect(typeof provider.Wrapper).toBe('function');
+            expect(typeof provider.wrapper).toBe('function');
+        });
+
+        it('should have a wrapper eventually constructor', function () {
+            expect(typeof provider.WrapperEventually).toBe('function');
         });
 
         it('should have a $get function', function () {

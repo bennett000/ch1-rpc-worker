@@ -39,10 +39,18 @@ angular.module('js-rpc-wrapper', []).provider('RPCWrapper', function () {
         return true;
     }
 
-    function Wrapper(functionList, topLevelObj, type) {
+    /**
+     * Manually wraps a given object
+     * @param functionList {Array}
+     * @param topLevelObj {string}
+     * @param type {string}
+     * @returns {WrapperEventually}
+     * @constructor
+     */
+    function WrapperEventually(functionList, topLevelObj, type) {
         // guard
-        if (!(this instanceof Wrapper)) {
-            return new Wrapper(functionList, topLevelObj, type);
+        if (!(this instanceof WrapperEventually)) {
+            return new WrapperEventually(functionList, topLevelObj, type);
         }
 
         if (!validateWrapperConstruct(functionList, topLevelObj, type)) {
@@ -171,7 +179,38 @@ angular.module('js-rpc-wrapper', []).provider('RPCWrapper', function () {
         this.origin = getSetOrigin;
     }
 
-    this.$get = function () { return Wrapper; };
-    this.Wrapper = Wrapper;
+
+    /**
+     * Generates an interface to a remote object that assumes all calls are the
+     * given type 'callback', 'invoke', or 'promise'
+     *
+     * @pram remote {Object} remote object to 'act' on
+     * @param topLevelObj {string} name of the top level object to 'wrap'
+     * @param type {string} callback, invoke, or promise
+     * @returns {Object} wrapped object
+     * @throws {TypeError} TypeErrors thrown given invalid inputs
+     */
+    function wrapRPC(remote, topLevelObj, type) {
+        if (!remote[topLevelObj]) {
+            throw new TypeError('wrapRPC: invalid toplevel object');
+        }
+        if ((type !== 'callback') && (type !== 'promise') && (type !== 'invoke')) {
+            throw new TypeError('wrapRPC: invalid type, must be promise, callback, or invoke');
+        }
+        var rObj = Object.create(null);
+        Object.keys(remote[topLevelObj]).forEach(function (attr) {
+            var value = remote[topLevelObj][attr];
+            if (!value[type]) { return; }
+            if (typeof value[type] === 'function') {
+                // don't forget to bind this sucker!
+                rObj[attr] = angular.bind(remote[topLevelObj][attr], remote[topLevelObj][attr][type]);
+            }
+        });
+        return rObj;
+    }
+
+    this.$get = function () { return {}; };
+    this.wrapper = wrapRPC;
+    this.WrapperEventually = WrapperEventually;
     this.SimpleFakePromise = SimpleFakePromise;
 });
