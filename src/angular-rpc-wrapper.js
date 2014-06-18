@@ -184,7 +184,7 @@ angular.module('js-rpc-wrapper', []).provider('RPCWrapper', function () {
      * Generates an interface to a remote object that assumes all calls are the
      * given type 'callback', 'invoke', or 'promise'
      *
-     * @pram remote {Object} remote object to 'act' on
+     * @param remote {Object} remote object to 'act' on
      * @param topLevelObj {string} name of the top level object to 'wrap'
      * @param type {string} callback, invoke, or promise
      * @returns {Object} wrapped object
