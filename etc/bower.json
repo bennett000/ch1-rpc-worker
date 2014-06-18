@@ -5,7 +5,7 @@
     "moduleType"  : [
         "globals"
     ],
-    "main": ["js-rpc.min.js", "js-rpc.min.map", "js-rpc.js"],
+    "main": ["js-rpc.min.js", "js-rpc.min.map", "js-rpc.js", "js-rpc-wrapper.js"],
     "dependencies": {
         "<%= target %>":"<%= targetSrc %>"
     },
