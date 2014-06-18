@@ -38,6 +38,27 @@ describe('rpc wrapper', function () {
         });
     });
 
+    describe('wrapper function', function () {
+        it('should just work', function () {
+            var r = wrap({
+                             testObj: {
+                                 someFunc: {
+                                     invoke: function () {
+                                         var d = new provider.SimpleFakePromise();
+                                         d = d.defer();
+                                         d.resolve(65);
+                                         return d.promise;
+                                     }
+                                 }
+                             }
+                         }, 'testObj', 'invoke');
+
+            r.someFunc().then(function (result) {
+                expect(result).toBe(65);
+            });
+        });
+    });
+
     describe('wrapper class', function () {
         it('should be a constructor function', function () {
             expect(typeof Wrapper).toBe('function');
@@ -65,5 +86,48 @@ describe('rpc wrapper', function () {
             expect(new Wrapper([], 'b', 'invoke') instanceof Wrapper).toBe(true);
             expect(Wrapper([], 'b', 'invoke') instanceof Wrapper).toBe(true);
         });
+
+        it('should provide, the provided api (I)', function () {
+            var w = new Wrapper(['do'], 'testObj', 'invoke');
+
+            expect(typeof w.do).toBe('function');
+        });
+
+        it('should provide, the provided api (I)', function () {
+            var fns = ['be', 'there', 'you', 'silly', 'functions'], w = new Wrapper(fns, 'testObj', 'invoke');
+
+            fns.forEach(function (fn) {
+                expect(typeof w[fn]).toBe('function');
+            });
+        });
+
+
+        it('should not resolve the functions until an \'origin\' is provided', function (done) {
+            var fns = ['be', 'do'], w = new Wrapper(fns, 'testObj', 'invoke'), d1 = false, d2 = false;
+
+            w.do('test1').then(function () {
+                d1 = true;
+                if (d1 && d2) { done(); }
+            });
+
+            w.be('test2').then(function () {
+                d2 = true;
+                if (d1 && d2) { done(); }
+            });
+
+            expect(d1).toBe(false);
+            expect(d2).toBe(false);
+
+            w.origin({
+                         testObj: {
+                             do: function (p) {
+                                 expect(p).toBe('test1');
+                             }, be: function (p) {
+                                 expect(p).toBe('test2');
+                             }
+                         }
+                     });
+        });
     });
-});
+})
+;
