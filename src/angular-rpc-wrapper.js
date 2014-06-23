@@ -11,11 +11,38 @@ angular.module('js-rpc-wrapper', []).provider('RPCWrapper', function () {
     // not super happy with this solution...
     // the following is an inline copy of SimpleFakePromise
     /* jshint ignore:start */
-    function SimpleDefer(){"use strict";if(!(this instanceof SimpleDefer))return new SimpleDefer;var a,b,c=this,d=[],e=[];c.promise=Object.create(null),c.promise.then=function(c,f){if("function"!=typeof c)throw new TypeError("then's first parameter must be a function");if(void 0!==f&&"function"!=typeof f)throw new TypeError("then second parameter {undefined|function}");void 0===a?(d.push(c),f&&e.push(f)):a?c.apply(null,b):f.apply(null,b)},c.resolve=function(){void 0===a&&(a=!0,b=Array.prototype.slice.call(arguments,0),d.forEach(function(a){a.apply(null,b)}),d=[])},c.reject=function(c){if(!(c instanceof Error))throw new Error("promise rejections must be Error objects");void 0===a&&(a=!1,b=[c],e.forEach(function(a){a(c)}),e=[])}}function SimpleFakePromise(){"use strict";return this instanceof SimpleFakePromise?void(this.defer=function(){return new SimpleDefer}):new SimpleFakePromise}
+    function SimpleDefer() {
+        "use strict";
+        if (!(this instanceof SimpleDefer)) {
+            return new SimpleDefer;
+        }
+        var a, b, c = this, d = [], e = [];
+        c.promise = Object.create(null), c.promise.then = function (c, f) {
+            if ("function" != typeof c) {
+                throw new TypeError("then's first parameter must be a function");
+            }
+            if (void 0 !== f && "function" != typeof f) {
+                throw new TypeError("then second parameter {undefined|function}");
+            }
+            void 0 === a ? (d.push(c), f && e.push(f)) : a ? c.apply(null, b) : f.apply(null, b)
+        }, c.resolve = function () {void 0 === a && (a = !0, b = Array.prototype.slice.call(arguments, 0), d.forEach(function (a) {a.apply(null, b)}), d = [])}, c.reject = function (c) {
+            if (!(c instanceof Error)) {
+                throw new Error("promise rejections must be Error objects");
+            }
+            void 0 === a && (a = !1, b = [c], e.forEach(function (a) {a(c)}), e = [])
+        }
+    }
+
+    function SimpleFakePromise() {
+        "use strict";
+        return this instanceof SimpleFakePromise ? void(this.defer = function () {return new SimpleDefer}) : new SimpleFakePromise
+    }
+
     /* jshint ignore:end */
     /*global SimpleFakePromise*/
 
     var Q = new SimpleFakePromise();
+
     /**
      *
      * @param functionList {Array.<string>}
@@ -163,6 +190,7 @@ angular.module('js-rpc-wrapper', []).provider('RPCWrapper', function () {
                     return defer.promise;
                 }
             }
+
             return wrappedFn;
         }
 
@@ -170,7 +198,7 @@ angular.module('js-rpc-wrapper', []).provider('RPCWrapper', function () {
          * build the object
          */
         function init() {
-            functionList.forEach(function(fn) {
+            functionList.forEach(function (fn) {
                 that[fn] = getWrappedFunction(fn);
             });
         }
@@ -209,7 +237,11 @@ angular.module('js-rpc-wrapper', []).provider('RPCWrapper', function () {
         return rObj;
     }
 
-    this.$get = function () { return {}; };
+    this.$get = function () {
+        return {
+            wrapper: wrapRPC
+        };
+    };
     this.wrapper = wrapRPC;
     this.WrapperEventually = WrapperEventually;
     this.SimpleFakePromise = SimpleFakePromise;
