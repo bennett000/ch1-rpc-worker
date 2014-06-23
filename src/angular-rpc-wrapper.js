@@ -228,6 +228,10 @@ angular.module('js-rpc-wrapper', []).provider('RPCWrapper', function () {
         var rObj = Object.create(null);
         Object.keys(remote[topLevelObj]).forEach(function (attr) {
             var value = remote[topLevelObj][attr];
+            // if we encounter a truthy object, recurse
+            if ((remote[topLevelObj][attr]) && (typeof remote[topLevelObj][attr] === 'object')) {
+                rObj[attr] = wrapRPC(remote[topLevelObj], attr, type);
+            }
             if (!value[type]) { return; }
             if (typeof value[type] === 'function') {
                 // don't forget to bind this sucker!

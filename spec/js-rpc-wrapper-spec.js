@@ -40,7 +40,7 @@ describe('rpc wrapper', function () {
 
     describe('wrapper function', function () {
         it('should just work', function () {
-            var r = wrap({
+            var done = false, r = wrap({
                              testObj: {
                                  someFunc: {
                                      invoke: function () {
@@ -55,7 +55,39 @@ describe('rpc wrapper', function () {
 
             r.someFunc().then(function (result) {
                 expect(result).toBe(65);
+                done = true;
             });
+
+            waitsFor(function () {
+                return done;
+            });
+        });
+
+        it('should just work on nested objects', function () {
+            var done = false, r = wrap({
+                             testObj: {
+                                 someObj: {
+                                     someFunc: {
+                                         invoke: function () {
+                                             var d = new provider.SimpleFakePromise();
+                                             d = d.defer();
+                                             d.resolve(65);
+                                             return d.promise;
+                                         }
+                                     }
+                                 }
+                             }
+                         }, 'testObj', 'invoke');
+
+            r.someObj.someFunc().then(function (result) {
+                expect(result).toBe(65);
+                done = true;
+            });
+
+            waitsFor(function () {
+                return done;
+            });
+
         });
     });
 
