@@ -78,6 +78,18 @@ module.exports = (grunt) ->
           sourceMapName: 'build/browser-workular/js-rpc.min.map'
         files:
           'build/browser-workular/js-rpc.min.js': ['tmp/workular-shell.js']
+      buildWorkularWrap:
+        options:
+          sourceMap: true,
+          sourceMapName: 'build/browser-workular/js-rpc-wrapper.min.map'
+        files:
+          'build/browser-workular/js-rpc.min.js': ['src/workular-rpc-wrapper.js']
+      buildAngularWrap:
+        options:
+          sourceMap: true,
+          sourceMapName: 'build/browser-angular/js-rpc-wrapper.min.map'
+        files:
+          'build/browser-workular/js-rpc-wrapper.min.js': ['src/angular-rpc-wrapper.js']
       pristine:
         options:
           mangle: false
@@ -87,6 +99,7 @@ module.exports = (grunt) ->
         files:
           'build/browser-angular/js-rpc.js': ['tmp/angular-shell.js']
           'build/browser-workular/js-rpc.js': ['tmp/workular-shell.js']
+          'build/browser-workular/js-rpc-wrapper.js': ['src/workular-rpc-wrapper.js']
           'build/browser-angular/js-rpc-wrapper.js': ['src/angular-rpc-wrapper.js']
 
     concat:
