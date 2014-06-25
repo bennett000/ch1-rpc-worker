@@ -7,11 +7,12 @@
 
 /**
  * @todo when workular upgrades to a provider model, just use the angular copy
+ * @todo do not forget workular 5.1 has no bind method.. yet
  *
  * *Consider this a 'shim'*
  */
 
-workular.module('js-rpc-wrapper', []).factory('RPCWrapper', [function () {
+workular.module('js-rpc-wrapper', []).factory('RPCWrapper', ['underscore', function (_) {
     'use strict';
 
     /**
@@ -41,7 +42,7 @@ workular.module('js-rpc-wrapper', []).factory('RPCWrapper', [function () {
             if (!value[type]) { return; }
             if (typeof value[type] === 'function') {
                 // don't forget to bind this sucker!
-                rObj[attr] = angular.bind(remote[topLevelObj][attr], remote[topLevelObj][attr][type]);
+                rObj[attr] = _.bind(remote[topLevelObj][attr][type], remote[topLevelObj][attr]);
             }
         });
         return rObj;
