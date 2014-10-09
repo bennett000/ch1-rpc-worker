@@ -36,31 +36,31 @@ function RPC(remote, spec) {
 
     // scope that this!
     var that = this,
-    Q = new SimpleFakePromise(),
-    /** @const */
-    DOT = '.',
-    /** @dict */
-    exposedProcedures = Object.create(null), // references to functions that are called onmessage
-    /** @dict */
-    resultCallbacks = Object.create(null),  // waiting for return message to be called
-    /** @dict */
-    listenerIds = Object.create(null),  // waiting for return message to be called
-    /** @type {boolean} */
-    localReadyFlag = false,
-    /** @type {boolean} */
-    remoteReadyFlag = false,
-    /** @type {boolean} */
-    isReadyFlag = false,
-    /** @dict */
-    callingFunctions = Object.create(null),  // case statement
-    /** @type Array.<function()> */
-    readyQueue = [],
-    /** @type Array.<function()> */
-    remoteReadyQueue = [],
-    /** @const */
-    noop = function () {},
-    /*global console*/
-    log;
+        Q = new SimpleFakePromise(),
+        /** @const */
+        DOT = '.',
+        /** @dict */
+        exposedProcedures = Object.create(null), // references to functions that are called onmessage
+        /** @dict */
+        resultCallbacks = Object.create(null),  // waiting for return message to be called
+        /** @dict */
+        listenerIds = Object.create(null),  // waiting for return message to be called
+        /** @type {boolean} */
+        localReadyFlag = false,
+        /** @type {boolean} */
+        remoteReadyFlag = false,
+        /** @type {boolean} */
+        isReadyFlag = false,
+        /** @dict */
+        callingFunctions = Object.create(null),  // case statement
+        /** @type Array.<function()> */
+        readyQueue = [],
+        /** @type Array.<function()> */
+        remoteReadyQueue = [],
+        /** @const */
+        noop = function () {},
+        /*global console*/
+        log;
 
     /**
      * @param fn
@@ -76,10 +76,10 @@ function RPC(remote, spec) {
      */
     function status() {
         return {
-            resultCallbacks  : Object.keys(resultCallbacks).length,
-            listenerIds      : Object.keys(listenerIds).length,
-            readyQueue       : readyQueue.length,
-            remoteReadyQueue : remoteReadyQueue.length
+            resultCallbacks: Object.keys(resultCallbacks).length,
+            listenerIds: Object.keys(listenerIds).length,
+            readyQueue: readyQueue.length,
+            remoteReadyQueue: remoteReadyQueue.length
         };
     }
 
@@ -224,7 +224,7 @@ function RPC(remote, spec) {
             throw new TypeError('RPC: getNested Object: dictionary is not an object');
         }
         var result = null,
-        nextDict;
+            nextDict;
 
         tree = tree.split(DOT);
         doCreate = doCreate || false;
@@ -546,20 +546,32 @@ function RPC(remote, spec) {
     }
 
     /**
+     * @param data {*}
+     * @returns {Object}
+     */
+    function safeJSONParse(data) {
+        try {
+            return JSON.parse(data);
+        } catch (err) {
+            log.error('RPC: error parsing JSON: ', err.message, data);
+            return null;
+        }
+    }
+
+    /**
      * Attaches an internal listener
      */
     function initListener(spec) {
         that.listen(function onMessage(data) {
-            try {
-                if ((spec) && (spec.listenAttr)) {
-                    data = JSON.parse(data[spec.listenAttr]);
-                } else {
-                    data = JSON.parse(data);
-                }
-                handleMessage(data);
-            } catch (err) {
-                log.error('RPC: received invalid data ' + err.message, data);
+            if ((spec) && (spec.listenAttr)) {
+                data = safeJSONParse(data[spec.listenAttr]);
+            } else {
+                data = safeJSONParse(data);
             }
+            if (data === null) {
+                return;
+            }
+            handleMessage(data);
         });
     }
 
@@ -759,11 +771,11 @@ function RPC(remote, spec) {
             log = console;
         } else {
             log = {
-                log   : noop,
-                info  : noop,
+                log: noop,
+                info: noop,
                 assert: noop,
-                warn  : noop,
-                error : noop
+                warn: noop,
+                error: noop
             };
         }
 
