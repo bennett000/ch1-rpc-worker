@@ -1,7 +1,7 @@
 {
   "name": "js-rpc",
   "description": "JavaScript Remote Procedure Call (RPC)",
-  "version": "0.3.5",
+  "version": "0.4.0",
   "private": true,
   "repository": {
     "type": "git",
