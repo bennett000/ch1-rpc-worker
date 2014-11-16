@@ -45,18 +45,32 @@ function RPC(remote, spec) {
         resultCallbacks = Object.create(null),  // waiting for return message to be called
         /** @dict */
         listenerIds = Object.create(null),  // waiting for return message to be called
-        /** @type {boolean} */
-        localReadyFlag = false,
-        /** @type {boolean} */
-        remoteReadyFlag = false,
+        /** @type {{local: { ready: boolean, config: boolean }, ...} */
+        flags = {
+            local: {
+                ready: false,
+                config: false
+            },
+            remote: {
+                ready: false,
+                config: false
+            }
+        },
+        /** @type {{ local: { ready: Array.<function>, config: Array.<function}}, ...}} */
+        queues = {
+            local: {
+                ready: [],
+                config: []
+            },
+            remote: {
+                ready: [],
+                config: []
+            }
+        },
         /** @type {boolean} */
         isReadyFlag = false,
         /** @dict */
         callingFunctions = Object.create(null),  // case statement
-        /** @type Array.<function()> */
-        readyQueue = [],
-        /** @type Array.<function()> */
-        remoteReadyQueue = [],
         /** @const */
         noop = function () {},
         /*global console*/
@@ -78,8 +92,8 @@ function RPC(remote, spec) {
         return {
             resultCallbacks: Object.keys(resultCallbacks).length,
             listenerIds: Object.keys(listenerIds).length,
-            readyQueue: readyQueue.length,
-            remoteReadyQueue: remoteReadyQueue.length
+            readyQueue: queues.local.ready.length,
+            remoteReadyQueue: queues.remote.ready.length
         };
     }
 
@@ -515,7 +529,7 @@ function RPC(remote, spec) {
         }
         if (data['ready']) {
             if (data.ready === true) {
-                remoteReadyFlag = true;
+                flags.remote.ready = true;
                 isReady();
             }
         }
@@ -581,23 +595,23 @@ function RPC(remote, spec) {
      */
     function isReady(setReady) {
         if (setReady === true) {
-            localReadyFlag = true;
+            flags.local.ready = true;
             that.post(JSON.stringify({
                                          ready: true
                                      }));
         }
-        isReadyFlag = remoteReadyFlag && localReadyFlag;
-        if (remoteReadyFlag) {
-            remoteReadyQueue.forEach(function (readyFn) {
+        isReadyFlag = flags.remote.ready && flags.local.ready;
+        if (flags.remote.ready) {
+            queues.remote.ready.forEach(function (readyFn) {
                 try { readyFn(); } catch (err) {}
             });
-            remoteReadyQueue = [];
+            queues.remote.ready = [];
         }
         if (isReadyFlag) {
-            readyQueue.forEach(function (readyFn) {
+            queues.local.ready.forEach(function (readyFn) {
                 try { readyFn(); } catch (err) {}
             });
-            readyQueue = [];
+            queues.local.ready = [];
         }
         return isReadyFlag;
     }
@@ -608,7 +622,7 @@ function RPC(remote, spec) {
      */
     function onReady(fn) {
         if (isFunction(fn)) {
-            readyQueue.push(fn);
+            queues.local.ready.push(fn);
         }
         isReady();
     }
@@ -619,7 +633,7 @@ function RPC(remote, spec) {
      */
     function onRemoteReady(fn) {
         if (isFunction(fn)) {
-            remoteReadyQueue.push(fn);
+            queues.remote.ready.push(fn);
         }
         isReady();
     }
@@ -632,7 +646,7 @@ function RPC(remote, spec) {
     function error() {
         var args = Array.prototype.slice.call(arguments, 0);
         try {
-            that.post(JSON.stringify({ error: args }));
+            that.post(JSON.stringify({error: args}));
         } catch (err) {
             // notify the error, but fail over
             log.error(err.message);
