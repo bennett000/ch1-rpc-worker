@@ -22,6 +22,12 @@ module.exports = (grunt) ->
             pkg: grunt.file.readJSON 'package.json'
             target: 'workular'
             targetSrc:"git+ssh://dev.higginsregister.com/srv/bower/js-workular.git#v0.5.1"
+      browser:
+        options:
+          bowerJsonTemplate: 'etc/bower.json'
+          dest: 'build/browser/bower.json'
+          data:
+            pkg: grunt.file.readJSON 'package.json'
 
     insert:
       options: {}
@@ -41,6 +47,10 @@ module.exports = (grunt) ->
         src: 'tmp/intermediate.js'
         dest: 'build/node/js-rpc.js'
         match: '//###RPCCODE'
+      browser:
+        src: 'tmp/intermediate.js'
+        dest: 'tmp/vanilla-shell.js'
+        match: '//###RPCCODE'
 
     mkdir:
       buildEnvironement:
@@ -48,6 +58,7 @@ module.exports = (grunt) ->
           create: [
             'tmp',
             'build',
+            'build/browser',
             'build/browser-angular',
             'build/browser-workular',
             'build/node-workular',
@@ -78,6 +89,12 @@ module.exports = (grunt) ->
           sourceMapName: 'build/browser-workular/js-rpc.min.map'
         files:
           'build/browser-workular/js-rpc.min.js': ['tmp/workular-shell.js']
+      buildBrowser:
+        options:
+          sourceMap: true,
+          sourceMapName: 'build/browser/js-rpc.min.map'
+        files:
+          'build/browser/js-rpc.min.js': ['tmp/vanilla-shell.js']
       buildWorkularWrap:
         options:
           sourceMap: true,
@@ -97,6 +114,7 @@ module.exports = (grunt) ->
           beautify: true
           preserveComments: true
         files:
+          'build/browser/js-rpc.js': ['tmp/vanilla-shell.js']
           'build/browser-angular/js-rpc.js': ['tmp/angular-shell.js']
           'build/browser-workular/js-rpc.js': ['tmp/workular-shell.js']
           'build/browser-workular/js-rpc-wrapper.js': ['src/workular-rpc-wrapper.js']
@@ -109,6 +127,9 @@ module.exports = (grunt) ->
       rpcOnly:
         src: ['src/remote-procedure.js', 'src/js-rpc.js']
         dest: 'tmp/rpc-only.js'
+      containerBrowser:
+        src: ['src/vanilla-shell.js']
+        dest: 'tmp/vanilla-shell.js'
       containerAngular:
         src: ['src/angular-shell.js']
         dest: 'tmp/angular-shell.js'
