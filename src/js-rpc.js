@@ -45,7 +45,7 @@ function RPC(remote, spec) {
         resultCallbacks = Object.create(null),  // waiting for return message to be called
         /** @dict */
         listenerIds = Object.create(null),  // waiting for return message to be called
-        /** @type {{local: { ready: boolean, config: boolean }, ...} */
+        /** @type {{local: { ready: boolean, config: boolean }}} */
         flags = {
             local: {
                 ready: false,
@@ -54,9 +54,13 @@ function RPC(remote, spec) {
             remote: {
                 ready: false,
                 config: false
+            },
+            global: {
+                ready: false,
+                config: false
             }
         },
-        /** @type {{ local: { ready: Array.<function>, config: Array.<function}}, ...}} */
+        /** @type {{ local: { ready: Array.<function>, config: Array.<function}}} */
         queues = {
             local: {
                 ready: [],
@@ -67,8 +71,6 @@ function RPC(remote, spec) {
                 config: []
             }
         },
-        /** @type {boolean} */
-        isReadyFlag = false,
         /** @dict */
         callingFunctions = Object.create(null),  // case statement
         /** @const */
@@ -77,11 +79,51 @@ function RPC(remote, spec) {
         log;
 
     /**
-     * @param fn
+     * @param fn {*}
      * @returns {boolean}
      */
     function isFunction(fn) {
         return typeof fn === 'function';
+    }
+
+    /**
+     * @param obj {*}
+     * @returns {boolean}
+     */
+    function isObject(obj) {
+        return obj && typeof obj === 'object';
+    }
+
+    /**
+     * @param obj {*}
+     */
+    function forEach(obj, fn) {
+        if (!isObject(obj)) { return; }
+        if (!isFunction(fn)) { return; }
+        Object.keys(obj).forEach(function (attr) {
+            fn(obj[attr], attr);
+        });
+    }
+
+    /**
+     * @param cb {function(...)}
+     */
+    function eachQueue(cb) {
+        if (!isFunction(cb)) { return; }
+        forEach(queues, function (category) {
+            forEach(category, function (queue, name) {
+                cb(queue, name, category);
+            });
+        });
+    }
+
+    function eachFlags(cb) {
+        if (!isFunction(cb)) { return; }
+        forEach(flags, function (category) {
+            forEach(category, function (flag, name) {
+                cb(flag, name, category);
+            });
+        });
     }
 
     /**
@@ -533,6 +575,12 @@ function RPC(remote, spec) {
                 isReady();
             }
         }
+        if (data['config']) {
+            if (data.config === true) {
+                flags.remote.config = true;
+                isConfig();
+            }
+        }
         if (data['results']) {
             onResults(data.results);
         }
@@ -589,31 +637,88 @@ function RPC(remote, spec) {
         });
     }
 
+    function safeApply(fn, args) {
+        if (!Array.isArray(args)) {
+            args = [];
+        }
+        try {
+            fn.apply(null, args);
+        } catch (err) {
+            // fail over
+        }
+    }
+
+    function enlightenQueue(queue) {
+        queue.forEach(function (fn) {
+            safeApply(fn);
+        });
+    }
+
+    function _isStage(setStage, name) {
+        if (setStage === true) {
+            flags.local[name] = true;
+            var msg = {};
+            msg[name] = true;
+            that.post(JSON.stringify(msg));
+        }
+        flags.global[name] = flags.remote[name] && flags.local[name];
+        if (flags.remote[name]) {
+            enlightenQueue(queues.remote[name]);
+        }
+        if (flags.global[name]) {
+            enlightenQueue(queues.local[name]);
+        }
+        return flags.global[name];
+    }
+
     /**
      * @param setReady {boolean=} will set 'this side' to ready
      * @returns {boolean}
      */
     function isReady(setReady) {
-        if (setReady === true) {
-            flags.local.ready = true;
-            that.post(JSON.stringify({
-                                         ready: true
-                                     }));
+        return _isStage(setReady, 'ready');
+        //if (setReady === true) {
+        //    flags.local.ready = true;
+        //    that.post(JSON.stringify({
+        //                                 ready: true
+        //                             }));
+        //}
+        //flags.global.ready = flags.remote.ready && flags.local.ready;
+        //if (flags.remote.ready) {
+        //    queues.remote.ready.forEach(function (readyFn) {
+        //        safeApply(readyFn);
+        //    });
+        //    queues.remote.ready = [];
+        //}
+        //if (flags.global.ready) {
+        //    queues.local.ready.forEach(function (readyFn) {
+        //        safeApply(readyFn);
+        //    });
+        //    queues.local.ready = [];
+        //}
+        //return flags.global.ready;
+    }
+
+    /**
+     * @param setConfig {boolean=} will set 'this side' to config
+     * @returns {boolean}
+     */
+    function isConfig(setConfig) {
+        return _isStage(setConfig, 'config');
+    }
+
+    function onConfig(fn) {
+        if (isFunction(fn)) {
+            queues.local.config.push(fn);
         }
-        isReadyFlag = flags.remote.ready && flags.local.ready;
-        if (flags.remote.ready) {
-            queues.remote.ready.forEach(function (readyFn) {
-                try { readyFn(); } catch (err) {}
-            });
-            queues.remote.ready = [];
+        isConfig();
+    }
+
+    function onRemoteConfig(fn) {
+        if (isFunction (fn)) {
+            queues.remote.config.push(fn);
         }
-        if (isReadyFlag) {
-            queues.local.ready.forEach(function (readyFn) {
-                try { readyFn(); } catch (err) {}
-            });
-            queues.local.ready = [];
-        }
-        return isReadyFlag;
+        isConfig();
     }
 
     /**
@@ -803,6 +908,9 @@ function RPC(remote, spec) {
         that['isReady'] = isReady;
         that['onReady'] = onReady;
         that['onRemoteReady'] = onRemoteReady;
+        that['isConfig'] = isConfig;
+        that['onConfig'] = onConfig;
+        that['onRemoteConfig'] = onRemoteConfig;
         that['setLogger'] = setLogger;
         that['error'] = error;
         that['status'] = status;
@@ -814,3 +922,4 @@ function RPC(remote, spec) {
     // start the ball rolling!
     init(remote, spec);
 }
+
