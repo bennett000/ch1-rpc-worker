@@ -10,6 +10,8 @@ angular.module('js-rpc', []).provider('jsRPC', function () {
         rpc = new RPC(remote, spec);
     };
 
+    this.RPC = RPC;
+
     this.$get = ['$q', function ($q) {
         if (!rpc) {
             throw new Error('RPC not constructed!!!');
