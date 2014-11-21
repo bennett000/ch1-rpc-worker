@@ -149,6 +149,7 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks 'grunt-write-bower-json'
   grunt.loadNpmTasks 'grunt-karma'
 
-  grunt.registerTask('build', ['karma', 'mkdir', 'concat', 'insert', 'jshint', 'uglify', 'writeBowerJson'])
+  grunt.registerTask('build', ['karma', 'build-no-test'])
+  grunt.registerTask('build-no-test', ['mkdir', 'concat', 'insert', 'jshint', 'uglify', 'writeBowerJson'])
   grunt.registerTask('default', ['build'])
 
