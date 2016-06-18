@@ -26,3 +26,9 @@ build
 
 # coverage folder
 coverage
+
+# distribution
+dist
+
+# typings
+typings

@@ -1,0 +1,8 @@
+bin/**
+dist/**
+build/**
+tmp/**
+coverage/**
+node_modules/**
+lib/**
+spec/**
