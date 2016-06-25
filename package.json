@@ -13,7 +13,7 @@
     "lint-ts": "tslint ./src/**/*.ts",
     "pretest": "rimraf coverage/ && npm run lint",
     "postinstall": "npm run typings",
-    "test": "karma start",
+    "test": "karma start --singleRun true",
     "test:watch": "karma start --singleRun false --restartOnFileChange true",
     "typings": "typings install"
   },

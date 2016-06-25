@@ -1,10 +1,18 @@
 export const uid = createUidGenerator();
 
-export function isFunction(fn): fn is Function {
+export function isFunction(fn: any): fn is Function {
   return typeof fn === 'function';
 }
 
-export function noop() {}
+export function isObject(obj: any): obj is Object {
+  if (!obj) {
+    return false;
+  }
+  
+  return typeof obj === 'object';
+}
+
+export function noop(): void {}
 
 export function createUidGenerator(): () => string {
   let uidCount = 0;
@@ -19,15 +27,21 @@ export function createUidGenerator(): () => string {
     // return a uid
     return [
       'u',
-      Date.now().toString(16).substring(4),
+      Date.now().toString(16),
       uidCount,
       Math.floor(Math.random() * 100000).toString(32)
-    ].join('');
+    ].join('-');
   };
 }
 
 export function createTypeError(message) {
   return new TypeError('js-rpc: ' + message);
+}
+
+export function throwIfNotFunction(fn: any, message?: string) {
+  if (!isFunction(fn)) {
+    typeError(message || 'given value is not a function');
+  }
 }
 
 export function typeError(message) {

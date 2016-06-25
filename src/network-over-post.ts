@@ -1,15 +1,15 @@
-import { RPCConfig, RPCEvent, RPCPayload } from './interfaces';
+import { typeError } from './utils';
+import { safeCall } from './remote';
+import * as evt from './events';
 
-import {
-  createTypeError,
-  isFunction,
-  typeError
-} from './utils';
-
-import {
-  createEvent,
-  createErrorEvent,
-} from './events';
+import { 
+  RPCConfig, 
+  RPCEvent,
+  RPCErrorPayload,
+  RPCInvocationPayload,
+  RPCPayload,
+  RPCReturnPayload,
+} from './interfaces';
 
 const responders = {
   invoke,
@@ -28,61 +28,17 @@ export function create(config: RPCConfig) {
   const off = on(config);
 }
 
-function getFinalFunction(remote: Object, fnName: string) {
-  const names = fnName.split('.').filter((el) => el);
 
-  // invalid function name case
-  if (names.length === 0) {
-    return createTypeError(`getFinalFunction: ${fnName} not found on remote`);
-  }
-
-  // "first level" case
-  if (names.length === 1) {
-    if (isFunction(remote[names[0]])) {
-      return remote[names[0]];
-    }
-    return createTypeError(`getFinalFunction: ${fnName} is not a function: ` +
-      typeof remote[names[0]]);
-  }
-
-  // invalid sub object case
-  if (!remote[names[0]]) {
-    return createTypeError(`getFinalFunction: ${names[0]} is not a ` +
-      'namespace (sub-object) on remote');
-  }
-
-  // sub object case
-  if (names.length === 2) {
-    return getFinalFunction(remote[names[0]], names[1]);
-  }
-
-  // deeper object case
-  return getFinalFunction(remote[names.shift()], names.join('.'));
-}
-
-function safeCall(c: RPCConfig, fnName: string, args: any[]) {
-  const fn = getFinalFunction(c.remote, fnName);
-
-  if (fn instanceof Error) {
-    return fn;
-  }
-
-  try {
-    return fn.apply(null, args);
-  } catch (err) {
-    return err;
-  }
-}
 
 function safeCallback(c: RPCConfig, callbacks: Object) {
 
 }
 
-function invoke(c: RPCConfig, payload: RPCPayload, uid: string) {
+function invoke(c: RPCConfig, payload: RPCInvocationPayload, uid: string) {
   const result = safeCall(c, payload.fn, payload.args);
 
   if (result instanceof Error) {
-    c.cemit(createErrorEvent(c, 'invokeReturn', result));
+    c.cemit(evt.createError(c, 'invokeReturn', result));
     return;
   }
 
@@ -100,12 +56,12 @@ function onRemote(c: RPCConfig, payload: RPCPayload, uid: string,
   const result = safeCall(c, payload.fn, payload.args);
 
   if (result instanceof Error) {
-    c.cemit(createErrorEvent(c, 'onReturn', result));
+    c.cemit(evt.createError(c, 'onReturn', result));
     return;
   }
 
   if (callbacks[uid]) {
-    c.cemit(createErrorEvent(c, 'onReturn', new Error('invokeReturn: ' + '' +
+    c.cemit(evt.createError(c, 'onReturn', new Error('invokeReturn: ' + '' +
       `callback with uid: ${uid} alrady registered`)));
     return;
   }

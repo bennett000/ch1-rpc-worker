@@ -1,5 +1,29 @@
-import { RPCConfig, RPCEvent, RPCEventType, RPCPayload } from './interfaces';
 import { uid } from './utils';
+import { createRPCError } from './rpc-error';
+
+import {
+  RPCConfig, RPCEvent, RPCEventType, RPCPayload,
+} from './interfaces';
+
+
+export function createCreate(remote) {
+  
+  return {
+    
+  };
+}
+
+export function createCreateReturn() {
+  
+}
+
+export function createDestroy() {
+
+}
+
+export function createDestroyReturn() {
+
+}
 
 export function createEvent(type: RPCEventType, payload: RPCPayload,
                             givenUid?: string): RPCEvent {
@@ -10,30 +34,9 @@ export function createEvent(type: RPCEventType, payload: RPCPayload,
   };
 }
 
-export function createErrorEvent(c: RPCConfig, type: RPCEventType,
+export function createError(c: RPCConfig, type: RPCEventType,
                                  error: Error): RPCEvent {
-  let errorType = 'Error';
-  let stack = '';
 
-  if (error instanceof TypeError) {
-    errorType = 'TypeError';
-  }
-
-  if (c.enableStackTrace) {
-    stack = error.stack;
-  }
-
-  return {
-    payload: {
-      error: {
-        message: error.message,
-        stack,
-        type: errorType,
-      },
-    },
-    type,
-    uid: uid(),
-  };
-
+  return createEvent(type, { error: createRPCError(c, error) });
 }
 

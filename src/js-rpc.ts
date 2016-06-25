@@ -1,9 +1,10 @@
 import { DEFAULT_MESSAGE } from './constants';
-import { isFunction, typeError } from './utils';
 import { RPC, RPCConfig } from './interfaces';
+import { isObject, typeError, throwIfNotFunction} from './utils';
 
 
-export function create(remote: Object, config: RPCConfig): RPC {
+export function create<Local extends Object, 
+  Remote extends Object>(remote: Local, config: RPCConfig): RPC {
   validateRemote(remote);
   config = validateConfig(config, remote);
   
@@ -12,26 +13,19 @@ export function create(remote: Object, config: RPCConfig): RPC {
   return {
     config,
     destroy,
-    remote,
+    remote: {},
   };
 }
 
 export function validateRemote(r: Object) {
-  if (typeof r !== 'object') {
+  if (!isObject(r)) {
     typeError('validateRemote: remote must be an object');
-  }
-  if (!r) {
-    typeError('validateRemote: remote must not be null');
   }
 }
 
 export function validateConfig(c: RPCConfig, remote: Object): RPCConfig {
-  if (!isFunction(c.on)) {
-    typeError('validateConfig: config requires an on method');
-  }   
-  if (!isFunction(c.emit)) {
-    typeError(('validateConfig: config requires an emit method'));
-  }
+  throwIfNotFunction(c.on, 'validateConfig: config requires an on method');
+  throwIfNotFunction(c.emit, 'validateConfig: config requires an emit method');
   
   c.enableStackTrace = c.enableStackTrace || false;
   c.message = c.message || DEFAULT_MESSAGE;

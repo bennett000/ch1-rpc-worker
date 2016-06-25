@@ -2,9 +2,14 @@ export interface Dictionary<T> {
   [key: string]: T;
 }
 
-export type RPCEventType = 'invoke' | 
-  'invokeReturn' | 
-  'nodeCallback' | 
+export type RPCEventType =
+  'create' |
+  'createReturn' |
+  'destroy' | 
+  'destroyReturn' |
+  'invoke' |
+  'invokeReturn' |
+  'nodeCallback' |
   'nodeCallbackReturn' |
   'on' |
   'onReturn' |
@@ -15,11 +20,11 @@ export type RPCEventType = 'invoke' |
 
 
 export interface RPCEmit {
-  (message: string, payload: RPCPayload): any;
+  (message: string, payload: RPCEvent): any;
 }
 
 export interface ConfiguredRPCEmit {
-  (payload: RPCPayload): any;
+  (payload: RPCEvent): any;
 }
 
 export interface RPCOn {
@@ -38,15 +43,24 @@ export interface RPCConfig {
 export interface RPCError {
   message: string;
   stack?: string;
-  code?: number;
+  type?: string;
 }
 
-export interface RPCPayload {
-  fn?: string;
-  args?: any[];
-  result?: any;
-  error?: RPCError;
+export interface RPCInvocationPayload {
+  fn: string;
+  args: any[];
 }
+
+export interface RPCErrorPayload {
+  error: RPCError;
+}
+
+export interface RPCReturnPayload {
+  result: any;
+}
+
+export type RPCPayload = 
+  RPCInvocationPayload | RPCReturnPayload | RPCErrorPayload;
 
 export interface RPCEvent {
   type: RPCEventType;
