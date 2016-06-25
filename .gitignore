@@ -32,3 +32,6 @@ dist
 
 # typings
 typings
+
+# legacy
+legacy/

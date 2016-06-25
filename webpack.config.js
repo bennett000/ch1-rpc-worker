@@ -8,10 +8,18 @@ const loaders = {
     exclude: /node_modules/,
   },
 
-  tsTest: loadTs('ts', true),
+  tsTest: loadTs(null, true),
   istanbulInstrumenter: loadTs('istanbul-instrumenter'),
   ts: loadTs(),
 };
+
+const plugins = [
+  new webpack.optimize.UglifyJsPlugin({
+    compressor: {
+      warnings: false,
+    },
+  }),
+];
 
 module.exports = {
   devtool: 'source-map',
@@ -34,13 +42,7 @@ module.exports = {
     filename: 'js-rpc.js',
     publicPath: 'dist',
   },
-  plugins: [
-    new webpack.optimize.UglifyJsPlugin({
-      compressor: {
-        warnings: false,
-      },
-    }),
-  ],
+  plugins,
   resolve: {
     extensions: ['', '.webpack.js', '.web.js', '.ts', '.js'],
   },
@@ -54,7 +56,7 @@ module.exports = {
 function loadTs(loader, inTest) {
   return {
     test: /\.ts$/,
-    loader: loader || 'ts',
+    loader: loader || 'awesome-typescript-loader',
     exclude: inTest ? /node_modules/ :
       /(node_modules\/|\.test\.ts$|tests\.\w+\.ts$)/,
   };

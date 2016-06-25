@@ -1,93 +1,97 @@
-'use strict';
+const loaders = require('./webpack.config').loaders;
+const plugins = require('./webpack.config').plugins;
 
-const webpack = require('webpack');
 module.exports = (config) => {
   config.set({
     frameworks: [
       'jasmine',
-      'source-map-support',
     ],
 
-    files: ['./src/spec.entry.ts'],
+    plugins: [
+      'karma-jasmine',
+      'karma-sourcemap-writer',
+      'karma-sourcemap-loader',
+      'karma-webpack',
+      'karma-coverage',
+      'karma-spec-reporter',
+      'karma-chrome-launcher',
+    ],
+
+    files: [
+      './src/spec.entry.ts',
+      {
+        pattern: '**/*.map',
+        served: true,
+        included: false,
+        watched: true,
+      },
+    ],
 
     preprocessors: {
-      './src/**/*.ts': [
+      './src/spec.entry.ts': [
         'webpack',
         'sourcemap',
       ],
-      './src/**/!(*.test|tests.*).ts': [
+      './src/**/!(spec.entry).ts': [
+        'sourcemap',
         'coverage',
       ],
     },
 
     webpack: {
-      plugins: [
-        new webpack.NoErrorsPlugin(),
-      ],
-      entry: './src/tests.entry.ts',
+      plugins,
+      entry: './src/spec.entry.ts',
       devtool: 'inline-source-map',
-      verbose: true,
+      verbose: false,
       resolve: {
         extensions: ['', '.webpack.js', '.web.js', '.ts', '.js'],
       },
       module: {
-        loaders: [
-          webpack.loaders.tsTest,
-        ],
-        postLoaders: [
-          webpack.loaders.istanbulInstrumenter,
-        ],
+        loaders: combinedLoaders(),
+        postLoaders: [ loaders.istanbulInstrumenter ],
       },
       stats: { colors: true, reasons: true },
-      debug: true,
+      debug: false,
     },
 
     webpackServer: {
       noInfo: true, // prevent console spamming when running in Karma!
     },
 
-    reporters: [
-      'spec',
-      'coverage',
-      'karma-remap-istanbul',
-      'junit',
-    ],
+    reporters: ['spec', 'coverage'],
+
     coverageReporter: {
       reporters: [
-        {
-          type: 'text',
-        },
-        {
-          type: 'json',
-          subdir: '.',
-          file: 'coverage-final.json',
-        },
+        { type: 'lcov', dir: './coverage/lcov' },
+        { type: 'html', dir: './coverage/html' },
+        { type: 'json', dir: './coverage/json' },
       ],
       dir: './coverage/',
-      subdir: (browser) => {
-        return browser.toLowerCase().split(/[ /-]/)[0]; // returns 'chrome'
-      },
-    },
-
-    remapIstanbulReporter: {
-      src: './coverage/coverage-final.json',
-      reports: {
-        html: './coverage/html'
-      },
-      timeoutNotCreated: 1000,
-      timeoutNoMoreFiles: 1100
-    },
-
-    junitReporter: {
-      outputFile: 'test-results.xml'
     },
 
     port: 9999,
     colors: true,
     logLevel: config.LOG_INFO,
     autoWatch: true,
-    browsers: ['PhantomJS'], // Alternatively: 'PhantomJS'
+    browsers: ['Chrome'], // Alternatively: 'PhantomJS'
     captureTimeout: 6000,
-    singleRun: true,
   });
 };
+
+function combinedLoaders() {
+  return Object.keys(loaders).reduce(function reduce(aggregate, k) {
+      switch (k) {
+        case 'istanbulInstrumenter':
+        case 'tslint':
+          return aggregate;
+        case 'ts':
+        case 'tsTest':
+          return aggregate.concat([ // force inline source maps
+            Object.assign(loaders[k],
+              { query: { babelOptions: { sourceMaps: 'both' } } })]);
+        default:
+          return aggregate.concat([loaders[k]]);
+      }
+    },
+    []);
+}
