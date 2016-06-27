@@ -1,14 +1,16 @@
 import * as rpcError from './rpc-error';
+import { noop } from './utils';
+import { CodedError } from './interfaces';
 
 describe('RPCError', () => {
   let config;
 
   beforeEach(() => {
     config = {
-      emit: () => {},
+      emit: noop,
       enableStackTrace: false,
       message: '',
-      on: () => {},
+      on: noop,
       remote: {},
     };
   });
@@ -31,21 +33,21 @@ describe('RPCError', () => {
     it('should default to generic Error type errors', () => {
       class MyError extends Error { constructor(msg) { super(msg); } }
       const rpcErr = rpcError.createRPCError(config, new MyError('test')); 
-      const err = rpcError.createErrorFromRPCError(rpcErr);
+      const err = rpcError.createErrorFromRPCError(config, rpcErr);
       
       expect(err instanceof Error).toBe(true);
     });
     
     it('should support EvalError type errors', () => {
       const rpcErr = rpcError.createRPCError(config, new EvalError('test'));
-      const err = rpcError.createErrorFromRPCError(rpcErr);
+      const err = rpcError.createErrorFromRPCError(config, rpcErr);
 
       expect(err instanceof Error).toBe(true);
     });
     
     it('should support RangeError type errors', () => {
       const rpcErr = rpcError.createRPCError(config, new RangeError('test'));
-      const err = rpcError.createErrorFromRPCError(rpcErr);
+      const err = rpcError.createErrorFromRPCError(config, rpcErr);
 
       expect(err instanceof Error).toBe(true);
     });
@@ -53,30 +55,40 @@ describe('RPCError', () => {
     it('should support ReferenceError type errors', () => {
       const rpcErr = rpcError
         .createRPCError(config, new ReferenceError('test'));
-      const err = rpcError.createErrorFromRPCError(rpcErr);
+      const err = rpcError.createErrorFromRPCError(config, rpcErr);
 
       expect(err instanceof Error).toBe(true);
     });
     
     it('should support SyntaxError type errors', () => {
       const rpcErr = rpcError.createRPCError(config, new SyntaxError('test'));
-      const err = rpcError.createErrorFromRPCError(rpcErr);
+      const err = rpcError.createErrorFromRPCError(config, rpcErr);
 
       expect(err instanceof Error).toBe(true);
     });
 
     it('should support TypeError type errors', () => {
       const rpcErr = rpcError.createRPCError(config, new TypeError('test'));
-      const err = rpcError.createErrorFromRPCError(rpcErr);
+      const err = rpcError.createErrorFromRPCError(config, rpcErr);
 
       expect(err instanceof Error).toBe(true);
     });
 
     it('should support URIError type errors', () => {
       const rpcErr = rpcError.createRPCError(config, new URIError('test'));
-      const err = rpcError.createErrorFromRPCError(rpcErr);
+      const err = rpcError.createErrorFromRPCError(config, rpcErr);
 
       expect(err instanceof Error).toBe(true);
+    });
+    
+    it('should support numeric error codes', () => {
+      const err: CodedError = new URIError('test');
+      err.code = 5;
+      
+      const rpcErr = rpcError.createRPCError(config, err);
+      const test = rpcError.createErrorFromRPCError(config, rpcErr);
+
+      expect(test.code).toBe(5);
     });
   });
 

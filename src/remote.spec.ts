@@ -1,18 +1,17 @@
 import * as remote from './remote';
+import { noop } from './utils';
 
 describe('Remote Object functions', () => {
   describe('getFinalFunction function', () => {
     it('should resolve simple "first level" cases', () => {
-      let called = false;
-      const finalFunction = () => { called = true; };
+      const finalFunction = noop;
       const test = { myFunction: finalFunction };
       
       expect(remote.getFinalFunction(test, 'myFunction')).toBe(finalFunction);
     });
     
     it('should resolve a "second level" case', () => {
-      let called = false;
-      const finalFunction = () => { called = true; };
+      const finalFunction = noop;
       const test = { 
         myNamespace: { myFunction: finalFunction },
       };
@@ -22,8 +21,7 @@ describe('Remote Object functions', () => {
     });
     
     it('should resolve a "third level" case', () => {
-      let called = false;
-      const finalFunction = () => { called = true; };
+      const finalFunction = noop;
       const test = {
         myNamespace: { 
           nestedNS: { myFunction: finalFunction },
@@ -35,8 +33,7 @@ describe('Remote Object functions', () => {
     });
     
     it('should return an Error if given invalid input', () => {
-      let called = false;
-      const finalFunction = () => { called = true; };
+      const finalFunction = noop;
       const test = { myFunction: finalFunction };
 
       expect(remote.getFinalFunction(test, '') instanceof Error).toBe(true);
@@ -44,8 +41,7 @@ describe('Remote Object functions', () => {
 
     it('should return an error if given an invalid sub object / namespace',
       () => {
-        let called = false;
-        const finalFunction = () => { called = true; };
+        const finalFunction = noop;
         const test = {
           myNamespace: { myFunction: finalFunction },
         };
@@ -71,10 +67,10 @@ describe('Remote Object functions', () => {
 
     beforeEach(() => {
       config = {
-        emit: () => {},
+        emit: noop,
         enableStackTrace: false,
         message: '',
-        on: () => {},
+        on: noop,
         remote: {},
       };
     });

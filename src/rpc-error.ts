@@ -1,38 +1,21 @@
-import { RPCConfig, RPCError } from './interfaces';
+/**
+ * Functions for working with different types of errors
+ */
+import { CodedError, RPCConfig, RPCError } from './interfaces';
+import { safeInstantiate, throwIfNotError } from './utils';
 
-export function createRPCError(c: RPCConfig, error: Error): RPCError {
-  let errorType = 'Error';
+export function createRPCError(c: RPCConfig, error: CodedError): RPCError {
+  throwIfNotError(error);
+
   let stack = '';
-
-  if (error instanceof EvalError) {
-    errorType = 'EvalError';
-  }
-  
-  if (error instanceof RangeError) {
-    errorType = 'RangeError';
-  }
-  
-  if (error instanceof ReferenceError) {
-    errorType = 'ReferenceError';
-  }
-  
-  if (error instanceof SyntaxError) {
-    errorType = 'SyntaxError';
-  }
-  
-  if (error instanceof TypeError) {
-    errorType = 'TypeError';
-  }
-  
-  if (error instanceof URIError) {
-    errorType = 'URIError';
-  }
+  const errorType = error.constructor.name || 'Error';
 
   if (c.enableStackTrace) {
     stack = error.stack;
   }
 
   return {
+    code: error.code,
     message: error.message,
     stack,
     type: errorType,
@@ -44,44 +27,46 @@ export function prefixStackWith(a, b) {
   a.stack = b.stack + a.stack;
 }
 
-export function createErrorFromRPCError(error: RPCError): Error {
-  let err: Error;
+export function createErrorFromRPCError(
+  c: RPCConfig, error: RPCError): CodedError {
+  let err: CodedError;
   
   switch (error.type) {
     case 'EvalError':
       err = new EvalError(error.message);
-      prefixStackWith(err, error);
-      return err;
+      break;
 
     case 'RangeError':
       err = new RangeError(error.message);
-      prefixStackWith(err, error);
-      return err;
+      break;
     
     case 'ReferenceError':
       err = new ReferenceError(error.message);
-      prefixStackWith(err, error);
-      return err;
+      break;
     
     case 'SyntaxError':
       err = new SyntaxError(error.message);
-      prefixStackWith(err, error);
-      return err;
+      break;
     
     case 'TypeError':
       err = new TypeError(error.message);
-      prefixStackWith(err, error);
-      return err;
+      break;
     
     case 'URIError':
       err = new URIError(error.message);
-      prefixStackWith(err, error);
-      return err;
+      break;
       
     default:
       err = new Error(error.message);
-      prefixStackWith(err, error);
-      return err;
+      break;
   }
+  
+  prefixStackWith(err, error);
+  
+  if (error.code) {
+    err.code = error.code;   
+  }
+  
+  return err;
 }
 

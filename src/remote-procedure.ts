@@ -1,146 +1,118 @@
-import { Promise } from 'es6-promise';
-import {
+/**
+ * Functions for executing remote procedures and returning their results
+ */
+import { createEvent } from './events';
+
+import { 
+  ConfiguredRPCEmit,
   Dictionary,
+  RPCAsync, 
+  RPCCallback,
+  RPCDefer, 
+  RPCEventType,
+  RPCNotify,
 } from './interfaces';
 
-let uidCount = 0;
+import { 
+  defer, 
+  rangeError, 
+  throwIfNotDefer, 
+  throwIfNotFunction, 
+  typeError,
+} from './utils';
 
-/**
- * Encapsulates the grunt functions that make the RPC work
- */
-export function RemoteProcedure(postMethod: Function,
-                                callbackDictionary: Dictionary<Function>,
-                                remoteFn: string) {
-  // ensure object constructor
-  if (!(this instanceof RemoteProcedure)) {
-    return new RemoteProcedure(postMethod, callbackDictionary, remoteFn);
+export function registerDefer<T>(
+  callbacks: Dictionary<RPCAsync<T>>, defer: RPCDefer<T>, uid) {
+  
+  if (callbacks[uid]) {
+    rangeError('Remote Procedure: callback uid already exists!');
   }
+  
+  throwIfNotDefer(defer, 'Remote Procedure: expecting defer object');
 
-  this.postMethod = postMethod;
-  this.callbacks = callbackDictionary;
-  this.fn = remoteFn;
-}
-
-/**
- * Generates a relatively unique string
- */
-RemoteProcedure.prototype.uid = (): string => {
-  // increment the counter
-  uidCount += 1;
-  // reset it if it's 'high'
-  uidCount = uidCount > 1000 ? 0 : uidCount;
-  // return a uid
-  return [
-    'u',
-    Date.now().toString(16).substring(4),
-    uidCount,
-    Math.floor(Math.random() * 100000).toString(32)
-  ].join('');
-};
-
-/**
- * Registers a callback in the callback dictionary
- * @param defer {Object} defer/promise/future
- * @param uid {string} uid of the callback
- */
-RemoteProcedure.prototype.registerCallback = (defer, uid) => {
-  if (this.callbacks[uid]) {
-    throw new RangeError('Remote Procedure: callback uid already exists!');
-  }
-  this.callbacks[uid] = {
-    t: defer.resolve,
-    f: defer.reject
-  };
+  callbacks[uid] = defer;
 
   return defer.promise;
-};
+}
 
-/**
- * Registers a listener in the callback dictionary
- * @param callback {function(...)}
- * @param uid {string}
- */
-RemoteProcedure.prototype.registerListener = (callback, uid) => {
-  if (typeof callback !== 'function') {
-    throw new TypeError('Remote Procedure: register listener: expecting ' +
-      'callback function');
+export function registerCallback<T>(
+  callbacks: Dictionary<RPCAsync<T>>, 
+  callback: RPCNotify<T> | RPCCallback<T>, 
+  uid) {
+  
+  if (callbacks[uid]) {
+    rangeError('Remote Procedure: callback uid already exists!');
   }
+  
+  throwIfNotFunction(callback, 'Remote Procedure: register callback: ' +
+    'expecting callback function');
 
-  this.callbacks[uid] = callback;
+  callbacks[uid] = callback;
 
   return uid;
-};
+}
 
-/**
- * calls the remote post message
- * @param type {string} the 'type' of call (invoke, callback, listen...)
- * @param registerFunction {function(...)}
- * @param args {Array}
- * @returns {*}
- */
-RemoteProcedure.prototype.callRemote = (type, registerFunction, args) => {
-  const msg = newMessage();
-  const postObj = newPostObject();
-  let d = Promise.defer();
+export function doPost(postMethod, type, remoteFunction: string, args: any[]) {
+  const event = createEvent(type, {
+    args,
+    fn: remoteFunction,
+  });
 
-  // listener case
-  if (type === 'listen') {
-    if (args.length === 0) {
-      throw new TypeError('RPC: Invalid Listener');
-    }
-    d = args.pop();
+  postMethod(event);
+  
+  return event;
+}
+
+export function callbackRemote(callbacks: Dictionary<RPCAsync>,
+                               postMethod: ConfiguredRPCEmit,
+                               type: RPCEventType,
+                               remoteFunction: string,
+                               args) {
+
+  if (args.length === 0) {
+    typeError('RPC: Invalid Invocation: Callback required!');
   }
+  
+  
+  const cb = args.pop();
+  const event = doPost(postMethod, type, remoteFunction, args);
+  
+  return registerCallback(callbacks, cb, event.uid);
+}
 
-  msg.fn = this.fn;
-  msg.uid = this.uid();
-  msg.args = args;
+export function promiseRemote(callbacks: Dictionary<RPCAsync>,
+                              postMethod: ConfiguredRPCEmit,
+                              type: RPCEventType,
+                              remoteFunction: string,
+                              args) {
+  const d = defer();
+  const event = doPost(postMethod, type, remoteFunction, args);
+  
+  return registerDefer(callbacks, d, event.uid);
+}
 
-  postObj[type].push(msg);
+function create(callbacks: Dictionary<RPCAsync<any>>, postMethod) {
 
-  this.postMethod(JSON.stringify(postObj));
-  return registerFunction.call(this, d, msg.uid);
-};
+  const boundPRemote = (type, rFun, args) => promiseRemote(
+    callbacks, postMethod, type, rFun, args);
+  const boundCBRemote = (type, rFun, args) => callbackRemote(
+    callbacks, postMethod, type, rFun, args);
 
-/**
- * posts an invoke message
- * @returns {Object}
- */
-RemoteProcedure.prototype.invoke = (...args) => {
-  return this.callRemote('invoke', this.registerCallback, args);
-};
+  return {
+    invoke: (...args) => boundPRemote('invoke', registerDefer, args),
+    nodeCallback: (...args) => boundCBRemote(
+      'nodeCallback', registerDefer, args),
+    promise: (...args) => boundPRemote('promise', registerDefer, args),
+    on: (message: string, callback: RPCCallback) => boundCBRemote(
+      'on', registerCallback, args),
+    removeListener: (message: string, fn: RPCNotify) => {
+      const rVal = boundPRemote('removeListener', registerDefer, args);
+      
+      if (callbacks[uid]) {
+        delete callbacks[uid];
+      }
+      return rVal;
+    },
+  };
+}
 
-/**
- * posts an callback message
- * @returns {Object}
- */
-RemoteProcedure.prototype.callback = (...args) => {
-  return this.callRemote('callback', this.registerCallback, args);
-};
-
-/**
- * posts a promise message
- * @returns {Object}
- */
-RemoteProcedure.prototype.promise = (...args) => {
-  return this.callRemote('promise', this.registerCallback, args);
-};
-
-/**
- * posts a listen message
- * @returns {Object}
- */
-RemoteProcedure.prototype.listen = (...args) => {
-  return this.callRemote('listen', this.registerListener, args);
-};
-
-/**
- * posts an ignore message
- * @returns {Object}
- */
-RemoteProcedure.prototype.ignore = (uid: string) => {
-  const rVal = this.callRemote('ignore', this.registerCallback, [uid]);
-  if (this.callbacks[uid]) {
-    delete this.callbacks[uid];
-  }
-  return rVal;
-};

@@ -1,21 +1,23 @@
 import * as events from './events';
+import { noop } from './utils';
 
 describe('event functions', () => {
   let config;
   
   beforeEach(() => {
     config = {
-      emit: () => {},
+      emit: noop,
       enableStackTrace: false,
       message: '',
-      on: () => {},
+      on: noop,
       remote: {},
     };
   });
 
   describe('createErrorEvent function', () => {
     it('should run create a serializable error', () => {
-      const event = events.createError(config, 'invoke', new Error('test'));
+      const event = events
+        .createErrorEvent(config, 'invoke', new Error('test'));
 
       expect(typeof JSON.stringify(event)).toBe('string');
     });

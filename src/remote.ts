@@ -1,5 +1,8 @@
+/**
+ * Functions related to creating and using remote objects
+ */
 import { RPCConfig } from './interfaces';
-import { createTypeError, isFunction } from './utils';
+import { createTypeError, isFunction, safeInvoke } from './utils';
 
 export function getFinalFunction(remote: Object, fnName: string) {
   const names = fnName.split('.').filter((el) => el);
@@ -31,14 +34,6 @@ export function getFinalFunction(remote: Object, fnName: string) {
 
   // deeper object case
   return getFinalFunction(remote[names.shift()], names.join('.'));
-}
-
-function safeInvoke(fn: Function, args: any[]) {
-  try {
-    return fn.apply(null, args);
-  } catch (err) {
-    return err;
-  }
 }
 
 export function safeCall(c: RPCConfig, fnName: string, args?: any[]) {

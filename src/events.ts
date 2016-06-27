@@ -1,3 +1,6 @@
+/**
+ * Event functions
+ */
 import { uid } from './utils';
 import { createRPCError } from './rpc-error';
 
@@ -34,7 +37,7 @@ export function createEvent(type: RPCEventType, payload: RPCPayload,
   };
 }
 
-export function createError(c: RPCConfig, type: RPCEventType,
+export function createErrorEvent(c: RPCConfig, type: RPCEventType,
                                  error: Error): RPCEvent {
 
   return createEvent(type, { error: createRPCError(c, error) });

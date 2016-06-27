@@ -1,28 +1,33 @@
 import * as rpc from './js-rpc';
 import { DEFAULT_MESSAGE } from './constants';
+import { noop } from './utils';
 
 describe('js-rpc functions', () => {
   let config;
 
   beforeEach(() => {
     config = {
-      emit: () => {},
+      emit: noop,
       enableStackTrace: false,
       message: '',
-      on: () => {},
+      on: noop,
       remote: {},
     };
   });
 
   describe('create function', () => {
     it('should run without incident if given valid parameters', () => {
-      expect(() => rpc.create<Object, Object>({}, config)).not.toThrowError();
+      expect(() => rpc.create<Object, Object>(config, {})).not.toThrowError();
     });
   });
   
   describe('validateRemote function', () => {
-    it('should throw if given value is not an object', () => {
-      expect(() => rpc.validateRemote(null)).toThrowError();
+    it('should resolve if a given value is falsey', () => {
+      expect(() => rpc.validateRemote(null)).not.toThrowError();
+    });
+    
+    it('should throw if given value is truthy and also not an object', () => {
+      expect(() => rpc.validateRemote('hello')).toThrowError();
     }); 
     
     it('should not throw if given a valid object', () => {
@@ -57,9 +62,13 @@ describe('js-rpc functions', () => {
         config.emit = (m) => { message = m; };
         const validConfig = rpc.validateConfig(config, {});
         validConfig.cemit({
-          error: {
-            message: 'test',
+          payload: {
+            error: {
+              message: 'test',
+            },
           },
+          type: 'invokeReturn',
+          uid: 'test',
         });
 
         expect(message).toBe(DEFAULT_MESSAGE);
