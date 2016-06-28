@@ -1,22 +1,35 @@
 /**
  * Main module "really ties the project together"
  */
-import { DEFAULT_MESSAGE } from './constants';
-import { RPC, RPCConfig } from './interfaces';
+import { Remote, RemoteDesc, RPC, RPCConfig } from './interfaces';
 import { isObject, typeError, throwIfNotFunction} from './utils';
-import { create } from './network-over-post';
+import * as nOp from './network-over-post';
+
+import { 
+  DEFAULT_ASYNC_TYPE,
+  DEFAULT_MESSAGE,
+  DEFAULT_CREATE_RETRY,
+  DEFAULT_CREATE_RETRY_CURVE,
+  DEFAULT_CREATE_WAIT,
+} from './constants';
 
 /**
+ * Where `RemoteType` is the description of the interface you _expect_ to be 
+ * exposed *by the "other side"*
  * @param config
- * @param remote optional remote to expose on the other side
+ * @param remote optional remote to expose *on the "other side"*
  */
-export function create<Local extends Object, 
-  Remote extends Object>(config: RPCConfig, remote?: Object): RPC {
+export function create<RemoteType>(config: RPCConfig, remote?: Remote, 
+                                   remoteDesc?: RemoteDesc): RPC {
   remote = validateRemote(remote);
   config = validateConfig(config, remote);
   
-  const isReady = create(config, remote)
-    .then(() => {
+  const local = {
+    
+  };
+  
+  const isReady = nOp.create(config, remoteDesc)
+    .then((otherRemoteDesc: RemoteDesc) => {
       
     })
     .catch();
@@ -30,7 +43,7 @@ export function create<Local extends Object,
       destroyRemote();
     },
     ready: isReady,
-    remote: {},
+    remote: local,
   };
 }
 
@@ -45,7 +58,13 @@ export function validateRemote(r: Object) {
 export function validateConfig(c: RPCConfig, remote: Object): RPCConfig {
   throwIfNotFunction(c.on, 'validateConfig: config requires an on method');
   throwIfNotFunction(c.emit, 'validateConfig: config requires an emit method');
-  
+
+
+  c.defaultAsyncType = c.defaultAsyncType || DEFAULT_ASYNC_TYPE;
+  c.defaultCreateRetry = c.defaultCreateRetry || DEFAULT_CREATE_RETRY;
+  c.defaultCreateRetryCurve = c.defaultCreateRetryCurve || 
+    DEFAULT_CREATE_RETRY_CURVE;
+  c.defaultCreateWait = c.defaultCreateWait || DEFAULT_CREATE_WAIT;
   c.enableStackTrace = c.enableStackTrace || false;
   c.maxAckDelay = c.maxAckDelay || 5000;
   c.message = c.message || DEFAULT_MESSAGE;

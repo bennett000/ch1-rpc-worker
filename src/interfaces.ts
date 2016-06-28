@@ -5,6 +5,20 @@ export interface Dictionary<T> {
   [key: string]: T;
 }
 
+export type RemoteElement = (...args: any[]) => any | 
+  Dictionary<(...args:  any[]) => any>;
+
+/**
+ * Where `T` is the type of the complete interface you wish to expose
+ */
+export interface Remote<T> extends Dictionary<RemoteElement> { }
+
+/**
+ * Specify async types on the remote
+ */
+export interface RemoteDesc extends 
+  Dictionary<RPCDefaultAsync | Dictionary<RPCDefaultAsync>> {}
+
 export type RPCAsync<T> = RPCDefer<T> | RPCNotify<T> | RPCCallback<T>; 
 
 export interface RPCCallback<T> {
@@ -62,11 +76,14 @@ export interface RPCObservable<T> {
 }
 
 export interface RPCOn {
-  (message: string, callback: (payload: RPCPayload) => void): () => void;
+  (message: string, callback: (payload: RPCEvent) => void): () => void;
 }
 
 export interface RPCConfig {
-  asyncType?: RPCDefaultAsync;
+  defaultAsyncType?: RPCDefaultAsync;
+  defaultCreateRetry?: number;
+  defaultCreateRetryCurve?: number;
+  defaultCreateWait?: number;
   emit: RPCEmit;
   enableStackTrace: boolean;
   maxAckDelay?: number;

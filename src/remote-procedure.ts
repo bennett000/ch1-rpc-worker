@@ -103,16 +103,6 @@ function create(callbacks: Dictionary<RPCAsync<any>>, postMethod) {
     nodeCallback: (...args) => boundCBRemote(
       'nodeCallback', registerDefer, args),
     promise: (...args) => boundPRemote('promise', registerDefer, args),
-    on: (message: string, callback: RPCCallback) => boundCBRemote(
-      'on', registerCallback, args),
-    removeListener: (message: string, fn: RPCNotify) => {
-      const rVal = boundPRemote('removeListener', registerDefer, args);
-      
-      if (callbacks[uid]) {
-        delete callbacks[uid];
-      }
-      return rVal;
-    },
   };
 }
 

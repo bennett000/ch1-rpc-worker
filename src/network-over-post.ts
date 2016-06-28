@@ -1,12 +1,12 @@
 /**
  * Network over post establishes a network between two processes
  */
-import { Promise } from 'es6-promise';
 import { safeCall } from './remote';
 import { createErrorFromRPCError } from './rpc-error';
 import { createEvent, createErrorEvent } from './events';
 
 import { 
+  defer,
   isDefer,
   isFunction, 
   throwIfNotRPCEvent 
@@ -24,6 +24,7 @@ import {
 
 import { 
   Dictionary,
+  RemoteDesc,
   RPCAsync,
   RPCConfig, 
   RPCEvent,
@@ -44,6 +45,8 @@ const nodeCallbackReturn = invokeReturn;
 
 const responders = Object.freeze({
   ack,
+  create: createRemote,
+  createReturn: createRemoteReturn,
   invoke,
   invokeReturn,
   on: onRemote,
@@ -54,16 +57,100 @@ const responders = Object.freeze({
   nodeCallbackReturn,
   promise,
   promiseReturn,
+  ready,
+  readyReturn,
 });
 
-export function create(config: RPCConfig, remote: Object) {
+export function create(config: RPCConfig, remoteDesc: RemoteDesc) {
   const id = uid();
   const callbacks = Object.create(null);
-  const off = on(sendAck, config, callbacks, id);
+
+  const initState = createInitializationState(config, remoteDesc, id);
+
+  return initialize(config, initState)
+    .then(() =>  on(sendAck, config, callbacks, id));
+}
+
+export function createInitializationState(config: RPCConfig,
+                                          remoteDesc: RemoteDesc, 
+                                          id: string) {
+  const d = defer();
+  const readTimeout = setTimeout(() =>
+      d.reject(new Error('RPC initialization failed, maximum delay of ' +
+        `${config.defaultCreateWait}ms exceeded`)),
+    config.defaultCreateWait);
   
-  return new Promise((resolve, reject) => {
-    resolve(off);
+  let delay = config.defaultCreateRetry;
+  
+  let createTimeout = setTimeout(fireCreate, delay);
+
+  function fireCreate() {
+    config.cemit(createEvent('create', { result: [ remoteDesc ] }));
+    delay *= config.defaultCreateRetryCurve;
+    createTimeout = setTimeout(fireCreate, delay);
+  }
+  
+  function clean() {
+    clearTimeout(readTimeout);
+    stopCreateSpam();
+  }
+  
+  function stopCreateSpam() {
+    clearTimeout(createTimeout);
+  }
+  
+  return {
+    clean,
+    defer: d,
+    id,
+    isCreated: false,
+    hasCreated: false,
+    localRemoteDesc: null,
+    stopCreateSpam,
+  };
+}
+
+export function initialize(config: RPCConfig, initState) {
+  const off = config.on(config.message, (event: RPCEvent) => {
+    const { payload } = event;
+    
+    if (isRPCErrorPayload(payload)) {
+      throw createErrorFromRPCError(config, payload.error);
+    }
+
+    if (!isRPCReturnPayload(payload)) {
+      rangeError('unexpected payload received during initialization');
+    }
+
+    if (event.type === 'create') {
+      // create local remote
+      initState.localRemoteDesc = payload.result[0];
+      initState.hasCreated = true;
+      config.cemit(createEvent('createReturn', { result: [ initState.id ] }));
+    } else if (event.type === 'createReturn') {
+      initState.stopCreateSpam();
+      initState.isCreated = true;
+    } else {
+      rangeError('unexpected event received during initialization: ' +
+        event.type);
+    }
+
+    if (initState.isCreated && initState.hasCreated) {
+      initState.clean();
+      off();
+      initState.defer.resolve(initState.localRemoteDesc);
+    }
   });
+  
+  return initState.defer.promise;
+}
+
+export function createRemote() {
+  
+}
+
+export function createRemoteReturn() {
+  
 }
 
 export function ack(c: RPCConfig, event: RPCEvent) {
@@ -85,6 +172,14 @@ export function ack(c: RPCConfig, event: RPCEvent) {
   } else {
     typeError('ack received invalid payload');
   }
+}
+
+export function ready() {
+  
+}
+
+export function readyReturn() {
+  
 }
 
 export function sendAck(c: RPCConfig, uid: string) {
