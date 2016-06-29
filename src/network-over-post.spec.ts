@@ -15,7 +15,7 @@ describe('network over post functions', () => {
   beforeEach(() => {
     config = {
       emit: noop,
-      cemit: noop,
+      emit: noop,
       enableStackTrace: false,
       message: '',
       on: () => noop,
@@ -64,7 +64,7 @@ describe('network over post functions', () => {
     it('should emit an error', () => {
       config.remote = {};
 
-      config.cemit = (arg) => {
+      config.emit = (arg) => {
         expect(isRPCErrorPayload(arg.payload)).toBe(true);
       };
 
@@ -78,7 +78,7 @@ describe('network over post functions', () => {
         test: (arg) => result = arg
       };
       
-      config.cemit = (arg) => { 
+      config.emit = (arg) => { 
         expect(isRPCReturnPayload(arg.payload)).toBe(true); 
       };
       
@@ -91,7 +91,7 @@ describe('network over post functions', () => {
       // trigger an error by wiping remotes
       config.remote = {};
 
-      config.cemit = (arg) => {
+      config.emit = (arg) => {
         expect(isRPCErrorPayload(arg.payload)).toBe(true);
       };
 
@@ -103,7 +103,7 @@ describe('network over post functions', () => {
     it('should not sendAcks by default', () => {
       let didRun = false;
       let emit;
-      config.on = (message, trigger) => { emit = trigger; };
+      config.on = (trigger) => { emit = trigger; };
       const sendAck = (c, uid) => { didRun = true; };
        
       nOp.on(sendAck, config, {
@@ -119,7 +119,7 @@ describe('network over post functions', () => {
       () => {
         let didRun = true;
         let emit;
-        config.on = (message, trigger) => { emit = trigger; };
+        config.on = (trigger) => { emit = trigger; };
         config.useAcks = Object.create(null);
         const sendAck = (c, uid) => { didRun = true; };
 
@@ -246,7 +246,7 @@ describe('network over post functions', () => {
     it('should repeatedly fire create messages', (done) => {
       let emitCount = 0;
       config.defaultCreateRetry = 1;
-      config.cemit = (evt) => {
+      config.emit = (evt) => {
         expect(evt.type).toBe('create'); 
         emitCount += 1;
       };
@@ -262,7 +262,7 @@ describe('network over post functions', () => {
     it('stopCreateSpam should clear create messages', (done) => {
       let emitCount = 0;
       config.defaultCreateRetry = 1;
-      config.cemit = (evt) => emitCount += 1;
+      config.emit = (evt) => emitCount += 1;
       const state = nOp.createInitializationState(config, {}, 'testId');
       
       state.stopCreateSpam();
@@ -278,7 +278,7 @@ describe('network over post functions', () => {
     let initState;
     
     function resetState() {
-      config.on = (msg, callback) => { init = callback; };
+      config.on = (callback) => { init = callback; };
       initState = {
         clean: () => {},
         defer: defer(),
@@ -339,7 +339,7 @@ describe('network over post functions', () => {
       
       it('should emit a createReturn event', () => {
         let evt;
-        config.cemit = (e) => { evt = e; };
+        config.emit = (e) => { evt = e; };
         init({ uid: 'test', type: 'create', payload: { result: [] }});
         expect(evt.type).toBe('createReturn');
       });
@@ -374,7 +374,7 @@ describe('network over post functions', () => {
         resetState();
         isCleaned = false;
         
-        config.on = (msg, callback) => {
+        config.on = (callback) => {
           init = callback;
           return () => { isCleaned = true; };
         };
@@ -412,7 +412,7 @@ describe('network over post functions', () => {
     it('should emit an error', () => {
       config.remote = {};
 
-      config.cemit = (arg) => {
+      config.emit = (arg) => {
         expect(isRPCErrorPayload(arg.payload)).toBe(true);
       };
 
@@ -425,7 +425,7 @@ describe('network over post functions', () => {
         test: () => { throw new Error('test'); },
       };
 
-      config.cemit = (arg) => {
+      config.emit = (arg) => {
         expect(isRPCErrorPayload(arg.payload)).toBe(true);
       };
 
@@ -439,7 +439,7 @@ describe('network over post functions', () => {
         }
       };
 
-      config.cemit = (arg) => {
+      config.emit = (arg) => {
         if (arg.type !== 'nodeCallback') {
           return;
         }
@@ -456,7 +456,7 @@ describe('network over post functions', () => {
         test: (arg, callback) => callback(new Error('test')),
       };
 
-      config.cemit = (arg) => {
+      config.emit = (arg) => {
         if (arg.type !== 'nodeCallback') {
           return;
         }
@@ -471,7 +471,7 @@ describe('network over post functions', () => {
     it('should emit an error', () => {
       config.remote = {};
 
-      config.cemit = (arg) => {
+      config.emit = (arg) => {
         expect(isRPCErrorPayload(arg.payload)).toBe(true);
       };
 
@@ -484,7 +484,7 @@ describe('network over post functions', () => {
         test: () => { throw new Error('test'); },
       };
 
-      config.cemit = (arg) => {
+      config.emit = (arg) => {
         expect(isRPCErrorPayload(arg.payload)).toBe(true);
       };
 
@@ -496,7 +496,7 @@ describe('network over post functions', () => {
         test: (arg, callback) => new Promise((resolve) => resolve('test-this')),
       };
 
-      config.cemit = (arg) => {
+      config.emit = (arg) => {
         if (arg.type !== 'promise') {
           return;
         }
@@ -514,7 +514,7 @@ describe('network over post functions', () => {
           (resolve, reject) => reject(new Error('test-this'))),
       };
 
-      config.cemit = (arg) => {
+      config.emit = (arg) => {
         if (arg.type !== 'nodeCallback') {
           return;
         }
@@ -571,7 +571,7 @@ describe('network over post functions', () => {
   describe('sendAck', () => {
     it('should emit an RPCResultPayload with the given uid', () => {
       let evt;
-      config.cemit = (e) => evt = e;
+      config.emit = (e) => evt = e;
       
       nOp.sendAck(config, 'test-uid');
       expect(evt.payload.result[0]).toBe('test-uid');

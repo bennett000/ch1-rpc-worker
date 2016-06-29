@@ -102,10 +102,10 @@ export function create(c: RPCConfig,
   switch (fnType) {
     case 'promise':
       return (...args) => promiseRemote(
-        callbacks, c.cemit, 'promise', fullFnName, args);
+        callbacks, c.emit, 'promise', fullFnName, args);
     
     case 'nodeCallback':
-      return (...args) => callbackRemote(callbacks, c.cemit, 'nodeCallback', 
+      return (...args) => callbackRemote(callbacks, c.emit, 'nodeCallback', 
         fullFnName, args); 
     
     default:

@@ -14,7 +14,7 @@ describe('Remote Object functions', () => {
   beforeEach(() => {
     config = {
       emit: noop,
-      cemit: noop,
+      emit: noop,
       enableStackTrace: false,
       message: '',
       on: () => noop,

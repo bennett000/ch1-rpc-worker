@@ -61,24 +61,6 @@ describe('js-rpc functions', () => {
 
       expect(validConfig.message).toBe(DEFAULT_MESSAGE);
     });
-    
-    it('should create a `cemit` method that calls emit with message prop',
-      () => {
-        let message;
-        config.emit = (m) => { message = m; };
-        const validConfig = rpc.validateConfig(config, {});
-        validConfig.cemit({
-          payload: {
-            error: {
-              message: 'test',
-            },
-          },
-          type: 'invokeReturn',
-          uid: 'test',
-        });
-
-        expect(message).toBe(DEFAULT_MESSAGE);
-      });
   });
 });
 
@@ -89,42 +71,38 @@ describe('basic async e2e', () => {
   let callbacksB;
 
   beforeEach(() => {
-    callbacksA = {};
-    callbacksB = {};
+    callbacksA = [];
+    callbacksB = [];
     
     configA = {
-      emit: (msg, ...args) => {
-        callbacksB[msg] = callbacksB[msg] || [];
+      emit: (...args) => {
         setTimeout(() => {
-          callbacksB[msg].filter(Boolean).forEach((cb) => cb.apply(null, args));
+          callbacksB.filter(Boolean).forEach((cb) => cb.apply(null, args));
         }, 0);
       },
       enableStackTrace: false,
       message: '',
-      on: (msg, listener) => {
-        callbacksA[msg] = callbacksA[msg] || [];
-        const offset = callbacksA[msg].push(listener);
+      on: (listener) => {
+        const offset = callbacksA.push(listener);
         return () => {
-          callbacksA[msg][offset - 1] = null;
+          callbacksA[offset - 1] = null;
         };
       },
       remote: {},
     };
     
     configB = {
-      emit: (msg, ...args) => {
-        callbacksA[msg] = callbacksA[msg] || [];
+      emit: (...args) => {
         setTimeout(() => {
-          callbacksA[msg].filter(Boolean).forEach((cb) => cb.apply(null, args));
+          callbacksA.filter(Boolean).forEach((cb) => cb.apply(null, args));
         }, 0);
       },
       enableStackTrace: false,
       message: '',
-      on: (msg, listener) => {
-        callbacksB[msg] = callbacksB[msg] || [];
-        const offset = callbacksB[msg].push(listener); 
+      on: (listener) => {
+        const offset = callbacksB.push(listener); 
         return () =>  {
-          callbacksB[msg][offset - 1] = null;
+          callbacksB[offset - 1] = null;
         };
       },
       remote: {},

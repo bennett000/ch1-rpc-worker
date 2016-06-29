@@ -76,7 +76,6 @@ export function validateConfig(c: RPCConfig, remote: Remote<any>): RPCConfig {
   c.maxAckDelay = c.maxAckDelay || 5000;
   c.message = c.message || DEFAULT_MESSAGE;
 
-  c.cemit = (event) => c.emit(c.message, event);
   c.useAcks = c.useAcks ? Object.create(null) : null;
   c.remote = remote;
   

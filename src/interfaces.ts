@@ -80,18 +80,21 @@ export interface RPCOn {
   (message: string, callback: (payload: RPCEvent) => void): () => void;
 }
 
+export interface ConfiguredRPCOn {
+  (callback: (payload: RPCEvent) => void): () => void;
+}
+
 export interface RPCConfig {
   defaultAsyncType?: RPCDefaultAsync;
   defaultCreateRetry?: number;
   defaultCreateRetryCurve?: number;
   defaultCreateWait?: number;
-  emit: RPCEmit;
+  emit: ConfiguredRPCEmit;
   enableStackTrace: boolean;
   maxAckDelay?: number;
   message: string;
-  on: RPCOn;
+  on: ConfiguredRPCOn;
   remote: Object;
-  cemit?: ConfiguredRPCEmit;
   useAcks?: Dictionary<number>;
 }
 
