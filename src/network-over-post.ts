@@ -14,9 +14,9 @@ import {
   isRPCReturnPayload,
   isRPCInvocationPayload,
   rangeError,
-  throwIfNotRPCEvent 
+  throwIfNotRPCEvent, 
   typeError, 
-  uid 
+  uid,
 } from './utils';
 
 import { 

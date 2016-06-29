@@ -18,7 +18,9 @@
     "emitRequireType": false
   },
   "exclude": [
-    "node_modules",
-    "dist"
+    "coverage",
+    "dist",
+    "lib",
+    "node_modules"
   ]
 }

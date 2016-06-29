@@ -5,6 +5,8 @@ export interface Dictionary<T> {
   [key: string]: T;
 }
 
+/** Prepare for non nullable types in TypeScript 2.0 */
+export type NullableError = Error;
 
 /**
  * Where `T` is the type of the complete interface you wish to expose
@@ -20,7 +22,7 @@ export interface RemoteDesc extends
 export type RPCAsync<T> = RPCDefer<T> | RPCNotify<T> | RPCCallback<T>; 
 
 export interface RPCCallback<T> {
-  (error: Error | null, param: T, ...rest: any[]);
+  (error: NullableError, param: T, ...rest: any[]);
 }
 
 export type RPCDefaultAsync =

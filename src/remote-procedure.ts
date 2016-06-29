@@ -11,6 +11,7 @@ import {
   RPCConfig,
   RPCDefaultAsync,
   RPCDefer, 
+  RPCEvent,
   RPCEventType,
   RPCNotify,
 } from './interfaces';

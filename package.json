@@ -8,6 +8,10 @@
     "url": "ssh://git@github.com/bennett000/js-rpc.git"
   },
   "scripts": {
+    "clean": "npm run clean:coverage && npm run clean:dist && npm run clean:lib",
+    "clean:coverage": "rimraf ./coverage",
+    "clean:dist": "rimraf ./dist",
+    "clear:lib": "rimraf ./lib",
     "lint": "npm run lint-ts &&  npm run lint-js",
     "lint-js": "eslint . ",
     "lint-ts": "tslint ./src/**/*.ts",
@@ -15,6 +19,7 @@
     "postinstall": "npm run typings",
     "test": "karma start --singleRun true",
     "test:watch": "karma start --singleRun false --restartOnFileChange true",
+    "tsc": "tsc --declaration --outDir lib",
     "typedoc": "typedoc --out docs-generated ./src/index.ts",
     "typings": "typings install"
   },
