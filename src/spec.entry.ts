@@ -3,5 +3,5 @@ import 'ts-helpers';
 let testContext = (<{ context?: Function }>require).context(
   './',
   true,
-  /.ts/);
+  /^(?!\.\/index|\.\/spec).*\.ts$/);
 testContext.keys().forEach(testContext);

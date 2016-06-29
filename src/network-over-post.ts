@@ -5,19 +5,16 @@ import { safeCall } from './remote';
 import { createErrorFromRPCError } from './rpc-error';
 import { createEvent, createErrorEvent } from './events';
 
-import { 
+import {
   defer,
   isDefer,
+  isRPCEvent,
   isFunction, 
-  throwIfNotRPCEvent 
-} from './utils';
-
-import { 
-  isRPCEvent, 
   isRPCErrorPayload, 
   isRPCReturnPayload,
   isRPCInvocationPayload,
   rangeError,
+  throwIfNotRPCEvent 
   typeError, 
   uid 
 } from './utils';
@@ -29,7 +26,6 @@ import {
   RPCConfig, 
   RPCEvent,
   RPCErrorPayload,
-  RPCInvocationPayload,
   RPCPayload,
   RPCReturnPayload,
 } from './interfaces';

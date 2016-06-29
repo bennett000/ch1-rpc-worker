@@ -29,10 +29,9 @@ export function create<RemoteType>(config: RPCConfig, remote?: Remote,
   const callbacks = Object.create(null);
   const combinedDesc = createRemoteDescFrom(config, remote, remoteDesc);
   let destroy = pnoop;
-  console.log('comb', combinedDesc)
 
   const isReady = nOp
-    .create(config, callbacks, combinedDesc,)
+    .create(config, callbacks, combinedDesc)
     .then((network) => {
       createRemote<RemoteType>(config, callbacks, network.remoteDesc, local); 
       destroy = network.off;

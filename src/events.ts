@@ -9,25 +9,6 @@ import {
 } from './interfaces';
 
 
-export function createCreate(remote) {
-  
-  return {
-    
-  };
-}
-
-export function createCreateReturn() {
-  
-}
-
-export function createDestroy() {
-
-}
-
-export function createDestroyReturn() {
-
-}
-
 export function createEvent(type: RPCEventType, payload: RPCPayload,
                             givenUid?: string): RPCEvent {
   return {
