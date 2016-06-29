@@ -66,7 +66,7 @@ export function doPost(postMethod, type, remoteFunction: string, args: any[]) {
   return event;
 }
 
-export function callbackRemote(callbacks: Dictionary<RPCAsync>,
+export function callbackRemote(callbacks: Dictionary<RPCAsync<any>>,
                                postMethod: ConfiguredRPCEmit,
                                type: RPCEventType,
                                remoteFunction: string,
@@ -83,7 +83,7 @@ export function callbackRemote(callbacks: Dictionary<RPCAsync>,
   return registerCallback(callbacks, cb, event.uid);
 }
 
-export function promiseRemote(callbacks: Dictionary<RPCAsync>,
+export function promiseRemote(callbacks: Dictionary<RPCAsync<any>>,
                               postMethod: ConfiguredRPCEmit,
                               type: RPCEventType,
                               remoteFunction: string,

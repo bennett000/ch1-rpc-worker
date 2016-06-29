@@ -1,6 +1,7 @@
 /**
  * Main module "really ties the project together"
  */
+import { Promise } from 'es6-promise';
 import { Remote, RemoteDesc, RPC, RPCConfig } from './interfaces';
 import { isObject, pnoop, typeError, throwIfNotFunction} from './utils';
 import { create as createRemote, createRemoteDescFrom } from './remote';
@@ -20,15 +21,16 @@ import {
  * @param config
  * @param remote optional remote to expose *on the "other side"*
  */
-export function create<RemoteType>(config: RPCConfig, remote?: Remote, 
-                                   remoteDesc?: RemoteDesc): RPC {
+export function create<RemoteType>(config: RPCConfig, 
+                                   remote?: Remote<any>, 
+                                   remoteDesc?: RemoteDesc): RPC<RemoteType> {
   remote = validateRemote(remote);
   config = validateConfig(config, remote);
   
   const local: RemoteType = Object.create(null);
   const callbacks = Object.create(null);
   const combinedDesc = createRemoteDescFrom(config, remote, remoteDesc);
-  let destroy = pnoop;
+  let destroy: () => Promise<void> = pnoop;
 
   const isReady = nOp
     .create(config, callbacks, combinedDesc)
@@ -37,7 +39,7 @@ export function create<RemoteType>(config: RPCConfig, remote?: Remote,
       destroy = network.off;
     });
   
-  return {
+  return <RPC<RemoteType>> {
     config,
     destroy: () => {
       Object.keys(local).forEach((key) => delete local[key]);
@@ -50,17 +52,17 @@ export function create<RemoteType>(config: RPCConfig, remote?: Remote,
   };
 }
 
-export function validateRemote(r: Object) {
+export function validateRemote(r: Object): Remote<any> {
   r = r || Object.create(null);
   
   if (!isObject(r)) {
     typeError('validateRemote: remote must be an object');
   }
   
-  return r;
+  return <Remote<any>>r;
 }
 
-export function validateConfig(c: RPCConfig, remote: Object): RPCConfig {
+export function validateConfig(c: RPCConfig, remote: Remote<any>): RPCConfig {
   throwIfNotFunction(c.on, 'validateConfig: config requires an on method');
   throwIfNotFunction(c.emit, 'validateConfig: config requires an emit method');
 

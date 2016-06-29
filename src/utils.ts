@@ -3,9 +3,11 @@
  */
 import { Promise } from 'es6-promise';
 
-import { 
+import {
+  Dictionary,
   RPCDefaultAsync,
   RPCDefer,
+  RPCCallback,
   RPCEvent,
   RPCError,
   RPCErrorPayload, 
@@ -19,7 +21,7 @@ export const isRPCDefaultAsync = (arg): arg is RPCDefaultAsync => [
 
 export const uid = createUidGenerator();
 
-export function isDefer(defer: any): defer is RPCDefer {
+export function isDefer<T>(defer: any): defer is RPCDefer<T> {
   if (!defer) {
     return false;
   }
@@ -52,7 +54,11 @@ export function isObject(obj: any): obj is Object {
   return typeof obj === 'object';
 }
 
-export function isPromise(promise: any): promise is Promise  {
+export function isDictionary<T>(dict: any): dict is Dictionary<T> {
+  return isObject(dict);
+}
+
+export function isPromise<T>(promise: any): promise is Promise<T>  {
   if (!promise) {
     return false;
   }
@@ -66,6 +72,10 @@ export function isPromise(promise: any): promise is Promise  {
   }
   
   return true;
+}
+
+export function isRPCCallback<T>(arg: any): arg is RPCCallback<T> {
+  return isFunction(arg); 
 }
 
 export function isRPCEvent(event: any): event is RPCEvent  {
@@ -138,7 +148,8 @@ export function isRPCReturnPayload(payload: any): payload is RPCReturnPayload {
 
 export function noop(): void {}
 
-export const pnoop = () => new Promise((resolve) => resolve());
+export const pnoop: () => Promise<void> = 
+  () => new Promise<void>((resolve) => resolve());
 
 export function createUidGenerator(): () => string {
   let uidCount = 0;
@@ -160,11 +171,11 @@ export function createUidGenerator(): () => string {
   };
 }
 
-export function defer(): RPCDefer {
+export function defer<T>(): RPCDefer<T> {
   let pass = noop;
   let fail = noop;
   
-  const promise = new Promise((resolve, reject) => {
+  const promise = new Promise<T>((resolve, reject) => {
     pass = resolve;
     fail = reject;
   }); 

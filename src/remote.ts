@@ -10,14 +10,14 @@ import * as rpc from './remote-procedure';
 import {
   createTypeError, 
   isFunction, 
+  isDictionary,
   isObject, 
   isRPCDefaultAsync,
   safeInvoke, 
-  throwIfNotObject, 
 } from './utils';
 
 export function getFinalFunction(remote: Object, fnName: string) {
-  const names = fnName.split('.').filter((el) => el);
+  const names = fnName.split('.').filter(Boolean);
 
   // invalid function name case
   if (names.length === 0) {
@@ -65,7 +65,7 @@ export function safeCall(c: RPCConfig, fnName: string, args?: any[]) {
 export function create<T>(c: RPCConfig,
                        callbacks: Dictionary<RPCAsync<any>>,
                        remoteDesc: RemoteDesc,
-                       remote?: Remote, 
+                       remote?: T, 
                        prefix?: string): T {
   remoteDesc = remoteDesc || Object.create(null);
   
@@ -75,7 +75,7 @@ export function create<T>(c: RPCConfig,
     const desc = remoteDesc[prop];
     prefix = prefix || '';
     
-    if (isObject(desc)) {
+    if (isDictionary(desc)) {
       state[prop] = create(c, callbacks, desc, remote[prop], prop + '.');
     } else if (isRPCDefaultAsync(desc)) {
       state[prop] = rpc.create(c, callbacks, prefix + prop, desc);
@@ -86,7 +86,7 @@ export function create<T>(c: RPCConfig,
 }
 
 export function createRemoteDescFrom(
-  c: RPCConfig, remote: Remote, remoteDesc?: RemoteDesc) {
+  c: RPCConfig, remote: Remote<any>, remoteDesc?: RemoteDesc) {
   remote = remote || Object.create(null);
   remoteDesc = remoteDesc || Object.create(null);
   
@@ -95,8 +95,15 @@ export function createRemoteDescFrom(
   /* tslint:disable forin */
   for (let prop in remote) {
     if (isObject(remote[prop])) {
+      let newDesc;
+      if (isDictionary<RemoteDesc>(remoteDesc[prop])) {
+        newDesc = remoteDesc[prop]; 
+      } else {
+        newDesc = Object.create(null);
+      }
       newRemoteDesc[prop] = 
-        createRemoteDescFrom(c, remote[prop], remoteDesc[prop]); 
+        createRemoteDescFrom(c, 
+          <Remote<any>>remote[prop], newDesc); 
     }
     if (isFunction(remote[prop])) {
       const type = remoteDesc[prop] || c.defaultAsyncType;

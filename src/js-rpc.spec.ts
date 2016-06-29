@@ -18,11 +18,11 @@ describe('js-rpc functions', () => {
 
   describe('create function', () => {
     it('should run without incident if given valid parameters', () => {
-      expect(() => rpc.create<Object, Object>(config, {})).not.toThrowError();
+      expect(() => rpc.create<Object>(config, {})).not.toThrowError();
     });
     
     it('should provide a destroy function', () => {
-      const test = rpc.create<Object, Object>(config, {});
+      const test = rpc.create<Object>(config, {});
       expect(() => test.destroy()).not.toThrowError();
     });
   });

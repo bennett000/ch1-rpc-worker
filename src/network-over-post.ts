@@ -8,6 +8,7 @@ import { createEvent, createErrorEvent } from './events';
 import {
   defer,
   isDefer,
+  isRPCCallback,
   isRPCEvent,
   isFunction, 
   isRPCErrorPayload, 
@@ -53,7 +54,8 @@ const responders = Object.freeze({
   promiseReturn,
 });
 
-export function create(config: RPCConfig, callbacks, remoteDesc: RemoteDesc) {
+export function create(config: RPCConfig, callbacks, remoteDesc: RemoteDesc):
+Promise<{ off: () => Promise<void>, remoteDesc: RemoteDesc}> {
   const id = uid();
 
   const initState = createInitializationState(config, remoteDesc, id);
@@ -62,8 +64,9 @@ export function create(config: RPCConfig, callbacks, remoteDesc: RemoteDesc) {
     .then((localRemoteDesc) => {
       const off = on(sendAck, config, callbacks, id);
       /** @todo implement RPC destroy here */
+      
       return {
-        off: () => new Promise((resolve) => resolve(off()) ),
+        off: () => new Promise<void>((resolve) => resolve(off())),
         remoteDesc: localRemoteDesc,
       };
     });
@@ -108,7 +111,7 @@ export function createInitializationState(config: RPCConfig,
   };
 }
 
-export function initialize(config: RPCConfig, initState) {
+export function initialize(config: RPCConfig, initState): Promise<RemoteDesc> {
   const off = config.on(config.message, (event: RPCEvent) => {
     const { payload } = event;
     
@@ -121,23 +124,25 @@ export function initialize(config: RPCConfig, initState) {
         JSON.stringify(payload));
     }
 
-    if (event.type === 'create') {
-      if (initState.hasCreated) {
-        return;
+    if (isRPCReturnPayload(payload)) {
+      if (event.type === 'create') {
+        if (initState.hasCreated) {
+          return;
+        }
+        // create local remote
+        initState.localRemoteDesc = payload.result[0];
+        initState.hasCreated = true;
+        config.cemit(createEvent('createReturn', {result: [initState.id]}));
+      } else if (event.type === 'createReturn') {
+        if (initState.isCreated) {
+          return;
+        }
+        initState.stopCreateSpam();
+        initState.isCreated = true;
+      } else {
+        rangeError('unexpected event received during initialization: ' +
+          event.type);
       }
-      // create local remote
-      initState.localRemoteDesc = payload.result[0];
-      initState.hasCreated = true;
-      config.cemit(createEvent('createReturn', { result: [ initState.id ] }));
-    } else if (event.type === 'createReturn') {
-      if (initState.isCreated) {
-        return;
-      }
-      initState.stopCreateSpam();
-      initState.isCreated = true;
-    } else {
-      rangeError('unexpected event received during initialization: ' +
-        event.type);
     }
 
     if (initState.isCreated && initState.hasCreated) {
@@ -158,7 +163,7 @@ export function ack(c: RPCConfig, event: RPCEvent) {
   const payload = event.payload;
   
   if (isRPCReturnPayload(payload)) {
-    const uid = payload.result;
+    const uid = payload.result[0];
     
     if (!c.useAcks[uid]) {
       typeError(`ack expecting to find ack timeout for: ${uid}`);
@@ -193,15 +198,14 @@ export function invoke(
   }
 }
 
-export function fireError(c, payload: RPCErrorPayload, asyncReturn: RPCAsync) {
+export function fireError(
+  c, payload: RPCErrorPayload, asyncReturn: RPCAsync<any>) {
   const error = createErrorFromRPCError(c, payload.error);
 
-  if (isDefer(asyncReturn)) {
+  if (isDefer<any>(asyncReturn)) {
     asyncReturn.reject(error);
     return;
-  }
-  
-  if (isFunction(asyncReturn)) {
+  } else if (isRPCCallback<any>(asyncReturn)) {
     asyncReturn(error);
     return;
   }
@@ -210,14 +214,12 @@ export function fireError(c, payload: RPCErrorPayload, asyncReturn: RPCAsync) {
 }
 
 export function fireSuccess(
-  c, payload: RPCReturnPayload, asyncReturn: RPCAsync) {
+  c, payload: RPCReturnPayload, asyncReturn: RPCAsync<any>) {
   
   if (isDefer(asyncReturn)) {
     asyncReturn.resolve.apply(asyncReturn.resolve, payload.result);
     return;
-  }
-  
-  if (isFunction(asyncReturn)) {
+  } else if (isRPCCallback(asyncReturn)) {
     asyncReturn.apply(null, [null].concat(payload.result));
     return;
   }

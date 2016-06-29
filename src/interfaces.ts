@@ -1,12 +1,11 @@
+import { Promise } from 'es6-promise';
+
 /**
  * Project interfaces
  */
 export interface Dictionary<T> {
   [key: string]: T;
 }
-
-/** Prepare for non nullable types in TypeScript 2.0 */
-export type NullableError = Error;
 
 /**
  * Where `T` is the type of the complete interface you wish to expose
@@ -19,10 +18,11 @@ export interface Remote<T> extends Dictionary<Function|Object> { }
 export interface RemoteDesc extends 
   Dictionary<RPCDefaultAsync | Dictionary<RPCDefaultAsync>> {}
 
-export type RPCAsync<T> = RPCDefer<T> | RPCNotify<T> | RPCCallback<T>; 
+export type RPCAsync<T> = RPCDefer<T> | RPCCallback<T> | RPCNotify<T>; 
 
 export interface RPCCallback<T> {
-  (error: NullableError, param: T, ...rest: any[]);
+  (error: Error, param?: T);
+  (error: Error, ...rest: any[]);
 }
 
 export type RPCDefaultAsync =
@@ -32,8 +32,8 @@ export type RPCDefaultAsync =
   'asyncAwait';
 
 export interface RPCDefer<T> {
-  resolve: (...args: any[]) => any;
-  reject: (error: Error) => any;
+  resolve: (any) => any;
+  reject: (any) => any;
   promise: Promise<T>;
 }
 
@@ -67,6 +67,7 @@ export interface ConfiguredRPCEmit {
 
 export interface RPCNotify<T> {
   (param: T, ...args: any[]);
+  (...args: any[]);
 }
 
 export interface RPCObservable<T> {
@@ -91,7 +92,7 @@ export interface RPCConfig {
   on: RPCOn;
   remote: Object;
   cemit?: ConfiguredRPCEmit;
-  useAcks?: Dictionary<{ uid: string, timeout: any }>;
+  useAcks?: Dictionary<number>;
 }
 
 /**
@@ -99,6 +100,7 @@ export interface RPCConfig {
  */
 export interface CodedError extends Error {
   code?: number;
+  stack?: string;
 }
 
 /**
@@ -131,13 +133,13 @@ export interface RPCEvent {
   type: RPCEventType;
   payload: RPCPayload;
   uid: string;
-  useAck?: boolean;
+  useAcks?: boolean;
 }
 
 export interface RPC<T> {
   config: RPCConfig;
-  destroy();
-  ready: Promise;
+  destroy: () => Promise<void>;
+  ready: Promise<void>;
   remote: T;
 }
 
