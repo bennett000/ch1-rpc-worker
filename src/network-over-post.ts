@@ -45,8 +45,6 @@ const nodeCallbackReturn = invokeReturn;
 
 const responders = Object.freeze({
   ack,
-  create: createRemote,
-  createReturn: createRemoteReturn,
   invoke,
   invokeReturn,
   on: onRemote,
@@ -57,18 +55,22 @@ const responders = Object.freeze({
   nodeCallbackReturn,
   promise,
   promiseReturn,
-  ready,
-  readyReturn,
 });
 
-export function create(config: RPCConfig, remoteDesc: RemoteDesc) {
+export function create(config: RPCConfig, callbacks, remoteDesc: RemoteDesc) {
   const id = uid();
-  const callbacks = Object.create(null);
 
   const initState = createInitializationState(config, remoteDesc, id);
 
   return initialize(config, initState)
-    .then(() =>  on(sendAck, config, callbacks, id));
+    .then((localRemoteDesc) => {
+      const off = on(sendAck, config, callbacks, id);
+      /** @todo implement RPC destroy here */
+      return {
+        off: () => new Promise((resolve) => resolve(off()) ),
+        remoteDesc: localRemoteDesc,
+      };
+    });
 }
 
 export function createInitializationState(config: RPCConfig,
@@ -119,15 +121,22 @@ export function initialize(config: RPCConfig, initState) {
     }
 
     if (!isRPCReturnPayload(payload)) {
-      rangeError('unexpected payload received during initialization');
+      rangeError('unexpected payload received during initialization ' + 
+        JSON.stringify(payload));
     }
 
     if (event.type === 'create') {
+      if (initState.hasCreated) {
+        return;
+      }
       // create local remote
       initState.localRemoteDesc = payload.result[0];
       initState.hasCreated = true;
       config.cemit(createEvent('createReturn', { result: [ initState.id ] }));
     } else if (event.type === 'createReturn') {
+      if (initState.isCreated) {
+        return;
+      }
       initState.stopCreateSpam();
       initState.isCreated = true;
     } else {
@@ -143,14 +152,6 @@ export function initialize(config: RPCConfig, initState) {
   });
   
   return initState.defer.promise;
-}
-
-export function createRemote() {
-  
-}
-
-export function createRemoteReturn() {
-  
 }
 
 export function ack(c: RPCConfig, event: RPCEvent) {
@@ -174,28 +175,26 @@ export function ack(c: RPCConfig, event: RPCEvent) {
   }
 }
 
-export function ready() {
-  
-}
-
-export function readyReturn() {
-  
-}
-
 export function sendAck(c: RPCConfig, uid: string) {
   c.cemit(createEvent('ack', {result: [uid]}));
 }
 
 export function invoke(
-  c: RPCConfig, payload: RPCInvocationPayload, uid: string) {
-  const result = safeCall(c, payload.fn, payload.args);
+  c: RPCConfig, payload: RPCPayload, uid: string) {
+  
+  if (isRPCInvocationPayload(payload)) {
+    const result = safeCall(c, payload.fn, payload.args);
 
-  if (result instanceof Error) {
-    c.cemit(createErrorEvent(c, 'invokeReturn', result));
-    return;
+    if (result instanceof Error) {
+      c.cemit(createErrorEvent(c, 'invokeReturn', result, uid));
+      return;
+    }
+
+    c.cemit(createEvent('invokeReturn', { result: [ result ] }, uid));
+  } else {
+    c.cemit(createErrorEvent(c, 'invokeReturn',
+      new TypeError('invoke: invalidPayload'), uid));
   }
-
-  c.cemit(createEvent('invokeReturn', { result: [ result ] }, uid));
 }
 
 export function fireError(c, payload: RPCErrorPayload, asyncReturn: RPCAsync) {
@@ -289,14 +288,45 @@ function offRemoteReturn(c: RPCConfig, payload: RPCPayload, uid: string,
 
 }
 
-function nodeCallback(c: RPCConfig, payload: RPCPayload, uid: string,
-                      callbacks: Object, id: string) {
+export function nodeCallback(c: RPCConfig, payload: RPCPayload, uid: string) {
+  if (isRPCInvocationPayload(payload)) {
+    payload.args.push((err, ...args) => {
+      if (err) {
+        c.cemit(createErrorEvent(c, 'nodeCallbackReturn', err, uid)); 
+      } else {
+        c.cemit(createEvent('nodeCallbackReturn', { result: args }, uid));
+      }
+    });
+    
+    const result = safeCall(c, payload.fn, payload.args);
 
+    if (result instanceof Error) {
+      c.cemit(createErrorEvent(c, 'nodeCallbackReturn', result, uid));
+      return;
+    }
+  } else {
+    c.cemit(createErrorEvent(c, 'nodeCallbackReturn',
+      new TypeError('nodeCallback: invalidPayload'), uid));
+  }
 }
 
-function promise(c: RPCConfig, payload: RPCPayload, uid: string,
-                 callbacks: Object, id: string) {
+export function promise(c: RPCConfig, payload: RPCPayload, uid: string) {
+  if (isRPCInvocationPayload(payload)) {
+    const result = safeCall(c, payload.fn, payload.args);
 
+    if (result instanceof Error) {
+      c.cemit(createErrorEvent(c, 'promiseReturn', result, uid));
+      return;
+    }
+    
+    result
+      .then((...args) => c.cemit(createEvent('promiseReturn', { result: args }, 
+        uid)))
+      .catch((err) => c.cemit(createErrorEvent(c, 'promiseReturn', err, uid)));
+  } else {
+    c.cemit(createErrorEvent(c, 'promiseReturn',
+      new TypeError('promise: invalidPayload'), uid));
+  }
 }
 
 export function on(sendAck: (c: RPCConfig, uid: string) => void, 

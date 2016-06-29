@@ -207,6 +207,21 @@ describe('utils functions', () => {
     });
   });
   
+  describe('throwIfNotObject function', () => {
+    it('should throw if given a non function', () => {
+      expect(() => utils.throwIfNotObject(utils.noop)).toThrowError();
+    });
+
+    it('should optionally forward custom messages', () => {
+      expect(() => utils.throwIfNotObject(utils.noop, 'test'))
+        .toThrowError(/.*test.*/);
+    });
+
+    it('should *not* throw if given a function', () => {
+      expect(() => utils.throwIfNotObject({})).not.toThrowError();
+    });
+  });
+  
   describe('throwIfNotRPCEvent function', () => {
     it('should throw if given a non RPCEvent', () => {
       expect(() => utils.throwIfNotRPCEvent({})).toThrowError();

@@ -8,6 +8,8 @@ import {
   Dictionary,
   RPCAsync, 
   RPCCallback,
+  RPCConfig,
+  RPCDefaultAsync,
   RPCDefer, 
   RPCEventType,
   RPCNotify,
@@ -91,18 +93,20 @@ export function promiseRemote(callbacks: Dictionary<RPCAsync>,
   return registerDefer(callbacks, d, event.uid);
 }
 
-function create(callbacks: Dictionary<RPCAsync<any>>, postMethod) {
-
-  const boundPRemote = (type, rFun, args) => promiseRemote(
-    callbacks, postMethod, type, rFun, args);
-  const boundCBRemote = (type, rFun, args) => callbackRemote(
-    callbacks, postMethod, type, rFun, args);
-
-  return {
-    invoke: (...args) => boundPRemote('invoke', registerDefer, args),
-    nodeCallback: (...args) => boundCBRemote(
-      'nodeCallback', registerDefer, args),
-    promise: (...args) => boundPRemote('promise', registerDefer, args),
-  };
+export function create(c: RPCConfig, 
+                callbacks: Dictionary<RPCAsync<any>>,
+                fullFnName: string,
+                fnType?: RPCDefaultAsync) {
+  switch (fnType) {
+    case 'promise':
+      return (...args) => promiseRemote(
+        callbacks, c.cemit, 'promise', fullFnName, args);
+    
+    case 'nodeCallback':
+      return (...args) => callbackRemote(callbacks, c.cemit, 'nodeCallback', 
+        fullFnName, args); 
+    
+    default:
+      return create(c, callbacks, fullFnName, c.defaultAsyncType);
+  }
 }
-

@@ -1,8 +1,20 @@
 /**
  * Functions related to creating and using remote objects
  */
-import { RPCConfig } from './interfaces';
-import { createTypeError, isFunction, safeInvoke } from './utils';
+import {
+  Dictionary, Remote, RemoteDesc, RPCConfig,
+  RPCAsync
+} from './interfaces';
+import * as rpc from './remote-procedure';
+
+import {
+  createTypeError, 
+  isFunction, 
+  isObject, 
+  isRPCDefaultAsync,
+  safeInvoke, 
+  throwIfNotObject, 
+} from './utils';
 
 export function getFinalFunction(remote: Object, fnName: string) {
   const names = fnName.split('.').filter((el) => el);
@@ -48,4 +60,49 @@ export function safeCall(c: RPCConfig, fnName: string, args?: any[]) {
   }
   
   return safeInvoke(fn, args);
+}
+
+export function create<T>(c: RPCConfig,
+                       callbacks: Dictionary<RPCAsync<any>>,
+                       remoteDesc: RemoteDesc,
+                       remote?: Remote, 
+                       prefix?: string): T {
+  remoteDesc = remoteDesc || Object.create(null);
+  
+  remote = remote || Object.create(null);
+
+  return <T>Object.keys(remoteDesc).reduce((state, prop) => {
+    const desc = remoteDesc[prop];
+    prefix = prefix || '';
+    
+    if (isObject(desc)) {
+      state[prop] = create(c, callbacks, desc, remote[prop], prop + '.');
+    } else if (isRPCDefaultAsync(desc)) {
+      state[prop] = rpc.create(c, callbacks, prefix + prop, desc);
+    }
+    
+    return state;
+  }, remote);
+}
+
+export function createRemoteDescFrom(
+  c: RPCConfig, remote: Remote, remoteDesc?: RemoteDesc) {
+  remote = remote || Object.create(null);
+  remoteDesc = remoteDesc || Object.create(null);
+  
+  const newRemoteDesc = Object.create(null);
+  
+  /* tslint:disable forin */
+  for (let prop in remote) {
+    if (isObject(remote[prop])) {
+      newRemoteDesc[prop] = 
+        createRemoteDescFrom(c, remote[prop], remoteDesc[prop]); 
+    }
+    if (isFunction(remote[prop])) {
+      const type = remoteDesc[prop] || c.defaultAsyncType;
+      newRemoteDesc[prop] = type;
+    }
+  }
+  
+  return newRemoteDesc;
 }

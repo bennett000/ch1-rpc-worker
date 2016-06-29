@@ -38,8 +38,8 @@ export function createEvent(type: RPCEventType, payload: RPCPayload,
 }
 
 export function createErrorEvent(c: RPCConfig, type: RPCEventType,
-                                 error: Error): RPCEvent {
+                                 error: Error, uid?: string): RPCEvent {
 
-  return createEvent(type, { error: createRPCError(c, error) });
+  return createEvent(type, { error: createRPCError(c, error) }, uid);
 }
 

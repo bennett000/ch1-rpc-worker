@@ -1,3 +1,4 @@
+import { Promise } from 'es6-promise';
 import * as rpc from './js-rpc';
 import { DEFAULT_MESSAGE } from './constants';
 import { noop } from './utils';
@@ -18,6 +19,11 @@ describe('js-rpc functions', () => {
   describe('create function', () => {
     it('should run without incident if given valid parameters', () => {
       expect(() => rpc.create<Object, Object>(config, {})).not.toThrowError();
+    });
+    
+    it('should provide a destroy function', () => {
+      const test = rpc.create<Object, Object>(config, {});
+      expect(() => test.destroy()).not.toThrowError();
     });
   });
   
@@ -74,4 +80,91 @@ describe('js-rpc functions', () => {
         expect(message).toBe(DEFAULT_MESSAGE);
       });
   });
+});
+
+describe('basic async e2e', () => {
+  let configA;
+  let configB;
+  let callbacksA;
+  let callbacksB;
+
+  beforeEach(() => {
+    callbacksA = {};
+    callbacksB = {};
+    
+    configA = {
+      emit: (msg, ...args) => {
+        callbacksB[msg] = callbacksB[msg] || [];
+        setTimeout(() => {
+          callbacksB[msg].filter(Boolean).forEach((cb) => cb.apply(null, args));
+        }, 0);
+      },
+      enableStackTrace: false,
+      message: '',
+      on: (msg, listener) => {
+        callbacksA[msg] = callbacksA[msg] || [];
+        const offset = callbacksA[msg].push(listener);
+        return () => {
+          callbacksA[msg][offset - 1] = null;
+        };
+      },
+      remote: {},
+    };
+    
+    configB = {
+      emit: (msg, ...args) => {
+        callbacksA[msg] = callbacksA[msg] || [];
+        setTimeout(() => {
+          callbacksA[msg].filter(Boolean).forEach((cb) => cb.apply(null, args));
+        }, 0);
+      },
+      enableStackTrace: false,
+      message: '',
+      on: (msg, listener) => {
+        callbacksB[msg] = callbacksB[msg] || [];
+        const offset = callbacksB[msg].push(listener); 
+        return () =>  {
+          callbacksB[msg][offset - 1] = null;
+        };
+      },
+      remote: {},
+    };
+  });
+  
+  it('should work for two simple functions', (done) => {
+    interface Test1 {
+      test1(): string;
+    }
+    
+    interface Test2 {
+      test2(): string;
+    }
+    
+    const a = rpc.create<Test2>(configA, {
+      test1: () => new Promise((resolve) => resolve('testA')),
+    });
+    
+    const b = rpc.create<Test1>(configB, {
+      test2: () => new Promise((resolve) => resolve('testB')),
+    });
+
+    Promise.all([ a.ready, b.ready ])
+      .then(() => {
+        return Promise
+          .all([a.remote.test2(), b.remote.test1()])
+          .then((results) => {
+            expect(results[0]).toBe('testB');
+            expect(results[1]).toBe('testA');
+          });
+      })
+      .catch((err) => {
+        expect(err.message).toBeUndefined();
+      })
+      .then(() => {
+        a.destroy();
+        b.destroy();
+        done();
+      });
+  });
+
 });

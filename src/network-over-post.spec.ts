@@ -7,7 +7,7 @@ import {
   noop 
 } from './utils';
 
-describe('network over power functions', () => {
+describe('network over post functions', () => {
   let config;
   let event;
 
@@ -59,14 +59,17 @@ describe('network over power functions', () => {
     });
   });
 
-  describe('createRemote function', () => {
-     
-  });
-  
-  describe('createRemoteReturn function', () => {
-  });
-
   describe('invoke function', () => {
+    it('should emit an error', () => {
+      config.remote = {};
+
+      config.cemit = (arg) => {
+        expect(isRPCErrorPayload(arg.payload)).toBe(true);
+      };
+
+      nOp.invoke(config, { error: { message: 'hi' } }, 'testId');
+    });
+    
     it('should emit RPCReturnPayloads if the function passes', () => {
       let result;
       
@@ -155,6 +158,15 @@ describe('network over power functions', () => {
       
       expect(err instanceof Error).toBe(true);
     });
+    
+    it('should throw if given async is invalid', () => {
+      event.payload = { error: { message: 'uh oh' } };
+
+      expect(() => nOp
+        .fireError(config, event.payload, <any>{ iDoNothing: () => {} }))
+        .toThrowError();
+
+    });
   });
 
   describe('fireSuccess function', () => {
@@ -172,6 +184,15 @@ describe('network over power functions', () => {
           expect(error.message).toBeUndefined();
           done();
         });
+    });
+    
+    it('should throw if given async is invalid', () => {
+      event.payload = { 'something else': noop };
+
+      expect(() => nOp
+        .fireSuccess(config, event.payload, <any>{ iDoNothing: () => {} }))
+        .toThrowError();
+
     });
 
     it('should be able to process callbacks', () => {
@@ -234,7 +255,7 @@ describe('network over power functions', () => {
         // timers are imperfect, ensure two ticks only
         expect(emitCount).toBeGreaterThan(1); 
         done();
-      }, 10);
+      }, 50);
     });
     
     it('stopCreateSpam should clear create messages', (done) => {
@@ -303,6 +324,18 @@ describe('network over power functions', () => {
         expect(initState.hasCreated).toBe(true);
       });
       
+      it('should set hasCreated only once', () => {
+        init({ uid: 'test', type: 'create', payload: { result: [
+          'test'
+        ] }});
+        expect(initState.localRemoteDesc).toBe('test');
+        initState.localRemoteDesc = 'something else';
+        init({ uid: 'test', type: 'create', payload: { result: [
+          'test'
+        ] }});
+        expect(initState.localRemoteDesc).toBe('something else');
+      });
+      
       it('should emit a createReturn event', () => {
         let evt;
         config.cemit = (e) => { evt = e; };
@@ -315,6 +348,15 @@ describe('network over power functions', () => {
       it('should set isCreated', () => {
         init({ uid: 'test', type: 'createReturn', payload: { result: [] }});
         expect(initState.isCreated).toBe(true);
+      });
+      
+      it('should set isCreated only once', () => {
+        let callCount = 0;
+        initState.stopCreateSpam = () => callCount++;
+        init({ uid: 'test', type: 'createReturn', payload: { result: [] }});
+        expect(callCount).toBe(1);
+        init({ uid: 'test', type: 'createReturn', payload: { result: [] }});
+        expect(callCount).toBe(1);
       });
 
       it('should stopCreateSpam', () => {
@@ -341,22 +383,19 @@ describe('network over power functions', () => {
 
       it('should clean its listeners', () => {
         initState.hasCreated = true;
-        initState.isCreated = true;
         init({ uid: 'test', type: 'createReturn', payload: { result: [] }});
         expect(initState.isCreated).toBe(true);
       });
       
       it('should clean its state', () => {
-        initState.hasCreated = true;
         initState.isCreated = true;
         spyOn(initState, 'clean');
-        init({ uid: 'test', type: 'createReturn', payload: { result: [] }});
+        init({ uid: 'test', type: 'create', payload: { result: [] }});
         expect(initState.clean).toHaveBeenCalled();
       });
       
       it('should resolve state\'s defer with the localRemoteDesc', (done) => {
         initState.hasCreated = true;
-        initState.isCreated = true;
         initState.localRemoteDesc = 'test-it!';
         init({ uid: 'test', type: 'createReturn', payload: { result: [ ], }});
         initState.defer.promise
@@ -368,6 +407,123 @@ describe('network over power functions', () => {
     });
   });
 
+  describe('nodeCallback', () => {
+    it('should emit an error', () => {
+      config.remote = {};
+
+      config.cemit = (arg) => {
+        expect(isRPCErrorPayload(arg.payload)).toBe(true);
+      };
+
+      nOp.nodeCallback(config, { error: { message: 'hi' } }, 'testId');
+    });
+    
+    it('should emit RPCErrorPayload if the function fails', () => {
+      // trigger an error by wiping remotes
+      config.remote = {
+        test: () => { throw new Error('test'); },
+      };
+
+      config.cemit = (arg) => {
+        expect(isRPCErrorPayload(arg.payload)).toBe(true);
+      };
+
+      nOp.nodeCallback(config, { fn: 'test', args: [1] }, 'testId');
+    });
+
+    it('should emit RPCReturnPayloads if the function passes', () => {
+      config.remote = {
+        test: (arg, callback) => {
+          callback(null, 'test-this');
+        }
+      };
+
+      config.cemit = (arg) => {
+        if (arg.type !== 'nodeCallback') {
+          return;
+        }
+        expect(isRPCReturnPayload(arg.payload)).toBe(true);
+        expect(arg.payload.result[0]).toBe('test-this');
+      };
+
+      nOp.nodeCallback(config, { fn: 'test', args: [1] }, 'testId');
+    });
+
+    it('should emit RPCErrorPayload if the function fails', () => {
+      // trigger an error by wiping remotes
+      config.remote = {
+        test: (arg, callback) => callback(new Error('test')),
+      };
+
+      config.cemit = (arg) => {
+        if (arg.type !== 'nodeCallback') {
+          return;
+        }
+        expect(isRPCErrorPayload(arg.payload)).toBe(true);
+      };
+
+      nOp.nodeCallback(config, { fn: 'test', args: [1] }, 'testId');
+    });
+  });
+
+  describe('promise', () => {
+    it('should emit an error', () => {
+      config.remote = {};
+
+      config.cemit = (arg) => {
+        expect(isRPCErrorPayload(arg.payload)).toBe(true);
+      };
+
+      nOp.promise(config, { error: { message: 'hi' } }, 'testId');
+    });
+
+    it('should emit RPCErrorPayload if the function fails', () => {
+      // trigger an error by wiping remotes
+      config.remote = {
+        test: () => { throw new Error('test'); },
+      };
+
+      config.cemit = (arg) => {
+        expect(isRPCErrorPayload(arg.payload)).toBe(true);
+      };
+
+      nOp.promise(config, { fn: 'test', args: [1] }, 'testId');
+    });
+
+    it('should emit RPCReturnPayloads if the function passes', () => {
+      config.remote = {
+        test: (arg, callback) => new Promise((resolve) => resolve('test-this')),
+      };
+
+      config.cemit = (arg) => {
+        if (arg.type !== 'promise') {
+          return;
+        }
+        expect(isRPCReturnPayload(arg.payload)).toBe(true);
+        expect(arg.payload.result[0]).toBe('test-this');
+      };
+
+      nOp.promise(config, { fn: 'test', args: [1] }, 'testId');
+    });
+
+    it('should emit RPCErrorPayload if the function fails', () => {
+      // trigger an error by wiping remotes
+      config.remote = {
+        test: (arg, callback) => new Promise(
+          (resolve, reject) => reject(new Error('test-this'))),
+      };
+
+      config.cemit = (arg) => {
+        if (arg.type !== 'nodeCallback') {
+          return;
+        }
+        expect(isRPCErrorPayload(arg.payload)).toBe(true);
+      };
+
+      nOp.promise(config, { fn: 'test', args: [1] }, 'testId');
+    });
+  });
+
   describe('returnPayload function', () => {
     it('should throw an error if a callback is missing', () => {
       expect(() => nOp.returnPayload(config, event.payload, {}, 'test'))
@@ -376,7 +532,9 @@ describe('network over power functions', () => {
 
     it('should throw an error if a payload is unexpected', () => {
       event.payload = { };
-      expect(() => nOp.returnPayload(config, event.payload, {}, 'test'))
+      expect(() => nOp.returnPayload(config, event.payload, {
+        test: noop,
+      }, 'test'))
         .toThrowError();
     });
 
@@ -392,7 +550,7 @@ describe('network over power functions', () => {
       expect(callbacks.test).toBeUndefined();
     });
 
-    it('should delete callbacks if it processes an return value', () => {
+    it('should delete callbacks if it processes a return value', () => {
       const callbacks = {
         test: noop,
       };
@@ -400,6 +558,17 @@ describe('network over power functions', () => {
       nOp.returnPayload(config, event.payload, callbacks, 'test');
 
       expect(callbacks.test).toBeUndefined();
+    });
+  });
+
+  describe('sendAck', () => {
+    it('should emit an RPCResultPayload with the given uid', () => {
+      let evt;
+      config.cemit = (e) => evt = e;
+      
+      nOp.sendAck(config, 'test-uid');
+      expect(evt.payload.result[0]).toBe('test-uid');
+      
     });
   });
 });

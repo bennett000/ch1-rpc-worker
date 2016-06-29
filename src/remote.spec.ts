@@ -1,7 +1,20 @@
 import * as remote from './remote';
-import { noop } from './utils';
+import { isFunction, noop } from './utils';
 
 describe('Remote Object functions', () => {
+  let config;
+
+  beforeEach(() => {
+    config = {
+      emit: noop,
+      cemit: noop,
+      enableStackTrace: false,
+      message: '',
+      on: () => noop,
+      remote: {},
+    };
+  });
+  
   describe('getFinalFunction function', () => {
     it('should resolve simple "first level" cases', () => {
       const finalFunction = noop;
@@ -63,18 +76,6 @@ describe('Remote Object functions', () => {
   });
 
   describe('safeCall function', () => {
-    let config;
-
-    beforeEach(() => {
-      config = {
-        emit: noop,
-        enableStackTrace: false,
-        message: '',
-        on: noop,
-        remote: {},
-      };
-    });
-    
     it('should return an error if there is no final function', () => {
       const result = remote.safeCall(config, 'something');
       
@@ -101,5 +102,120 @@ describe('Remote Object functions', () => {
 
       expect(result instanceof Error).toBe(true);
     });
+  });
+
+  describe('create function', () => {
+    beforeEach(() => {
+      config.defaultAsyncType = 'promise';   
+    }); 
+    
+    it('should map a simple remoteDesc to a new object', () => {
+      interface Test {
+        test1();
+        test2();
+      };
+      
+      const test = remote.create<Test>(config, {}, {
+        test1: 'promise',
+        test2: 'nodeCallback',
+      }); 
+      
+      expect(isFunction(test.test1)).toBe(true);
+      expect(isFunction(test.test2)).toBe(true);
+    });
+    
+    it('should skip unknown entries', () => {
+      interface Test {
+        test1();
+        test2();
+        test3?: void;
+      };
+
+      const test = remote.create<Test>(config, {}, {
+        test1: 'promise',
+        test2: 'nodeCallback',
+        test3: 'mwhahaha',
+      });
+
+      expect(test.test3).toBeUndefined();
+    });
+    
+    it('should map a nested remoteDesc to a new object', () => {
+      interface TestNest {
+        test3();
+      }
+      
+      interface Test {
+        test1();
+        test2();
+        nest: TestNest; 
+      };
+
+      const test = remote.create<Test>(config, {}, {
+        test1: 'promise',
+        test2: 'nodeCallback',
+        nest: {
+          test3: 'promise',
+        }
+      });
+
+      expect(isFunction(test.nest.test3)).toBe(true);
+    }); 
+  });
+
+  describe('createRemoteDesc from', () => {
+    beforeEach(() => {
+      config.defaultAsyncType = 'promise';
+    }); 
+    
+    it('should build a desc using defaults', () => {
+      const desc = remote.createRemoteDescFrom(config, {
+        test1: noop,
+        test2: noop,
+      });
+      
+      expect(desc.test1).toBe('promise');
+      expect(desc.test2).toBe('promise');
+    });
+    
+    it('should build a nested desc using defaults', () => {
+      const desc = remote.createRemoteDescFrom(config, {
+        test1: noop,
+        test2: noop,
+        nest: {
+          test3: noop,
+        },
+      });
+
+      expect(desc.nest.test3).toBe('promise');
+    });
+    
+    it('should build a desc using specifics', () => {
+      const desc = remote.createRemoteDescFrom(config, {
+        test1: noop,
+        test2: noop,
+      }, {
+        test1: 'nodeCallback',
+      });
+
+      expect(desc.test1).toBe('nodeCallback');
+    });
+
+    it('should build a nested desc using specifics', () => {
+      const desc = remote.createRemoteDescFrom(config, {
+        test1: noop,
+        test2: noop,
+        nest: {
+          test3: noop,
+        },
+      }, {
+        nest: {
+          test3: 'nodeCallback',
+        }
+      });
+
+      expect(desc.nest.test3).toBe('nodeCallback');
+    });
+    
   });
 });

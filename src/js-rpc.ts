@@ -2,7 +2,8 @@
  * Main module "really ties the project together"
  */
 import { Remote, RemoteDesc, RPC, RPCConfig } from './interfaces';
-import { isObject, typeError, throwIfNotFunction} from './utils';
+import { isObject, pnoop, typeError, throwIfNotFunction} from './utils';
+import { create as createRemote, createRemoteDescFrom } from './remote';
 import * as nOp from './network-over-post';
 
 import { 
@@ -24,23 +25,26 @@ export function create<RemoteType>(config: RPCConfig, remote?: Remote,
   remote = validateRemote(remote);
   config = validateConfig(config, remote);
   
-  const local = {
-    
-  };
-  
-  const isReady = nOp.create(config, remoteDesc)
-    .then((otherRemoteDesc: RemoteDesc) => {
-      
-    })
-    .catch();
-  
-  const destroyRemote = createRemote(remote, config);
-  
+  const local: RemoteType = Object.create(null);
+  const callbacks = Object.create(null);
+  const combinedDesc = createRemoteDescFrom(config, remote, remoteDesc);
+  let destroy = pnoop;
+  console.log('comb', combinedDesc)
+
+  const isReady = nOp
+    .create(config, callbacks, combinedDesc,)
+    .then((network) => {
+      createRemote<RemoteType>(config, callbacks, network.remoteDesc, local); 
+      destroy = network.off;
+    });
   
   return {
     config,
     destroy: () => {
-      destroyRemote();
+      Object.keys(local).forEach((key) => delete local[key]);
+      Object.keys(callbacks).forEach((key) => delete callbacks[key]);
+      return destroy()
+        .then(() => { destroy = pnoop; });
     },
     ready: isReady,
     remote: local,
@@ -53,6 +57,8 @@ export function validateRemote(r: Object) {
   if (!isObject(r)) {
     typeError('validateRemote: remote must be an object');
   }
+  
+  return r;
 }
 
 export function validateConfig(c: RPCConfig, remote: Object): RPCConfig {
@@ -74,8 +80,4 @@ export function validateConfig(c: RPCConfig, remote: Object): RPCConfig {
   c.remote = remote;
   
   return Object.freeze(c);
-}
-
-function createRemote(remote: Object, config: RPCConfig): () => void {
-    
 }

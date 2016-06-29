@@ -5,13 +5,11 @@ export interface Dictionary<T> {
   [key: string]: T;
 }
 
-export type RemoteElement = (...args: any[]) => any | 
-  Dictionary<(...args:  any[]) => any>;
 
 /**
  * Where `T` is the type of the complete interface you wish to expose
  */
-export interface Remote<T> extends Dictionary<RemoteElement> { }
+export interface Remote<T> extends Dictionary<Function|Object> { }
 
 /**
  * Specify async types on the remote
@@ -134,9 +132,10 @@ export interface RPCEvent {
   useAck?: boolean;
 }
 
-export interface RPC {
+export interface RPC<T> {
   config: RPCConfig;
   destroy();
-  remote: Object;
+  ready: Promise;
+  remote: T;
 }
 

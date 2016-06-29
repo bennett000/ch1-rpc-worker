@@ -4,6 +4,7 @@
 import { Promise } from 'es6-promise';
 
 import { 
+  RPCDefaultAsync,
   RPCDefer,
   RPCEvent,
   RPCError,
@@ -11,6 +12,10 @@ import {
   RPCInvocationPayload, 
   RPCReturnPayload 
 } from './interfaces';
+
+export const isRPCDefaultAsync = (arg): arg is RPCDefaultAsync => [
+  'promise', 'nodeCallback'
+].indexOf(arg) !== -1;
 
 export const uid = createUidGenerator();
 
@@ -133,6 +138,8 @@ export function isRPCReturnPayload(payload: any): payload is RPCReturnPayload {
 
 export function noop(): void {}
 
+export const pnoop = () => new Promise((resolve) => resolve());
+
 export function createUidGenerator(): () => string {
   let uidCount = 0;
 
@@ -219,6 +226,12 @@ export function throwIfNotFunction(fn: any, message?: string) {
 export function throwIfNotRPCEvent(event: any, message?: string) {
   if (!isRPCEvent(event)) {
     typeError(message || 'given value is not an RPCEvent');
+  }
+}
+
+export function throwIfNotObject(obj: any, message?: string) {
+  if (!isObject(obj)) {
+    typeError(message || 'given value is not an object');
   }
 }
 
