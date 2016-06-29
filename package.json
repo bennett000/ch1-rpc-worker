@@ -1,17 +1,36 @@
 {
   "name": "js-rpc",
   "description": "JavaScript Remote Procedure Call (RPC)",
+  "keywords": ["rpc", "remote", "procedure", "call", "parallel", "worker",
+    "socket", "socket.io", "webworker", "postMessage"],
   "version": "1.0.0",
-  "private": true,
+  "author": {
+    "name": "Michael J. Bennett",
+    "email": "dev@michaeljbennett.info",
+    "url": "https://michaeljbennett.info"
+  },
+  "contributors": [],
+  "license": "LGPL-3",
+  "private": false,
   "repository": {
     "type": "git",
-    "url": "ssh://git@github.com/bennett000/js-rpc.git"
+    "url": "https://github.com/bennett000/js-rpc"
   },
+  "homepage": "https://github.com/bennett000/js-rpc",
+  "bugs": {
+    "url": "https://github.com/bennett000/js-rpc/issues"
+  },
+  "engines" : { "node" : ">=0.10.3" },
+  "typings": "./lib/index.ts",
   "scripts": {
-    "clean": "npm run clean:coverage && npm run clean:dist && npm run clean:lib",
-    "clean:coverage": "rimraf ./coverage",
+    "prebuild": "npm run clean && npm run test",
+    "build": "npm run docs && npm run tsc && npm run webpack",
+    "clean": "npm run clean:docs && npm run clean:cover && npm run clean:dist && npm run clean:lib",
+    "clean:cover": "rimraf ./coverage",
+    "clean:docs": "rimraf ./docs",
     "clean:dist": "rimraf ./dist",
-    "clear:lib": "rimraf ./lib",
+    "clean:lib": "rimraf ./lib",
+    "docs": "npm run typedoc",
     "lint": "npm run lint-ts &&  npm run lint-js",
     "lint-js": "eslint . ",
     "lint-ts": "tslint ./src/**/*.ts",
@@ -19,10 +38,11 @@
     "postinstall": "npm run typings",
     "test": "karma start --singleRun true",
     "test:watch": "karma start --singleRun false --restartOnFileChange true",
-    "tsc": "tsc --declaration --outDir lib",
+    "tsc": "tsc --declaration --outDir lib --target es5",
     "tsc:watch": "tsc -w --declaration --outDir lib",
-    "typedoc": "typedoc --out docs-generated ./src/index.ts",
-    "typings": "typings install"
+    "typedoc": "typedoc --name 'js-rpc' --readme README-docs.md --includeDeclarations --externalPattern '!(src/**/*.ts)' --exclude '+(node_modules/**/*|dist/**/*|lib/**/*|**/*.spec*|**/*/spec*)' --ignoreCompilerErrors --target es6 --out docs ./src/index.ts",
+    "typings": "typings install",
+    "webpack": "webpack"
   },
   "dependencies": {
     "es6-promise": "^3.2.1"

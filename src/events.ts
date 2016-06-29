@@ -9,6 +9,9 @@ import {
 } from './interfaces';
 
 
+/**
+ * create an event object
+ */
 export function createEvent(type: RPCEventType, payload: RPCPayload,
                             givenUid?: string): RPCEvent {
   return {
@@ -18,6 +21,9 @@ export function createEvent(type: RPCEventType, payload: RPCPayload,
   };
 }
 
+/**
+ * create an error event object
+ */
 export function createErrorEvent(c: RPCConfig, type: RPCEventType,
                                  error: Error, uid?: string): RPCEvent {
 

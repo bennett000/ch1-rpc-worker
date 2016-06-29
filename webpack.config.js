@@ -32,15 +32,15 @@ module.exports = {
     preLoaders: [
       { test: /\.js$/, loader: 'eslint-loader' },
     ],
-    loaders: [
-      { test: /\.js$/, loader: 'ts-loader', exclude: /node_modules/ },
-      { test: /\.ts$/, loader: 'ts-loader', exclude: /node_modules/ },
-    ],
+    loaders: [ loaders.ts ],
   },
   output: {
-    path: path.join(__dirname, 'lib'),
-    filename: 'js-rpc.js',
-    publicPath: 'dist',
+    externals: {
+      Rx: 'RxJs',
+    },
+    libraryTarget: 'umd',
+    filename: 'js-rpc.min.js',
+    path: path.join(__dirname, 'dist'),
   },
   plugins,
   resolve: {

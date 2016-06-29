@@ -1,6 +1,6 @@
 # JS RPC
 
-Remote Procedure Call library for JavaScript
+Remote Procedure Call library for JavaScript: [Documentation](./docs/index.html "JS RPC Documentation")
 
 ## License
 

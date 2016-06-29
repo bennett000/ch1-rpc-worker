@@ -15,7 +15,6 @@ describe('network over post functions', () => {
   beforeEach(() => {
     config = {
       emit: noop,
-      emit: noop,
       enableStackTrace: false,
       message: '',
       on: () => noop,
