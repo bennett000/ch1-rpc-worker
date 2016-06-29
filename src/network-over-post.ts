@@ -25,6 +25,7 @@ import {
   RemoteDesc,
   RPCAsync,
   RPCConfig, 
+  RPCDefer,
   RPCEvent,
   RPCErrorPayload,
   RPCPayload,

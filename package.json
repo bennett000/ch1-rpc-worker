@@ -20,6 +20,7 @@
     "test": "karma start --singleRun true",
     "test:watch": "karma start --singleRun false --restartOnFileChange true",
     "tsc": "tsc --declaration --outDir lib",
+    "tsc:watch": "tsc -w --declaration --outDir lib",
     "typedoc": "typedoc --out docs-generated ./src/index.ts",
     "typings": "typings install"
   },

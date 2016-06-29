@@ -1,4 +1,4 @@
-import { Dictionary } from './interfaces';
+import { Dictionary, RPCAsync } from './interfaces';
 import { defer, isDefer, isFunction, noop } from './utils';
 import * as rp from './remote-procedure';
 
@@ -39,7 +39,7 @@ describe('remoteProcedure functions', () => {
   
   describe('callbackRemote', () => {
     it('should throw if not given a callback', () => {
-      const dict = {};
+      const dict: Dictionary<RPCAsync<any>> = {};
       const post = noop;
       expect(() => rp
         .callbackRemote(dict, post, 'invoke', 'remote function', []))
@@ -47,7 +47,7 @@ describe('remoteProcedure functions', () => {
     });
     
     it('should register the last argument as a callback', () => {
-      const dict = {};
+      const dict: Dictionary<RPCAsync<any>> = {};
       const post = noop;
       const callback = noop;
       rp.callbackRemote(dict, post, 'invoke', 'remote function', [
@@ -76,7 +76,7 @@ describe('remoteProcedure functions', () => {
 
   describe('promiseRemote function', () => {
     it('should register a new defer', () => {
-      const dict = {};
+      const dict: Dictionary<RPCAsync<any>> = {};
       const post = noop;
       rp.promiseRemote(dict, post, 'invoke', 'remote function', [
         'args']);

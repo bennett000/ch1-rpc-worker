@@ -80,18 +80,17 @@ module.exports = (config) => {
 
 function combinedLoaders() {
   return Object.keys(loaders).reduce(function reduce(aggregate, k) {
-      switch (k) {
-        case 'istanbulInstrumenter':
-        case 'tslint':
-          return aggregate;
-        case 'ts':
-        case 'tsTest':
-          return aggregate.concat([ // force inline source maps
-            Object.assign(loaders[k],
-              { query: { babelOptions: { sourceMaps: 'both' } } })]);
-        default:
-          return aggregate.concat([loaders[k]]);
-      }
-    },
-    []);
+    switch (k) {
+    case 'istanbulInstrumenter':
+    case 'tslint':
+      return aggregate;
+    case 'ts':
+    case 'tsTest':
+      return aggregate.concat([ // force inline source maps
+        Object.assign(loaders[k],
+          { query: { babelOptions: { sourceMaps: 'both' } } })]);
+    default:
+      return aggregate.concat([loaders[k]]);
+    } },
+  []);
 }

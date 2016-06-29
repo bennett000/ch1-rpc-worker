@@ -1,6 +1,13 @@
 import * as remote from './remote';
 import { isFunction, noop } from './utils';
 
+import { 
+  RPCDefaultAsync, 
+  Dictionary, 
+  RemoteDesc, 
+  RPCAsync,
+} from './interfaces';
+
 describe('Remote Object functions', () => {
   let config;
 
@@ -130,12 +137,16 @@ describe('Remote Object functions', () => {
         test2();
         test3?: void;
       };
-
-      const test = remote.create<Test>(config, {}, {
+      
+      const callbacks: Dictionary<RPCAsync<any>> = {};
+      
+      const remoteDesc: RemoteDesc = {
         test1: 'promise',
         test2: 'nodeCallback',
-        test3: 'mwhahaha',
-      });
+        test3: <RPCDefaultAsync>'mwhahaha',
+      };
+
+      const test = remote.create<Test>(config, callbacks, remoteDesc);
 
       expect(test.test3).toBeUndefined();
     });

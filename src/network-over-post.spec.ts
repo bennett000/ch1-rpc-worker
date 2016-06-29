@@ -1,5 +1,6 @@
 import * as nOp from './network-over-post';
 import { defer } from './utils';
+import { Dictionary, RPCAsync } from './interfaces';
 
 import { 
   isRPCErrorPayload, 
@@ -539,25 +540,31 @@ describe('network over post functions', () => {
     });
 
     it('should delete callbacks if it processes an error', () => {
-      const callbacks = {
+      const callbacks: Dictionary<RPCAsync<any>> = {
         test: noop,
       };
 
       event.payload = { error: { message: 'test' }};
 
       nOp.returnPayload(config, event.payload, callbacks, 'test');
+      
+      /* tslint:disable no-string-literal */
+      const test: any = <any>callbacks['test'];
 
-      expect(callbacks.test).toBeUndefined();
+      expect(test).toBeUndefined();
     });
 
     it('should delete callbacks if it processes a return value', () => {
-      const callbacks = {
+      const callbacks: Dictionary<RPCAsync<any>> = {
         test: noop,
       };
 
       nOp.returnPayload(config, event.payload, callbacks, 'test');
+      
+      /* tslint:disable no-string-literal */
+      const test: any = <any>callbacks['test'];
 
-      expect(callbacks.test).toBeUndefined();
+      expect(test).toBeUndefined();
     });
   });
 

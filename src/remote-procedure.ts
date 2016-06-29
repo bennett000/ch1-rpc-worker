@@ -1,6 +1,7 @@
 /**
  * Functions for executing remote procedures and returning their results
  */
+import { Promise } from 'es6-promise';
 import { createEvent } from './events';
 
 import { 
