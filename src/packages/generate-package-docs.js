@@ -13,6 +13,11 @@ if (!parsedPackageJson) {
 }
 const license = readOrDie(path.join(sourceRoot, '..', 'LICENSE'));
 
+// this is Free software the package is public
+// however the main package json is set to private to avoid accidental
+// publishing
+parsedPackageJson.private = false;
+
 // remove deps
 delete parsedPackageJson.dependencies;
 delete parsedPackageJson.devDependencies;
