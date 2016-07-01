@@ -54,6 +54,10 @@ export function isObject(obj: any): obj is Object {
   return typeof obj === 'object';
 }
 
+export function isString(arg: any): arg is string {
+  return typeof arg === 'string'; 
+}
+
 export function isDictionary<T>(dict: any): dict is Dictionary<T> {
   return isObject(dict);
 }
@@ -214,7 +218,6 @@ export function safeInvoke(fn: Function, args: any[]) {
     return err;
   }
 }
-
 
 export function throwIfNotDefer(d: any, message?: string) {
   if (!isDefer(d)) {

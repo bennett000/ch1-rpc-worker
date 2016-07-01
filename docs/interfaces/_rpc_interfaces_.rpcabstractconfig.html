@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>RPCDefer | js-rpc</title>
+	<title>RPCAbstractConfig | js-rpc</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -60,29 +60,37 @@
 					<a href="../modules/_rpc_interfaces_.html">&quot;rpc/interfaces&quot;</a>
 				</li>
 				<li>
-					<a href="_rpc_interfaces_.rpcdefer.html">RPCDefer</a>
+					<a href="_rpc_interfaces_.rpcabstractconfig.html">RPCAbstractConfig</a>
 				</li>
 			</ul>
-			<h1>Interface RPCDefer&lt;T&gt;</h1>
+			<h1>Interface RPCAbstractConfig</h1>
 		</div>
 	</div>
 </header>
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
-			<section class="tsd-panel tsd-type-parameters">
-				<h3>Type parameters</h3>
-				<ul class="tsd-type-parameters">
-					<li>
-						<h4>T</h4>
-					</li>
-				</ul>
-			</section>
 			<section class="tsd-panel tsd-hierarchy">
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">RPCDefer</span>
+						<a href="_rpc_interfaces_.rpcoptions.html" class="tsd-signature-type">RPCOptions</a>
+						<ul class="tsd-hierarchy">
+							<li>
+								<span class="target">RPCAbstractConfig</span>
+								<ul class="tsd-hierarchy">
+									<li>
+										<a href="_rpc_interfaces_.rpcconfig.html" class="tsd-signature-type">RPCConfig</a>
+									</li>
+									<li>
+										<a href="_socket_io_socket_io_.rpcsocketioconfig.html" class="tsd-signature-type">RPCSocketIoConfig</a>
+									</li>
+									<li>
+										<a href="_web_worker_worker_.rpcworkerconfig.html" class="tsd-signature-type">RPCWorkerConfig</a>
+									</li>
+								</ul>
+							</li>
+						</ul>
 					</li>
 				</ul>
 			</section>
@@ -93,9 +101,17 @@
 						<section class="tsd-index-section tsd-is-external">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="_rpc_interfaces_.rpcdefer.html#promise" class="tsd-kind-icon">promise</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="_rpc_interfaces_.rpcdefer.html#reject" class="tsd-kind-icon">reject</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="_rpc_interfaces_.rpcdefer.html#resolve" class="tsd-kind-icon">resolve</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external"><a href="_rpc_interfaces_.rpcabstractconfig.html#defaultasynctype" class="tsd-kind-icon">default<wbr>Async<wbr>Type</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external"><a href="_rpc_interfaces_.rpcabstractconfig.html#defaultcreateretry" class="tsd-kind-icon">default<wbr>Create<wbr>Retry</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external"><a href="_rpc_interfaces_.rpcabstractconfig.html#defaultcreateretrycurve" class="tsd-kind-icon">default<wbr>Create<wbr>Retry<wbr>Curve</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external"><a href="_rpc_interfaces_.rpcabstractconfig.html#defaultcreatewait" class="tsd-kind-icon">default<wbr>Create<wbr>Wait</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="_rpc_interfaces_.rpcabstractconfig.html#emit" class="tsd-kind-icon">emit</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external"><a href="_rpc_interfaces_.rpcabstractconfig.html#enablestacktrace" class="tsd-kind-icon">enable<wbr>Stack<wbr>Trace</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external"><a href="_rpc_interfaces_.rpcabstractconfig.html#maxackdelay" class="tsd-kind-icon">max<wbr>Ack<wbr>Delay</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="_rpc_interfaces_.rpcabstractconfig.html#message" class="tsd-kind-icon">message</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="_rpc_interfaces_.rpcabstractconfig.html#on" class="tsd-kind-icon">on</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="_rpc_interfaces_.rpcabstractconfig.html#remote" class="tsd-kind-icon">remote</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external"><a href="_rpc_interfaces_.rpcabstractconfig.html#useacks" class="tsd-kind-icon">use<wbr>Acks</a></li>
 							</ul>
 						</section>
 					</div>
@@ -103,77 +119,122 @@
 			</section>
 			<section class="tsd-panel-group tsd-member-group tsd-is-external">
 				<h2>Properties</h2>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-					<a name="promise" class="tsd-anchor"></a>
-					<h3>promise</h3>
-					<div class="tsd-signature tsd-kind-icon">promise<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span></div>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external">
+					<a name="defaultasynctype" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> default<wbr>Async<wbr>Type</h3>
+					<div class="tsd-signature tsd-kind-icon">default<wbr>Async<wbr>Type<span class="tsd-signature-symbol">:</span> <a href="../modules/_rpc_interfaces_.html#rpcdefaultasync" class="tsd-signature-type">RPCDefaultAsync</a></div>
 					<aside class="tsd-sources">
+						<p>Inherited from <a href="_rpc_interfaces_.rpcoptions.html">RPCOptions</a>.<a href="_rpc_interfaces_.rpcoptions.html#defaultasynctype">defaultAsyncType</a></p>
 						<ul>
-							<li>Defined in rpc/interfaces.ts:37</li>
+							<li>Defined in rpc/interfaces.ts:88</li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external">
+					<a name="defaultcreateretry" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> default<wbr>Create<wbr>Retry</h3>
+					<div class="tsd-signature tsd-kind-icon">default<wbr>Create<wbr>Retry<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<aside class="tsd-sources">
+						<p>Inherited from <a href="_rpc_interfaces_.rpcoptions.html">RPCOptions</a>.<a href="_rpc_interfaces_.rpcoptions.html#defaultcreateretry">defaultCreateRetry</a></p>
+						<ul>
+							<li>Defined in rpc/interfaces.ts:89</li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external">
+					<a name="defaultcreateretrycurve" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> default<wbr>Create<wbr>Retry<wbr>Curve</h3>
+					<div class="tsd-signature tsd-kind-icon">default<wbr>Create<wbr>Retry<wbr>Curve<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<aside class="tsd-sources">
+						<p>Inherited from <a href="_rpc_interfaces_.rpcoptions.html">RPCOptions</a>.<a href="_rpc_interfaces_.rpcoptions.html#defaultcreateretrycurve">defaultCreateRetryCurve</a></p>
+						<ul>
+							<li>Defined in rpc/interfaces.ts:90</li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external">
+					<a name="defaultcreatewait" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> default<wbr>Create<wbr>Wait</h3>
+					<div class="tsd-signature tsd-kind-icon">default<wbr>Create<wbr>Wait<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<aside class="tsd-sources">
+						<p>Inherited from <a href="_rpc_interfaces_.rpcoptions.html">RPCOptions</a>.<a href="_rpc_interfaces_.rpcoptions.html#defaultcreatewait">defaultCreateWait</a></p>
+						<ul>
+							<li>Defined in rpc/interfaces.ts:91</li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-					<a name="reject" class="tsd-anchor"></a>
-					<h3>reject</h3>
-					<div class="tsd-signature tsd-kind-icon">reject<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
+					<a name="emit" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> emit</h3>
+					<div class="tsd-signature tsd-kind-icon">emit<span class="tsd-signature-symbol">:</span> <a href="_rpc_interfaces_.configuredrpcemit.html" class="tsd-signature-type">ConfiguredRPCEmit</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in rpc/interfaces.ts:36</li>
+							<li>Defined in rpc/interfaces.ts:100</li>
 						</ul>
 					</aside>
-					<div class="tsd-type-declaration">
-						<h4>Type declaration</h4>
-						<ul class="tsd-parameters">
-							<li class="tsd-parameter-siganture">
-								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property tsd-is-not-exported">
-									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>any<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
-								</ul>
-								<ul class="tsd-descriptions">
-									<li class="tsd-description">
-										<h4 class="tsd-parameters-title">Parameters</h4>
-										<ul class="tsd-parameters">
-											<li>
-												<h5>any: <span class="tsd-signature-type">any</span></h5>
-											</li>
-										</ul>
-										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
-									</li>
-								</ul>
-							</li>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external">
+					<a name="enablestacktrace" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> enable<wbr>Stack<wbr>Trace</h3>
+					<div class="tsd-signature tsd-kind-icon">enable<wbr>Stack<wbr>Trace<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+					<aside class="tsd-sources">
+						<p>Inherited from <a href="_rpc_interfaces_.rpcoptions.html">RPCOptions</a>.<a href="_rpc_interfaces_.rpcoptions.html#enablestacktrace">enableStackTrace</a></p>
+						<ul>
+							<li>Defined in rpc/interfaces.ts:92</li>
 						</ul>
-					</div>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external">
+					<a name="maxackdelay" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> max<wbr>Ack<wbr>Delay</h3>
+					<div class="tsd-signature tsd-kind-icon">max<wbr>Ack<wbr>Delay<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<aside class="tsd-sources">
+						<p>Inherited from <a href="_rpc_interfaces_.rpcoptions.html">RPCOptions</a>.<a href="_rpc_interfaces_.rpcoptions.html#maxackdelay">maxAckDelay</a></p>
+						<ul>
+							<li>Defined in rpc/interfaces.ts:93</li>
+						</ul>
+					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-					<a name="resolve" class="tsd-anchor"></a>
-					<h3>resolve</h3>
-					<div class="tsd-signature tsd-kind-icon">resolve<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
+					<a name="message" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> message</h3>
+					<div class="tsd-signature tsd-kind-icon">message<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in rpc/interfaces.ts:35</li>
+							<li>Defined in rpc/interfaces.ts:98</li>
 						</ul>
 					</aside>
-					<div class="tsd-type-declaration">
-						<h4>Type declaration</h4>
-						<ul class="tsd-parameters">
-							<li class="tsd-parameter-siganture">
-								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property tsd-is-not-exported">
-									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>any<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
-								</ul>
-								<ul class="tsd-descriptions">
-									<li class="tsd-description">
-										<h4 class="tsd-parameters-title">Parameters</h4>
-										<ul class="tsd-parameters">
-											<li>
-												<h5>any: <span class="tsd-signature-type">any</span></h5>
-											</li>
-										</ul>
-										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
-									</li>
-								</ul>
-							</li>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+					<a name="on" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> on</h3>
+					<div class="tsd-signature tsd-kind-icon">on<span class="tsd-signature-symbol">:</span> <a href="_rpc_interfaces_.configuredrpcon.html" class="tsd-signature-type">ConfiguredRPCOn</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in rpc/interfaces.ts:101</li>
 						</ul>
-					</div>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+					<a name="remote" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> remote</h3>
+					<div class="tsd-signature tsd-kind-icon">remote<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Object</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in rpc/interfaces.ts:99</li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external">
+					<a name="useacks" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> use<wbr>Acks</h3>
+					<div class="tsd-signature tsd-kind-icon">use<wbr>Acks<span class="tsd-signature-symbol">:</span> <a href="_rpc_interfaces_.dictionary.html" class="tsd-signature-type">Dictionary</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<aside class="tsd-sources">
+						<p>Inherited from <a href="_rpc_interfaces_.rpcoptions.html">RPCOptions</a>.<a href="_rpc_interfaces_.rpcoptions.html#useacks">useAcks</a></p>
+						<ul>
+							<li>Defined in rpc/interfaces.ts:94</li>
+						</ul>
+					</aside>
 				</section>
 			</section>
 		</div>
@@ -277,33 +338,57 @@
 					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-has-type-parameter tsd-is-external">
 						<a href="_rpc_interfaces_.rpc.html" class="tsd-kind-icon">RPC</a>
 					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-is-external">
+				</ul>
+				<ul class="current">
+					<li class="current tsd-kind-interface tsd-parent-kind-external-module tsd-is-external">
 						<a href="_rpc_interfaces_.rpcabstractconfig.html" class="tsd-kind-icon">RPCAbstract<wbr>Config</a>
+						<ul>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external">
+								<a href="_rpc_interfaces_.rpcabstractconfig.html#defaultasynctype" class="tsd-kind-icon">default<wbr>Async<wbr>Type</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external">
+								<a href="_rpc_interfaces_.rpcabstractconfig.html#defaultcreateretry" class="tsd-kind-icon">default<wbr>Create<wbr>Retry</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external">
+								<a href="_rpc_interfaces_.rpcabstractconfig.html#defaultcreateretrycurve" class="tsd-kind-icon">default<wbr>Create<wbr>Retry<wbr>Curve</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external">
+								<a href="_rpc_interfaces_.rpcabstractconfig.html#defaultcreatewait" class="tsd-kind-icon">default<wbr>Create<wbr>Wait</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+								<a href="_rpc_interfaces_.rpcabstractconfig.html#emit" class="tsd-kind-icon">emit</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external">
+								<a href="_rpc_interfaces_.rpcabstractconfig.html#enablestacktrace" class="tsd-kind-icon">enable<wbr>Stack<wbr>Trace</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external">
+								<a href="_rpc_interfaces_.rpcabstractconfig.html#maxackdelay" class="tsd-kind-icon">max<wbr>Ack<wbr>Delay</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+								<a href="_rpc_interfaces_.rpcabstractconfig.html#message" class="tsd-kind-icon">message</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+								<a href="_rpc_interfaces_.rpcabstractconfig.html#on" class="tsd-kind-icon">on</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+								<a href="_rpc_interfaces_.rpcabstractconfig.html#remote" class="tsd-kind-icon">remote</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external">
+								<a href="_rpc_interfaces_.rpcabstractconfig.html#useacks" class="tsd-kind-icon">use<wbr>Acks</a>
+							</li>
+						</ul>
 					</li>
+				</ul>
+				<ul class="after-current">
 					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-has-type-parameter tsd-is-external">
 						<a href="_rpc_interfaces_.rpccallback.html" class="tsd-kind-icon">RPCCallback</a>
 					</li>
 					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-is-external">
 						<a href="_rpc_interfaces_.rpcconfig.html" class="tsd-kind-icon">RPCConfig</a>
 					</li>
-				</ul>
-				<ul class="current">
-					<li class="current tsd-kind-interface tsd-parent-kind-external-module tsd-has-type-parameter tsd-is-external">
+					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-has-type-parameter tsd-is-external">
 						<a href="_rpc_interfaces_.rpcdefer.html" class="tsd-kind-icon">RPCDefer</a>
-						<ul>
-							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-								<a href="_rpc_interfaces_.rpcdefer.html#promise" class="tsd-kind-icon">promise</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-								<a href="_rpc_interfaces_.rpcdefer.html#reject" class="tsd-kind-icon">reject</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-								<a href="_rpc_interfaces_.rpcdefer.html#resolve" class="tsd-kind-icon">resolve</a>
-							</li>
-						</ul>
 					</li>
-				</ul>
-				<ul class="after-current">
 					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-is-external">
 						<a href="_rpc_interfaces_.rpcemit.html" class="tsd-kind-icon">RPCEmit</a>
 					</li>

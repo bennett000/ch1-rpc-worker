@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>RPCDefer | js-rpc</title>
+	<title>PostMessageListener | js-rpc</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -57,124 +57,53 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="../modules/_rpc_interfaces_.html">&quot;rpc/interfaces&quot;</a>
+					<a href="../modules/_web_worker_worker_.html">&quot;web-worker/worker&quot;</a>
 				</li>
 				<li>
-					<a href="_rpc_interfaces_.rpcdefer.html">RPCDefer</a>
+					<a href="_web_worker_worker_.postmessagelistener.html">PostMessageListener</a>
 				</li>
 			</ul>
-			<h1>Interface RPCDefer&lt;T&gt;</h1>
+			<h1>Interface PostMessageListener</h1>
 		</div>
 	</div>
 </header>
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
-			<section class="tsd-panel tsd-type-parameters">
-				<h3>Type parameters</h3>
-				<ul class="tsd-type-parameters">
-					<li>
-						<h4>T</h4>
-					</li>
-				</ul>
-			</section>
 			<section class="tsd-panel tsd-hierarchy">
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">RPCDefer</span>
+						<span class="target">PostMessageListener</span>
 					</li>
 				</ul>
 			</section>
-			<section class="tsd-panel-group tsd-index-group">
-				<h2>Index</h2>
-				<section class="tsd-panel tsd-index-panel">
-					<div class="tsd-index-content">
-						<section class="tsd-index-section tsd-is-external">
-							<h3>Properties</h3>
-							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="_rpc_interfaces_.rpcdefer.html#promise" class="tsd-kind-icon">promise</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="_rpc_interfaces_.rpcdefer.html#reject" class="tsd-kind-icon">reject</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="_rpc_interfaces_.rpcdefer.html#resolve" class="tsd-kind-icon">resolve</a></li>
+			<section class="tsd-panel">
+				<h3 class="tsd-before-signature">Callable</h3>
+				<ul class="tsd-signatures tsd-kind-interface tsd-parent-kind-external-module tsd-is-external">
+					<li class="tsd-signature tsd-kind-icon">__call<span class="tsd-signature-symbol">(</span>payload<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in web-worker/worker.ts:16</li>
 							</ul>
-						</section>
-					</div>
-				</section>
-			</section>
-			<section class="tsd-panel-group tsd-member-group tsd-is-external">
-				<h2>Properties</h2>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-					<a name="promise" class="tsd-anchor"></a>
-					<h3>promise</h3>
-					<div class="tsd-signature tsd-kind-icon">promise<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in rpc/interfaces.ts:37</li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-					<a name="reject" class="tsd-anchor"></a>
-					<h3>reject</h3>
-					<div class="tsd-signature tsd-kind-icon">reject<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in rpc/interfaces.ts:36</li>
-						</ul>
-					</aside>
-					<div class="tsd-type-declaration">
-						<h4>Type declaration</h4>
+						</aside>
+						<h4 class="tsd-parameters-title">Parameters</h4>
 						<ul class="tsd-parameters">
-							<li class="tsd-parameter-siganture">
-								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property tsd-is-not-exported">
-									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>any<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
-								</ul>
-								<ul class="tsd-descriptions">
-									<li class="tsd-description">
-										<h4 class="tsd-parameters-title">Parameters</h4>
-										<ul class="tsd-parameters">
-											<li>
-												<h5>any: <span class="tsd-signature-type">any</span></h5>
-											</li>
-										</ul>
-										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
+							<li>
+								<h5>payload: <span class="tsd-signature-type">object</span></h5>
+								<ul class="tsd-parameters">
+									<li class="tsd-parameter">
+										<h5>data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
 									</li>
 								</ul>
 							</li>
 						</ul>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-					<a name="resolve" class="tsd-anchor"></a>
-					<h3>resolve</h3>
-					<div class="tsd-signature tsd-kind-icon">resolve<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in rpc/interfaces.ts:35</li>
-						</ul>
-					</aside>
-					<div class="tsd-type-declaration">
-						<h4>Type declaration</h4>
-						<ul class="tsd-parameters">
-							<li class="tsd-parameter-siganture">
-								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property tsd-is-not-exported">
-									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>any<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
-								</ul>
-								<ul class="tsd-descriptions">
-									<li class="tsd-description">
-										<h4 class="tsd-parameters-title">Parameters</h4>
-										<ul class="tsd-parameters">
-											<li>
-												<h5>any: <span class="tsd-signature-type">any</span></h5>
-											</li>
-										</ul>
-										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
-									</li>
-								</ul>
-							</li>
-						</ul>
-					</div>
-				</section>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
+					</li>
+				</ul>
 			</section>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
@@ -198,7 +127,7 @@
 					<li class=" tsd-kind-external-module tsd-is-external">
 						<a href="../modules/_rpc_index_.html">"rpc/index"</a>
 					</li>
-					<li class="current tsd-kind-external-module tsd-is-external">
+					<li class=" tsd-kind-external-module tsd-is-external">
 						<a href="../modules/_rpc_interfaces_.html">"rpc/interfaces"</a>
 					</li>
 					<li class=" tsd-kind-external-module tsd-is-external">
@@ -252,7 +181,7 @@
 					<li class=" tsd-kind-external-module tsd-is-external">
 						<a href="../modules/_web_worker_index_.html">"web-<wbr>worker/index"</a>
 					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
+					<li class="current tsd-kind-external-module tsd-is-external">
 						<a href="../modules/_web_worker_worker_.html">"web-<wbr>worker/worker"</a>
 					</li>
 					<li class=" tsd-kind-external-module tsd-is-external">
@@ -263,94 +192,32 @@
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
 					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-is-external">
-						<a href="_rpc_interfaces_.codederror.html" class="tsd-kind-icon">Coded<wbr>Error</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-is-external">
-						<a href="_rpc_interfaces_.configuredrpcemit.html" class="tsd-kind-icon">ConfiguredRPCEmit</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-is-external">
-						<a href="_rpc_interfaces_.configuredrpcon.html" class="tsd-kind-icon">ConfiguredRPCOn</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-has-type-parameter tsd-is-external">
-						<a href="_rpc_interfaces_.dictionary.html" class="tsd-kind-icon">Dictionary</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-has-type-parameter tsd-is-external">
-						<a href="_rpc_interfaces_.rpc.html" class="tsd-kind-icon">RPC</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-is-external">
-						<a href="_rpc_interfaces_.rpcabstractconfig.html" class="tsd-kind-icon">RPCAbstract<wbr>Config</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-has-type-parameter tsd-is-external">
-						<a href="_rpc_interfaces_.rpccallback.html" class="tsd-kind-icon">RPCCallback</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-is-external">
-						<a href="_rpc_interfaces_.rpcconfig.html" class="tsd-kind-icon">RPCConfig</a>
+						<a href="_web_worker_worker_.postmessage.html" class="tsd-kind-icon">Post<wbr>Message</a>
 					</li>
 				</ul>
 				<ul class="current">
-					<li class="current tsd-kind-interface tsd-parent-kind-external-module tsd-has-type-parameter tsd-is-external">
-						<a href="_rpc_interfaces_.rpcdefer.html" class="tsd-kind-icon">RPCDefer</a>
-						<ul>
-							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-								<a href="_rpc_interfaces_.rpcdefer.html#promise" class="tsd-kind-icon">promise</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-								<a href="_rpc_interfaces_.rpcdefer.html#reject" class="tsd-kind-icon">reject</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-								<a href="_rpc_interfaces_.rpcdefer.html#resolve" class="tsd-kind-icon">resolve</a>
-							</li>
-						</ul>
+					<li class="current tsd-kind-interface tsd-parent-kind-external-module tsd-is-external">
+						<a href="_web_worker_worker_.postmessagelistener.html" class="tsd-kind-icon">Post<wbr>Message<wbr>Listener</a>
 					</li>
 				</ul>
 				<ul class="after-current">
 					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-is-external">
-						<a href="_rpc_interfaces_.rpcemit.html" class="tsd-kind-icon">RPCEmit</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-is-external">
-						<a href="_rpc_interfaces_.rpcerror.html" class="tsd-kind-icon">RPCError</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-is-external">
-						<a href="_rpc_interfaces_.rpcerrorpayload.html" class="tsd-kind-icon">RPCError<wbr>Payload</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-is-external">
-						<a href="_rpc_interfaces_.rpcevent.html" class="tsd-kind-icon">RPCEvent</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-is-external">
-						<a href="_rpc_interfaces_.rpcinvocationpayload.html" class="tsd-kind-icon">RPCInvocation<wbr>Payload</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-has-type-parameter tsd-is-external">
-						<a href="_rpc_interfaces_.rpcnotify.html" class="tsd-kind-icon">RPCNotify</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-has-type-parameter tsd-is-external">
-						<a href="_rpc_interfaces_.rpcobservable.html" class="tsd-kind-icon">RPCObservable</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-is-external">
-						<a href="_rpc_interfaces_.rpcon.html" class="tsd-kind-icon">RPCOn</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-is-external">
-						<a href="_rpc_interfaces_.rpcoptions.html" class="tsd-kind-icon">RPCOptions</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-is-external">
-						<a href="_rpc_interfaces_.rpcreturnpayload.html" class="tsd-kind-icon">RPCReturn<wbr>Payload</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-has-type-parameter tsd-is-external">
-						<a href="_rpc_interfaces_.remote.html" class="tsd-kind-icon">Remote</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-is-external">
-						<a href="_rpc_interfaces_.remotedesc.html" class="tsd-kind-icon">Remote<wbr>Desc</a>
+						<a href="_web_worker_worker_.rpcworkerconfig.html" class="tsd-kind-icon">RPCWorker<wbr>Config</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-external-module tsd-is-external">
-						<a href="../modules/_rpc_interfaces_.html#rpcasync" class="tsd-kind-icon">RPCAsync</a>
+						<a href="../modules/_web_worker_worker_.html#workertype" class="tsd-kind-icon">Worker<wbr>Type</a>
 					</li>
-					<li class=" tsd-kind-type-alias tsd-parent-kind-external-module tsd-is-external">
-						<a href="../modules/_rpc_interfaces_.html#rpcdefaultasync" class="tsd-kind-icon">RPCDefault<wbr>Async</a>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-has-type-parameter tsd-is-external">
+						<a href="../modules/_web_worker_worker_.html#create" class="tsd-kind-icon">create</a>
 					</li>
-					<li class=" tsd-kind-type-alias tsd-parent-kind-external-module tsd-is-external">
-						<a href="../modules/_rpc_interfaces_.html#rpceventtype" class="tsd-kind-icon">RPCEvent<wbr>Type</a>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
+						<a href="../modules/_web_worker_worker_.html#validateworker" class="tsd-kind-icon">validate<wbr>Worker</a>
 					</li>
-					<li class=" tsd-kind-type-alias tsd-parent-kind-external-module tsd-is-external">
-						<a href="../modules/_rpc_interfaces_.html#rpcpayload" class="tsd-kind-icon">RPCPayload</a>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
+						<a href="../modules/_web_worker_worker_.html#workeremit" class="tsd-kind-icon">worker<wbr>Emit</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
+						<a href="../modules/_web_worker_worker_.html#workeron" class="tsd-kind-icon">worker<wbr>On</a>
 					</li>
 				</ul>
 			</nav>

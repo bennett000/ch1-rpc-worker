@@ -1,2 +1,1 @@
-/* tslint:disable no-console */
-console.log('hello world');
+export { create, RPCSocketIoConfig } from './socket-io';

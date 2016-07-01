@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>&quot;web-worker/index&quot; | js-rpc</title>
+	<title>&quot;web-worker/worker&quot; | js-rpc</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -57,16 +57,166 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="_web_worker_index_.html">&quot;web-worker/index&quot;</a>
+					<a href="_web_worker_worker_.html">&quot;web-worker/worker&quot;</a>
 				</li>
 			</ul>
-			<h1>External module &quot;web-worker/index&quot;</h1>
+			<h1>External module &quot;web-worker/worker&quot;</h1>
 		</div>
 	</div>
 </header>
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
+			<section class="tsd-panel-group tsd-index-group">
+				<h2>Index</h2>
+				<section class="tsd-panel tsd-index-panel">
+					<div class="tsd-index-content">
+						<section class="tsd-index-section tsd-is-external">
+							<h3>Interfaces</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-interface tsd-parent-kind-external-module tsd-is-external"><a href="../interfaces/_web_worker_worker_.postmessage.html" class="tsd-kind-icon">Post<wbr>Message</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-external-module tsd-is-external"><a href="../interfaces/_web_worker_worker_.postmessagelistener.html" class="tsd-kind-icon">Post<wbr>Message<wbr>Listener</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-external-module tsd-is-external"><a href="../interfaces/_web_worker_worker_.rpcworkerconfig.html" class="tsd-kind-icon">RPCWorker<wbr>Config</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section tsd-is-external">
+							<h3>Type aliases</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-type-alias tsd-parent-kind-external-module tsd-is-external"><a href="_web_worker_worker_.html#workertype" class="tsd-kind-icon">Worker<wbr>Type</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section tsd-is-external">
+							<h3>Functions</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-has-type-parameter tsd-is-external"><a href="_web_worker_worker_.html#create" class="tsd-kind-icon">create</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-is-external"><a href="_web_worker_worker_.html#validateworker" class="tsd-kind-icon">validate<wbr>Worker</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-is-external"><a href="_web_worker_worker_.html#workeremit" class="tsd-kind-icon">worker<wbr>Emit</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-is-external"><a href="_web_worker_worker_.html#workeron" class="tsd-kind-icon">worker<wbr>On</a></li>
+							</ul>
+						</section>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group tsd-is-external">
+				<h2>Type aliases</h2>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-external-module tsd-is-external">
+					<a name="workertype" class="tsd-anchor"></a>
+					<h3>Worker<wbr>Type</h3>
+					<div class="tsd-signature tsd-kind-icon">Worker<wbr>Type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Worker</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in web-worker/worker.ts:29</li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p><code>Worker</code>s will be used as is
+							strings will attempt to <code>new Worker(string)</code></p>
+						</div>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group tsd-is-external">
+				<h2>Functions</h2>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module tsd-has-type-parameter tsd-is-external">
+					<a name="create" class="tsd-anchor"></a>
+					<h3>create</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module tsd-has-type-parameter tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">create&lt;T&gt;<span class="tsd-signature-symbol">(</span>config<span class="tsd-signature-symbol">: </span><a href="../interfaces/_web_worker_worker_.rpcworkerconfig.html" class="tsd-signature-type">RPCWorkerConfig</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/_rpc_interfaces_.rpc.html" class="tsd-signature-type">RPC</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in web-worker/worker.ts:60</li>
+								</ul>
+							</aside>
+							<h4 class="tsd-type-parameters-title">Type parameters</h4>
+							<ul class="tsd-type-parameters">
+								<li>
+									<h4>T</h4>
+								</li>
+							</ul>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>config: <a href="../interfaces/_web_worker_worker_.rpcworkerconfig.html" class="tsd-signature-type">RPCWorkerConfig</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="../interfaces/_rpc_interfaces_.rpc.html" class="tsd-signature-type">RPC</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
+					<a name="validateworker" class="tsd-anchor"></a>
+					<h3>validate<wbr>Worker</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">validate<wbr>Worker<span class="tsd-signature-symbol">(</span>worker<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/_web_worker_worker_.postmessage.html" class="tsd-signature-type">PostMessage</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in web-worker/worker.ts:38</li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>worker: <span class="tsd-signature-type">any</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="../interfaces/_web_worker_worker_.postmessage.html" class="tsd-signature-type">PostMessage</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
+					<a name="workeremit" class="tsd-anchor"></a>
+					<h3>worker<wbr>Emit</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">worker<wbr>Emit<span class="tsd-signature-symbol">(</span>postMessage<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">(Anonymous function)</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in web-worker/worker.ts:55</li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>postMessage: <span class="tsd-signature-type">any</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">(Anonymous function)</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
+					<a name="workeron" class="tsd-anchor"></a>
+					<h3>worker<wbr>On</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">worker<wbr>On<span class="tsd-signature-symbol">(</span>worker<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">(Anonymous function)</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in web-worker/worker.ts:48</li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>worker: <span class="tsd-signature-type">any</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">(Anonymous function)</span></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 			<nav class="tsd-navigation primary">
@@ -140,10 +290,10 @@
 					<li class=" tsd-kind-external-module tsd-is-external">
 						<a href="_spec_entry_.html">"spec.entry"</a>
 					</li>
-					<li class="current tsd-kind-external-module tsd-is-external">
+					<li class=" tsd-kind-external-module tsd-is-external">
 						<a href="_web_worker_index_.html">"web-<wbr>worker/index"</a>
 					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
+					<li class="current tsd-kind-external-module tsd-is-external">
 						<a href="_web_worker_worker_.html">"web-<wbr>worker/worker"</a>
 					</li>
 					<li class=" tsd-kind-external-module tsd-is-external">
@@ -153,6 +303,30 @@
 			</nav>
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
+					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-is-external">
+						<a href="../interfaces/_web_worker_worker_.postmessage.html" class="tsd-kind-icon">Post<wbr>Message</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-is-external">
+						<a href="../interfaces/_web_worker_worker_.postmessagelistener.html" class="tsd-kind-icon">Post<wbr>Message<wbr>Listener</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-is-external">
+						<a href="../interfaces/_web_worker_worker_.rpcworkerconfig.html" class="tsd-kind-icon">RPCWorker<wbr>Config</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-external-module tsd-is-external">
+						<a href="_web_worker_worker_.html#workertype" class="tsd-kind-icon">Worker<wbr>Type</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-has-type-parameter tsd-is-external">
+						<a href="_web_worker_worker_.html#create" class="tsd-kind-icon">create</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
+						<a href="_web_worker_worker_.html#validateworker" class="tsd-kind-icon">validate<wbr>Worker</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
+						<a href="_web_worker_worker_.html#workeremit" class="tsd-kind-icon">worker<wbr>Emit</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
+						<a href="_web_worker_worker_.html#workeron" class="tsd-kind-icon">worker<wbr>On</a>
+					</li>
 				</ul>
 			</nav>
 		</div>

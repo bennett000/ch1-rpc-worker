@@ -81,21 +81,29 @@ export interface RPCOn {
 }
 
 export interface ConfiguredRPCOn {
-  (callback: (payload: RPCEvent) => void): () => void;
+  (callback: (payload: RPCEvent) => any): () => any;
 }
 
-export interface RPCConfig {
+export interface RPCOptions {
   defaultAsyncType?: RPCDefaultAsync;
   defaultCreateRetry?: number;
   defaultCreateRetryCurve?: number;
   defaultCreateWait?: number;
-  emit: ConfiguredRPCEmit;
-  enableStackTrace: boolean;
+  enableStackTrace?: boolean;
   maxAckDelay?: number;
-  message: string;
-  on: ConfiguredRPCOn;
-  remote: Object;
   useAcks?: Dictionary<number>;
+}
+
+export interface RPCAbstractConfig extends RPCOptions {
+  message?: string;
+  remote?: Object;
+  emit?: ConfiguredRPCEmit;
+  on?: ConfiguredRPCOn;
+}
+
+export interface RPCConfig extends RPCAbstractConfig {
+  emit: ConfiguredRPCEmit;
+  on: ConfiguredRPCOn;
 }
 
 /**

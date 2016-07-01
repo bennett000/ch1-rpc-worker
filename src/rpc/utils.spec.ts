@@ -134,6 +134,13 @@ describe('utils functions', () => {
     });
   });
   
+  describe('isString', () => {
+    it('should type check for a string', () => {
+      expect(utils.isString(utils.noop)).toBe(false);
+      expect(utils.isString('word')).toBe(true);
+    });
+  });
+  
   describe('isObject function', () => {
     it('should return false if given a falsey value', () => {
       expect(utils.isObject(null)).toBe(false);

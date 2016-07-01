@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>RPCConfig | js-rpc</title>
+	<title>RPCWorkerConfig | js-rpc</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -57,19 +57,26 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="../modules/_rpc_interfaces_.html">&quot;rpc/interfaces&quot;</a>
+					<a href="../modules/_web_worker_worker_.html">&quot;web-worker/worker&quot;</a>
 				</li>
 				<li>
-					<a href="_rpc_interfaces_.rpcconfig.html">RPCConfig</a>
+					<a href="_web_worker_worker_.rpcworkerconfig.html">RPCWorkerConfig</a>
 				</li>
 			</ul>
-			<h1>Interface RPCConfig</h1>
+			<h1>Interface RPCWorkerConfig</h1>
 		</div>
 	</div>
 </header>
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>Worker RPC Config</p>
+					</div>
+				</div>
+			</section>
 			<section class="tsd-panel tsd-hierarchy">
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
@@ -77,7 +84,7 @@
 						<a href="_rpc_interfaces_.rpcabstractconfig.html" class="tsd-signature-type">RPCAbstractConfig</a>
 						<ul class="tsd-hierarchy">
 							<li>
-								<span class="target">RPCConfig</span>
+								<span class="target">RPCWorkerConfig</span>
 							</li>
 						</ul>
 					</li>
@@ -90,17 +97,18 @@
 						<section class="tsd-index-section tsd-is-external">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external"><a href="_rpc_interfaces_.rpcconfig.html#defaultasynctype" class="tsd-kind-icon">default<wbr>Async<wbr>Type</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external"><a href="_rpc_interfaces_.rpcconfig.html#defaultcreateretry" class="tsd-kind-icon">default<wbr>Create<wbr>Retry</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external"><a href="_rpc_interfaces_.rpcconfig.html#defaultcreateretrycurve" class="tsd-kind-icon">default<wbr>Create<wbr>Retry<wbr>Curve</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external"><a href="_rpc_interfaces_.rpcconfig.html#defaultcreatewait" class="tsd-kind-icon">default<wbr>Create<wbr>Wait</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-overwrite tsd-is-external"><a href="_rpc_interfaces_.rpcconfig.html#emit" class="tsd-kind-icon">emit</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external"><a href="_rpc_interfaces_.rpcconfig.html#enablestacktrace" class="tsd-kind-icon">enable<wbr>Stack<wbr>Trace</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external"><a href="_rpc_interfaces_.rpcconfig.html#maxackdelay" class="tsd-kind-icon">max<wbr>Ack<wbr>Delay</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external"><a href="_rpc_interfaces_.rpcconfig.html#message" class="tsd-kind-icon">message</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-overwrite tsd-is-external"><a href="_rpc_interfaces_.rpcconfig.html#on" class="tsd-kind-icon">on</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external"><a href="_rpc_interfaces_.rpcconfig.html#remote" class="tsd-kind-icon">remote</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external"><a href="_rpc_interfaces_.rpcconfig.html#useacks" class="tsd-kind-icon">use<wbr>Acks</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external"><a href="_web_worker_worker_.rpcworkerconfig.html#defaultasynctype" class="tsd-kind-icon">default<wbr>Async<wbr>Type</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external"><a href="_web_worker_worker_.rpcworkerconfig.html#defaultcreateretry" class="tsd-kind-icon">default<wbr>Create<wbr>Retry</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external"><a href="_web_worker_worker_.rpcworkerconfig.html#defaultcreateretrycurve" class="tsd-kind-icon">default<wbr>Create<wbr>Retry<wbr>Curve</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external"><a href="_web_worker_worker_.rpcworkerconfig.html#defaultcreatewait" class="tsd-kind-icon">default<wbr>Create<wbr>Wait</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external"><a href="_web_worker_worker_.rpcworkerconfig.html#emit" class="tsd-kind-icon">emit</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external"><a href="_web_worker_worker_.rpcworkerconfig.html#enablestacktrace" class="tsd-kind-icon">enable<wbr>Stack<wbr>Trace</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external"><a href="_web_worker_worker_.rpcworkerconfig.html#maxackdelay" class="tsd-kind-icon">max<wbr>Ack<wbr>Delay</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external"><a href="_web_worker_worker_.rpcworkerconfig.html#message" class="tsd-kind-icon">message</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external"><a href="_web_worker_worker_.rpcworkerconfig.html#on" class="tsd-kind-icon">on</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external"><a href="_web_worker_worker_.rpcworkerconfig.html#remote" class="tsd-kind-icon">remote</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external"><a href="_web_worker_worker_.rpcworkerconfig.html#useacks" class="tsd-kind-icon">use<wbr>Acks</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="_web_worker_worker_.rpcworkerconfig.html#worker" class="tsd-kind-icon">worker</a></li>
 							</ul>
 						</section>
 					</div>
@@ -152,14 +160,14 @@
 						</ul>
 					</aside>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-overwrite tsd-is-external">
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external">
 					<a name="emit" class="tsd-anchor"></a>
-					<h3>emit</h3>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> emit</h3>
 					<div class="tsd-signature tsd-kind-icon">emit<span class="tsd-signature-symbol">:</span> <a href="_rpc_interfaces_.configuredrpcemit.html" class="tsd-signature-type">ConfiguredRPCEmit</a></div>
 					<aside class="tsd-sources">
-						<p>Overwrites <a href="_rpc_interfaces_.rpcabstractconfig.html">RPCAbstractConfig</a>.<a href="_rpc_interfaces_.rpcabstractconfig.html#emit">emit</a></p>
+						<p>Inherited from <a href="_rpc_interfaces_.rpcabstractconfig.html">RPCAbstractConfig</a>.<a href="_rpc_interfaces_.rpcabstractconfig.html#emit">emit</a></p>
 						<ul>
-							<li>Defined in rpc/interfaces.ts:105</li>
+							<li>Defined in rpc/interfaces.ts:100</li>
 						</ul>
 					</aside>
 				</section>
@@ -196,14 +204,14 @@
 						</ul>
 					</aside>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-overwrite tsd-is-external">
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external">
 					<a name="on" class="tsd-anchor"></a>
-					<h3>on</h3>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> on</h3>
 					<div class="tsd-signature tsd-kind-icon">on<span class="tsd-signature-symbol">:</span> <a href="_rpc_interfaces_.configuredrpcon.html" class="tsd-signature-type">ConfiguredRPCOn</a></div>
 					<aside class="tsd-sources">
-						<p>Overwrites <a href="_rpc_interfaces_.rpcabstractconfig.html">RPCAbstractConfig</a>.<a href="_rpc_interfaces_.rpcabstractconfig.html#on">on</a></p>
+						<p>Inherited from <a href="_rpc_interfaces_.rpcabstractconfig.html">RPCAbstractConfig</a>.<a href="_rpc_interfaces_.rpcabstractconfig.html#on">on</a></p>
 						<ul>
-							<li>Defined in rpc/interfaces.ts:106</li>
+							<li>Defined in rpc/interfaces.ts:101</li>
 						</ul>
 					</aside>
 				</section>
@@ -226,6 +234,16 @@
 						<p>Inherited from <a href="_rpc_interfaces_.rpcoptions.html">RPCOptions</a>.<a href="_rpc_interfaces_.rpcoptions.html#useacks">useAcks</a></p>
 						<ul>
 							<li>Defined in rpc/interfaces.ts:94</li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+					<a name="worker" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> worker</h3>
+					<div class="tsd-signature tsd-kind-icon">worker<span class="tsd-signature-symbol">:</span> <a href="../modules/_web_worker_worker_.html#workertype" class="tsd-signature-type">WorkerType</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in web-worker/worker.ts:35</li>
 						</ul>
 					</aside>
 				</section>
@@ -252,7 +270,7 @@
 					<li class=" tsd-kind-external-module tsd-is-external">
 						<a href="../modules/_rpc_index_.html">"rpc/index"</a>
 					</li>
-					<li class="current tsd-kind-external-module tsd-is-external">
+					<li class=" tsd-kind-external-module tsd-is-external">
 						<a href="../modules/_rpc_interfaces_.html">"rpc/interfaces"</a>
 					</li>
 					<li class=" tsd-kind-external-module tsd-is-external">
@@ -306,7 +324,7 @@
 					<li class=" tsd-kind-external-module tsd-is-external">
 						<a href="../modules/_web_worker_index_.html">"web-<wbr>worker/index"</a>
 					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
+					<li class="current tsd-kind-external-module tsd-is-external">
 						<a href="../modules/_web_worker_worker_.html">"web-<wbr>worker/worker"</a>
 					</li>
 					<li class=" tsd-kind-external-module tsd-is-external">
@@ -317,118 +335,70 @@
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
 					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-is-external">
-						<a href="_rpc_interfaces_.codederror.html" class="tsd-kind-icon">Coded<wbr>Error</a>
+						<a href="_web_worker_worker_.postmessage.html" class="tsd-kind-icon">Post<wbr>Message</a>
 					</li>
 					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-is-external">
-						<a href="_rpc_interfaces_.configuredrpcemit.html" class="tsd-kind-icon">ConfiguredRPCEmit</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-is-external">
-						<a href="_rpc_interfaces_.configuredrpcon.html" class="tsd-kind-icon">ConfiguredRPCOn</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-has-type-parameter tsd-is-external">
-						<a href="_rpc_interfaces_.dictionary.html" class="tsd-kind-icon">Dictionary</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-has-type-parameter tsd-is-external">
-						<a href="_rpc_interfaces_.rpc.html" class="tsd-kind-icon">RPC</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-is-external">
-						<a href="_rpc_interfaces_.rpcabstractconfig.html" class="tsd-kind-icon">RPCAbstract<wbr>Config</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-has-type-parameter tsd-is-external">
-						<a href="_rpc_interfaces_.rpccallback.html" class="tsd-kind-icon">RPCCallback</a>
+						<a href="_web_worker_worker_.postmessagelistener.html" class="tsd-kind-icon">Post<wbr>Message<wbr>Listener</a>
 					</li>
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-interface tsd-parent-kind-external-module tsd-is-external">
-						<a href="_rpc_interfaces_.rpcconfig.html" class="tsd-kind-icon">RPCConfig</a>
+						<a href="_web_worker_worker_.rpcworkerconfig.html" class="tsd-kind-icon">RPCWorker<wbr>Config</a>
 						<ul>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external">
-								<a href="_rpc_interfaces_.rpcconfig.html#defaultasynctype" class="tsd-kind-icon">default<wbr>Async<wbr>Type</a>
+								<a href="_web_worker_worker_.rpcworkerconfig.html#defaultasynctype" class="tsd-kind-icon">default<wbr>Async<wbr>Type</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external">
-								<a href="_rpc_interfaces_.rpcconfig.html#defaultcreateretry" class="tsd-kind-icon">default<wbr>Create<wbr>Retry</a>
+								<a href="_web_worker_worker_.rpcworkerconfig.html#defaultcreateretry" class="tsd-kind-icon">default<wbr>Create<wbr>Retry</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external">
-								<a href="_rpc_interfaces_.rpcconfig.html#defaultcreateretrycurve" class="tsd-kind-icon">default<wbr>Create<wbr>Retry<wbr>Curve</a>
+								<a href="_web_worker_worker_.rpcworkerconfig.html#defaultcreateretrycurve" class="tsd-kind-icon">default<wbr>Create<wbr>Retry<wbr>Curve</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external">
-								<a href="_rpc_interfaces_.rpcconfig.html#defaultcreatewait" class="tsd-kind-icon">default<wbr>Create<wbr>Wait</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-overwrite tsd-is-external">
-								<a href="_rpc_interfaces_.rpcconfig.html#emit" class="tsd-kind-icon">emit</a>
+								<a href="_web_worker_worker_.rpcworkerconfig.html#defaultcreatewait" class="tsd-kind-icon">default<wbr>Create<wbr>Wait</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external">
-								<a href="_rpc_interfaces_.rpcconfig.html#enablestacktrace" class="tsd-kind-icon">enable<wbr>Stack<wbr>Trace</a>
+								<a href="_web_worker_worker_.rpcworkerconfig.html#emit" class="tsd-kind-icon">emit</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external">
-								<a href="_rpc_interfaces_.rpcconfig.html#maxackdelay" class="tsd-kind-icon">max<wbr>Ack<wbr>Delay</a>
+								<a href="_web_worker_worker_.rpcworkerconfig.html#enablestacktrace" class="tsd-kind-icon">enable<wbr>Stack<wbr>Trace</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external">
-								<a href="_rpc_interfaces_.rpcconfig.html#message" class="tsd-kind-icon">message</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-overwrite tsd-is-external">
-								<a href="_rpc_interfaces_.rpcconfig.html#on" class="tsd-kind-icon">on</a>
+								<a href="_web_worker_worker_.rpcworkerconfig.html#maxackdelay" class="tsd-kind-icon">max<wbr>Ack<wbr>Delay</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external">
-								<a href="_rpc_interfaces_.rpcconfig.html#remote" class="tsd-kind-icon">remote</a>
+								<a href="_web_worker_worker_.rpcworkerconfig.html#message" class="tsd-kind-icon">message</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external">
-								<a href="_rpc_interfaces_.rpcconfig.html#useacks" class="tsd-kind-icon">use<wbr>Acks</a>
+								<a href="_web_worker_worker_.rpcworkerconfig.html#on" class="tsd-kind-icon">on</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external">
+								<a href="_web_worker_worker_.rpcworkerconfig.html#remote" class="tsd-kind-icon">remote</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external">
+								<a href="_web_worker_worker_.rpcworkerconfig.html#useacks" class="tsd-kind-icon">use<wbr>Acks</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+								<a href="_web_worker_worker_.rpcworkerconfig.html#worker" class="tsd-kind-icon">worker</a>
 							</li>
 						</ul>
 					</li>
 				</ul>
 				<ul class="after-current">
-					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-has-type-parameter tsd-is-external">
-						<a href="_rpc_interfaces_.rpcdefer.html" class="tsd-kind-icon">RPCDefer</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-is-external">
-						<a href="_rpc_interfaces_.rpcemit.html" class="tsd-kind-icon">RPCEmit</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-is-external">
-						<a href="_rpc_interfaces_.rpcerror.html" class="tsd-kind-icon">RPCError</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-is-external">
-						<a href="_rpc_interfaces_.rpcerrorpayload.html" class="tsd-kind-icon">RPCError<wbr>Payload</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-is-external">
-						<a href="_rpc_interfaces_.rpcevent.html" class="tsd-kind-icon">RPCEvent</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-is-external">
-						<a href="_rpc_interfaces_.rpcinvocationpayload.html" class="tsd-kind-icon">RPCInvocation<wbr>Payload</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-has-type-parameter tsd-is-external">
-						<a href="_rpc_interfaces_.rpcnotify.html" class="tsd-kind-icon">RPCNotify</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-has-type-parameter tsd-is-external">
-						<a href="_rpc_interfaces_.rpcobservable.html" class="tsd-kind-icon">RPCObservable</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-is-external">
-						<a href="_rpc_interfaces_.rpcon.html" class="tsd-kind-icon">RPCOn</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-is-external">
-						<a href="_rpc_interfaces_.rpcoptions.html" class="tsd-kind-icon">RPCOptions</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-is-external">
-						<a href="_rpc_interfaces_.rpcreturnpayload.html" class="tsd-kind-icon">RPCReturn<wbr>Payload</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-has-type-parameter tsd-is-external">
-						<a href="_rpc_interfaces_.remote.html" class="tsd-kind-icon">Remote</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-is-external">
-						<a href="_rpc_interfaces_.remotedesc.html" class="tsd-kind-icon">Remote<wbr>Desc</a>
-					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-external-module tsd-is-external">
-						<a href="../modules/_rpc_interfaces_.html#rpcasync" class="tsd-kind-icon">RPCAsync</a>
+						<a href="../modules/_web_worker_worker_.html#workertype" class="tsd-kind-icon">Worker<wbr>Type</a>
 					</li>
-					<li class=" tsd-kind-type-alias tsd-parent-kind-external-module tsd-is-external">
-						<a href="../modules/_rpc_interfaces_.html#rpcdefaultasync" class="tsd-kind-icon">RPCDefault<wbr>Async</a>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-has-type-parameter tsd-is-external">
+						<a href="../modules/_web_worker_worker_.html#create" class="tsd-kind-icon">create</a>
 					</li>
-					<li class=" tsd-kind-type-alias tsd-parent-kind-external-module tsd-is-external">
-						<a href="../modules/_rpc_interfaces_.html#rpceventtype" class="tsd-kind-icon">RPCEvent<wbr>Type</a>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
+						<a href="../modules/_web_worker_worker_.html#validateworker" class="tsd-kind-icon">validate<wbr>Worker</a>
 					</li>
-					<li class=" tsd-kind-type-alias tsd-parent-kind-external-module tsd-is-external">
-						<a href="../modules/_rpc_interfaces_.html#rpcpayload" class="tsd-kind-icon">RPCPayload</a>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
+						<a href="../modules/_web_worker_worker_.html#workeremit" class="tsd-kind-icon">worker<wbr>Emit</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
+						<a href="../modules/_web_worker_worker_.html#workeron" class="tsd-kind-icon">worker<wbr>On</a>
 					</li>
 				</ul>
 			</nav>

@@ -84,7 +84,7 @@
     "requirejs": "~2.1.11",
     "rimraf": "^2.5.2",
     "rxjs-es": "^5.0.0-beta.9",
-    "socket.io": "~0.9.16",
+    "socket.io": "^0.9.17",
     "ts-helpers": "^1.1.1",
     "tslint": "^3.11.0",
     "typedoc": "^0.4.4",

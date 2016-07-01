@@ -1,5 +1,6 @@
 /**
  * Program Entry Point
  */
-export { create } from './js-rpc';
 export { DEFAULT_MESSAGE } from './constants';
+export { create } from './js-rpc';
+export { RPC, RPCAbstractConfig, RPCConfig } from './interfaces';
