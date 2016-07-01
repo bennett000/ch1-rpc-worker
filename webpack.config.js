@@ -23,7 +23,11 @@ const plugins = [
 
 module.exports = {
   devtool: 'source-map',
-  entry: './src/index.ts',
+  entry: {
+    rpc: './src/rpc/index.ts',
+    'web-worker': './src/web-worker/index.ts',
+    'socket-io': './src/socket-io/index.ts',
+  },
   stats: {
     colors: true,
     reasons: true,
@@ -39,7 +43,7 @@ module.exports = {
       Rx: 'RxJs',
     },
     libraryTarget: 'umd',
-    filename: 'js-rpc.min.js',
+    filename: path.normalize('/[name]/dist/[name].min.js'),
     path: path.join(__dirname, 'dist'),
   },
   plugins,

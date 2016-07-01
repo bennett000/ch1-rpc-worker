@@ -1,0 +1,13 @@
+{
+  "name":"@rpc/rpc",
+  "dependencies": {
+    "es6-promise": "^3.2.1"
+  },
+  "main": "lib/index.js",
+  "peerDependencies": {
+    "rxjs-es": "^5.0.0-beta.9"
+  },
+  "scripts": {
+  },
+  "typings": "lib/index.d.dts"
+}
