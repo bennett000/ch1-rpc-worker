@@ -1,7 +1,10 @@
+/**
+ * Project interfaces
+ */
 import { Promise } from 'es6-promise';
 
 /**
- * Project interfaces
+ * Generic Dictionary
  */
 export interface Dictionary<T> {
   [key: string]: T;
@@ -18,9 +21,12 @@ export interface Remote<T> extends Dictionary<Function|Object> { }
 export interface RemoteDesc extends 
   Dictionary<RPCDefaultAsync | Dictionary<RPCDefaultAsync>> {}
 
-export type RPCAsync<T> = RPCDefer<T> | RPCCallback<T> | RPCNotify<T>; 
+/**
+ * Async style function union
+ */
+export type RPCAsync<T> = RPCDefer<T> | RPCNodeCallback<T> | RPCNotify<T>; 
 
-export interface RPCCallback<T> {
+export interface RPCNodeCallback<T> {
   (error: Error, param?: T);
   (error: Error, ...rest: any[]);
 }
@@ -37,24 +43,25 @@ export interface RPCDefer<T> {
   promise: Promise<T>;
 }
 
+/**
+ * The Different Types of RPC Events
+ */
 export type RPCEventType =
   'ack' |
+  'addEventListener' |
   'create' |
   'createReturn' |
   'destroy' | 
   'destroyReturn' |
+  'fnReturn' |
   'invoke' |
-  'invokeReturn' |
   'nodeCallback' |
-  'nodeCallbackReturn' |
   'on' |
-  'onReturn' |
   'removeListener' |
-  'removeListenerReturn' |
+  'removeEventListener' |
   'promise' |
-  'promiseReturn' |
-  'subscribe' | 
-  'subscribeReturn';
+  'subscribe' |
+  'subscribereturn'; 
 
 
 export interface RPCEmit {

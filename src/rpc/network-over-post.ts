@@ -33,27 +33,21 @@ import {
   RPCReturnPayload,
 } from './interfaces';
 
-const invokeReturn = (
+const fnReturn = (
   c: RPCConfig, payload: RPCPayload, uid: string,
   callbacks: Dictionary<RPCAsync<any>>
 ) => returnPayload(c, payload, callbacks, uid);
 
-const promiseReturn = invokeReturn;
-const nodeCallbackReturn = invokeReturn;
-
-
 const responders = Object.freeze({
   ack,
   invoke,
-  invokeReturn,
+  fnReturn,
   on: onRemote,
   onReturn: onRemoteReturn,
   off: offRemote,
   offReturn: offRemoteReturn,
   nodeCallback,
-  nodeCallbackReturn,
   promise,
-  promiseReturn,
 });
 
 export function create(config: RPCConfig, callbacks, remoteDesc: RemoteDesc):
@@ -189,13 +183,13 @@ export function invoke(
     const result = safeCall(c, payload.fn, payload.args);
 
     if (result instanceof Error) {
-      c.emit(createErrorEvent(c, 'invokeReturn', result, uid));
+      c.emit(createErrorEvent(c, 'fnReturn', result, uid));
       return;
     }
 
-    c.emit(createEvent('invokeReturn', { result: [ result ] }, uid));
+    c.emit(createEvent('fnReturn', { result: [ result ] }, uid));
   } else {
-    c.emit(createErrorEvent(c, 'invokeReturn',
+    c.emit(createErrorEvent(c, 'fnReturn',
       new TypeError('invoke: invalidPayload'), uid));
   }
 }
@@ -292,20 +286,20 @@ export function nodeCallback(c: RPCConfig, payload: RPCPayload, uid: string) {
   if (isRPCInvocationPayload(payload)) {
     payload.args.push((err, ...args) => {
       if (err) {
-        c.emit(createErrorEvent(c, 'nodeCallbackReturn', err, uid)); 
+        c.emit(createErrorEvent(c, 'fnReturn', err, uid)); 
       } else {
-        c.emit(createEvent('nodeCallbackReturn', { result: args }, uid));
+        c.emit(createEvent('fnReturn', { result: args }, uid));
       }
     });
     
     const result = safeCall(c, payload.fn, payload.args);
 
     if (result instanceof Error) {
-      c.emit(createErrorEvent(c, 'nodeCallbackReturn', result, uid));
+      c.emit(createErrorEvent(c, 'fnReturn', result, uid));
       return;
     }
   } else {
-    c.emit(createErrorEvent(c, 'nodeCallbackReturn',
+    c.emit(createErrorEvent(c, 'fnReturn',
       new TypeError('nodeCallback: invalidPayload'), uid));
   }
 }
@@ -315,16 +309,16 @@ export function promise(c: RPCConfig, payload: RPCPayload, uid: string) {
     const result = safeCall(c, payload.fn, payload.args);
 
     if (result instanceof Error) {
-      c.emit(createErrorEvent(c, 'promiseReturn', result, uid));
+      c.emit(createErrorEvent(c, 'fnReturn', result, uid));
       return;
     }
     
     result
-      .then((...args) => c.emit(createEvent('promiseReturn', { result: args }, 
+      .then((...args) => c.emit(createEvent('fnReturn', { result: args }, 
         uid)))
-      .catch((err) => c.emit(createErrorEvent(c, 'promiseReturn', err, uid)));
+      .catch((err) => c.emit(createErrorEvent(c, 'fnReturn', err, uid)));
   } else {
-    c.emit(createErrorEvent(c, 'promiseReturn',
+    c.emit(createErrorEvent(c, 'fnReturn',
       new TypeError('promise: invalidPayload'), uid));
   }
 }

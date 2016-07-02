@@ -26,7 +26,7 @@ describe('network over post functions', () => {
       payload: {
         result: [],
       },
-      type: 'invokeReturn',
+      type: 'fnReturn',
       uid: 'test',
     };
   });

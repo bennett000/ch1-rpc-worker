@@ -8,7 +8,7 @@ import {
   ConfiguredRPCEmit,
   Dictionary,
   RPCAsync, 
-  RPCCallback,
+  RPCNodeCallback,
   RPCConfig,
   RPCDefaultAsync,
   RPCDefer, 
@@ -41,7 +41,7 @@ export function registerDefer<T>(
 
 export function registerCallback<T>(
   callbacks: Dictionary<RPCAsync<T>>, 
-  callback: RPCNotify<T> | RPCCallback<T>, 
+  callback: RPCNotify<T> | RPCNodeCallback<T>, 
   uid) {
   
   if (callbacks[uid]) {

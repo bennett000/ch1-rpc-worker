@@ -7,7 +7,7 @@ import {
   Dictionary,
   RPCDefaultAsync,
   RPCDefer,
-  RPCCallback,
+  RPCNodeCallback,
   RPCEvent,
   RPCError,
   RPCErrorPayload, 
@@ -78,7 +78,7 @@ export function isPromise<T>(promise: any): promise is Promise<T>  {
   return true;
 }
 
-export function isRPCCallback<T>(arg: any): arg is RPCCallback<T> {
+export function isRPCCallback<T>(arg: any): arg is RPCNodeCallback<T> {
   return isFunction(arg); 
 }
 
