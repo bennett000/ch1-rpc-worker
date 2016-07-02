@@ -128,6 +128,7 @@ describe('remoteProcedure functions', () => {
 function expectDeferIn(dict) {
   let found;
 
+  /* tslint:disable for-in */
   for (let i in dict) {
     if (!dict[i].async) {
       break;
@@ -143,6 +144,7 @@ function expectDeferIn(dict) {
 function expectFunctionIn(dict) {
   let found;
 
+  /* tslint:disable for-in */
   for (let i in dict) {
     if (!dict[i].async) {
       break;
