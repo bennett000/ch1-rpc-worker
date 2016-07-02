@@ -24,18 +24,28 @@ export interface RemoteDesc extends
 /**
  * Async style function union
  */
-export type RPCAsync<T> = RPCDefer<T> | RPCNodeCallback<T> | RPCNotify<T>; 
+export type RPCAsync<T> = RPCDefer<T> | RPCNodeCallback<T> | RPCNotify<T>;
+
+/**
+ * Ensures correct async response
+ */
+export interface RPCAsyncContainer<T> {
+  type: RPCDefaultAsync;
+  async: RPCAsync<T>;
+}
+
+export type RPCAsyncContainerDictionary = Dictionary<RPCAsyncContainer<any>>;
 
 export interface RPCNodeCallback<T> {
   (error: Error, param?: T);
   (error: Error, ...rest: any[]);
 }
 
-export type RPCDefaultAsync =
+export type RPCDefaultAsync = 
   'nodeCallback' |
+  'nodeOn' |
   'observable' |
-  'promise' |
-  'asyncAwait';
+  'promise';
 
 export interface RPCDefer<T> {
   resolve: (any) => any;
@@ -56,12 +66,14 @@ export type RPCEventType =
   'fnReturn' |
   'invoke' |
   'nodeCallback' |
-  'on' |
-  'removeListener' |
+  'nodeOn' |
+  'nodeRemoveListener' |
   'removeEventListener' |
+  'observe' | 
   'promise' |
   'subscribe' |
-  'subscribereturn'; 
+  'subscribeReturn' | 
+  'unSubscribeReturn'; 
 
 
 export interface RPCEmit {

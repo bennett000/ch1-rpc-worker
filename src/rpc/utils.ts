@@ -11,8 +11,9 @@ import {
   RPCEvent,
   RPCError,
   RPCErrorPayload, 
-  RPCInvocationPayload, 
-  RPCReturnPayload 
+  RPCInvocationPayload,
+  RPCNotify,
+  RPCReturnPayload,
 } from './interfaces';
 
 export const isRPCDefaultAsync = (arg): arg is RPCDefaultAsync => [
@@ -78,7 +79,11 @@ export function isPromise<T>(promise: any): promise is Promise<T>  {
   return true;
 }
 
-export function isRPCCallback<T>(arg: any): arg is RPCNodeCallback<T> {
+export function isRPCNodeCallback<T>(arg: any): arg is RPCNodeCallback<T> {
+  return isFunction(arg); 
+}
+
+export function isRPCNotify<T>(arg: any): arg is RPCNotify<T> {
   return isFunction(arg); 
 }
 

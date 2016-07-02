@@ -2,10 +2,17 @@
  * Main module "really ties the project together"
  */
 import { Promise } from 'es6-promise';
-import { Remote, RemoteDesc, RPC, RPCConfig } from './interfaces';
 import { isObject, pnoop, typeError, throwIfNotFunction} from './utils';
 import { create as createRemote, createRemoteDescFrom } from './remote';
 import * as nOp from './network-over-post';
+
+import { 
+  Remote, 
+  RemoteDesc, 
+  RPC,
+  RPCAsyncContainerDictionary,
+  RPCConfig 
+} from './interfaces';
 
 import { 
   DEFAULT_ASYNC_TYPE,
@@ -28,7 +35,7 @@ export function create<RemoteType>(config: RPCConfig,
   config = validateConfig(config, remote);
   
   const local: RemoteType = Object.create(null);
-  const callbacks = Object.create(null);
+  const callbacks: RPCAsyncContainerDictionary = Object.create(null);
   const combinedDesc = createRemoteDescFrom(config, remote, remoteDesc);
   let destroy: () => Promise<void> = pnoop;
 

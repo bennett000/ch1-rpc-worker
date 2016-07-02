@@ -2,8 +2,8 @@ import * as remote from './remote';
 import { isFunction, noop } from './utils';
 
 import { 
+  RPCAsyncContainerDictionary,
   RPCDefaultAsync, 
-  Dictionary, 
   RemoteDesc, 
   RPCAsync,
 } from './interfaces';
@@ -137,7 +137,7 @@ describe('Remote Object functions', () => {
         test3?: void;
       };
       
-      const callbacks: Dictionary<RPCAsync<any>> = {};
+      const callbacks: RPCAsyncContainerDictionary = {};
       
       const remoteDesc: RemoteDesc = {
         test1: 'promise',

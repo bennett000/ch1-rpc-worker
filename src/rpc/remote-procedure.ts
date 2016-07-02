@@ -6,8 +6,8 @@ import { createEvent } from './events';
 
 import { 
   ConfiguredRPCEmit,
-  Dictionary,
   RPCAsync, 
+  RPCAsyncContainerDictionary,
   RPCNodeCallback,
   RPCConfig,
   RPCDefaultAsync,
@@ -26,7 +26,7 @@ import {
 } from './utils';
 
 export function registerDefer<T>(
-  callbacks: Dictionary<RPCAsync<T>>, defer: RPCDefer<T>, uid) {
+  callbacks: RPCAsyncContainerDictionary, defer: RPCDefer<T>, uid) {
   
   if (callbacks[uid]) {
     rangeError('Remote Procedure: callback uid already exists!');
@@ -34,13 +34,16 @@ export function registerDefer<T>(
   
   throwIfNotDefer(defer, 'Remote Procedure: expecting defer object');
 
-  callbacks[uid] = defer;
+  callbacks[uid] = {
+    async: defer,
+    type: 'promise',
+  };
 
   return defer.promise;
 }
 
 export function registerCallback<T>(
-  callbacks: Dictionary<RPCAsync<T>>, 
+  callbacks: RPCAsyncContainerDictionary, 
   callback: RPCNotify<T> | RPCNodeCallback<T>, 
   uid) {
   
@@ -51,7 +54,10 @@ export function registerCallback<T>(
   throwIfNotFunction(callback, 'Remote Procedure: register callback: ' +
     'expecting callback function');
 
-  callbacks[uid] = callback;
+  callbacks[uid] = {
+    async: callback,
+    type: 'nodeCallback',
+  };
 
   return uid;
 }
@@ -67,7 +73,7 @@ export function doPost(postMethod, type, remoteFunction: string, args: any[]) {
   return event;
 }
 
-export function callbackRemote(callbacks: Dictionary<RPCAsync<any>>,
+export function callbackRemote(callbacks: RPCAsyncContainerDictionary,
                                postMethod: ConfiguredRPCEmit,
                                type: RPCEventType,
                                remoteFunction: string,
@@ -84,7 +90,7 @@ export function callbackRemote(callbacks: Dictionary<RPCAsync<any>>,
   return registerCallback(callbacks, cb, event.uid);
 }
 
-export function promiseRemote(callbacks: Dictionary<RPCAsync<any>>,
+export function promiseRemote(callbacks: RPCAsyncContainerDictionary,
                               postMethod: ConfiguredRPCEmit,
                               type: RPCEventType,
                               remoteFunction: string,
@@ -96,7 +102,7 @@ export function promiseRemote(callbacks: Dictionary<RPCAsync<any>>,
 }
 
 export function create(c: RPCConfig, 
-                callbacks: Dictionary<RPCAsync<any>>,
+                callbacks: RPCAsyncContainerDictionary,
                 fullFnName: string,
                 fnType?: RPCDefaultAsync) {
   switch (fnType) {
@@ -107,6 +113,9 @@ export function create(c: RPCConfig,
     case 'nodeCallback':
       return (...args) => callbackRemote(callbacks, c.emit, 'nodeCallback', 
         fullFnName, args); 
+    //
+    // case 'nodeOn':
+    //   return (...args) => 
     
     default:
       return create(c, callbacks, fullFnName, c.defaultAsyncType);

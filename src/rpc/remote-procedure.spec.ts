@@ -1,4 +1,4 @@
-import { Dictionary, RPCAsync } from './interfaces';
+import { RPCAsync, RPCAsyncContainerDictionary } from './interfaces';
 import { defer, isDefer, isFunction, noop } from './utils';
 import * as rp from './remote-procedure';
 
@@ -38,7 +38,7 @@ describe('remoteProcedure functions', () => {
   
   describe('callbackRemote', () => {
     it('should throw if not given a callback', () => {
-      const dict: Dictionary<RPCAsync<any>> = {};
+      const dict: RPCAsyncContainerDictionary = {};
       const post = noop;
       expect(() => rp
         .callbackRemote(dict, post, 'invoke', 'remote function', []))
@@ -46,7 +46,7 @@ describe('remoteProcedure functions', () => {
     });
     
     it('should register the last argument as a callback', () => {
-      const dict: Dictionary<RPCAsync<any>> = {};
+      const dict: RPCAsyncContainerDictionary = {};
       const post = noop;
       const callback = noop;
       rp.callbackRemote(dict, post, 'invoke', 'remote function', [
@@ -55,7 +55,7 @@ describe('remoteProcedure functions', () => {
       let found = false;
       
       for (let i in dict) {
-        if (dict[i] === callback) {
+        if (dict[i].async === callback) {
           found = true;
         }
       }
@@ -75,7 +75,7 @@ describe('remoteProcedure functions', () => {
 
   describe('promiseRemote function', () => {
     it('should register a new defer', () => {
-      const dict: Dictionary<RPCAsync<any>> = {};
+      const dict: RPCAsyncContainerDictionary = {};
       const post = noop;
       rp.promiseRemote(dict, post, 'invoke', 'remote function', [
         'args']);
@@ -86,7 +86,7 @@ describe('remoteProcedure functions', () => {
   
   describe('registerDefer function', () => {
     it('should add a defer to a dictionary', () => {
-      const dict: Dictionary<any> = {};
+      const dict: RPCAsyncContainerDictionary = {};
       const d = defer();
       const id = 'test';
       rp.registerDefer(dict, d, id);
@@ -95,7 +95,7 @@ describe('remoteProcedure functions', () => {
     });
     
     it('should throw if registering the same uid', () => {
-      const dict: Dictionary<any> = {};
+      const dict: RPCAsyncContainerDictionary = {};
       const d = defer();
       const id = 'test';
       rp.registerDefer(dict, d, id);
@@ -106,7 +106,7 @@ describe('remoteProcedure functions', () => {
 
   describe('registerCallback function', () => {
     it('should add a callback to a dictionary', () => {
-      const dict: Dictionary<any> = {};
+      const dict: RPCAsyncContainerDictionary = {};
       const callback = noop;
       const id = 'test';
       rp.registerCallback(dict, callback, id);
@@ -115,7 +115,7 @@ describe('remoteProcedure functions', () => {
     });
 
     it('should throw if registering the same uid', () => {
-      const dict: Dictionary<any> = {};
+      const dict: RPCAsyncContainerDictionary = {};
       const callback = noop;
       const id = 'test';
       rp.registerCallback(dict, callback, id);
@@ -129,8 +129,11 @@ function expectDeferIn(dict) {
   let found;
 
   for (let i in dict) {
-    if (isDefer(dict[i])) {
-      found = dict[i];
+    if (!dict[i].async) {
+      break;
+    }
+    if (isDefer(dict[i].async)) {
+      found = dict[i].async;
     }
   }
 
@@ -141,8 +144,11 @@ function expectFunctionIn(dict) {
   let found;
 
   for (let i in dict) {
-    if (isFunction(dict[i])) {
-      found = dict[i];
+    if (!dict[i].async) {
+      break;
+    }
+    if (isFunction(dict[i].async)) {
+      found = dict[i].async;
     }
   }
 

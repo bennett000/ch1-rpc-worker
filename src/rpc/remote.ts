@@ -1,11 +1,15 @@
 /**
  * Functions related to creating and using remote objects
  */
-import {
-  Dictionary, Remote, RemoteDesc, RPCConfig,
-  RPCAsync
-} from './interfaces';
 import * as rpc from './remote-procedure';
+
+import {
+  Remote, 
+  RemoteDesc, 
+  RPCAsyncContainerDictionary,
+  RPCConfig,
+  RPCAsync,
+} from './interfaces';
 
 import {
   createTypeError, 
@@ -48,6 +52,9 @@ export function getFinalFunction(remote: Object, fnName: string) {
   return getFinalFunction(remote[names.shift()], names.join('.'));
 }
 
+/**
+ * Safely finds and executes a proxy for a remote procedure
+ */
 export function safeCall(c: RPCConfig, fnName: string, args?: any[]) {
   const fn = getFinalFunction(c.remote, fnName);
   
@@ -63,7 +70,7 @@ export function safeCall(c: RPCConfig, fnName: string, args?: any[]) {
 }
 
 export function create<T>(c: RPCConfig,
-                       callbacks: Dictionary<RPCAsync<any>>,
+                       callbacks: RPCAsyncContainerDictionary,
                        remoteDesc: RemoteDesc,
                        remote?: T, 
                        prefix?: string): T {

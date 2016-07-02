@@ -9,7 +9,7 @@ import { createEvent, createErrorEvent } from './events';
 import {
   defer,
   isDefer,
-  isRPCCallback,
+  isRPCNodeCallback,
   isRPCEvent,
   isFunction, 
   isRPCErrorPayload, 
@@ -22,9 +22,10 @@ import {
 } from './utils';
 
 import { 
-  Dictionary,
   RemoteDesc,
   RPCAsync,
+  RPCAsyncContainer,
+  RPCAsyncContainerDictionary,
   RPCConfig, 
   RPCDefer,
   RPCEvent,
@@ -35,7 +36,7 @@ import {
 
 const fnReturn = (
   c: RPCConfig, payload: RPCPayload, uid: string,
-  callbacks: Dictionary<RPCAsync<any>>
+  callbacks: RPCAsyncContainerDictionary
 ) => returnPayload(c, payload, callbacks, uid);
 
 const responders = Object.freeze({
@@ -195,29 +196,47 @@ export function invoke(
 }
 
 export function fireError(
-  c, payload: RPCErrorPayload, asyncReturn: RPCAsync<any>) {
+  c, payload: RPCErrorPayload, asyncReturn: RPCAsyncContainer<any>) {
   const error = createErrorFromRPCError(c, payload.error);
+  const asyncFn = asyncReturn.async;
 
-  if (isDefer<any>(asyncReturn)) {
-    asyncReturn.reject(error);
-    return;
-  } else if (isRPCCallback<any>(asyncReturn)) {
-    asyncReturn(error);
-    return;
+  switch (asyncReturn.type) {
+    case 'promise':
+      if (isDefer<any>(asyncFn)) {
+        asyncFn.reject(error);
+        return;
+      } 
+      break;
+    
+    case 'nodeCallback':
+      if (isRPCNodeCallback<any>(asyncFn)) {
+        asyncFn(error); 
+        return;
+      }
+      break;
   }
   
   throw error;
 }
 
 export function fireSuccess(
-  c, payload: RPCReturnPayload, asyncReturn: RPCAsync<any>) {
+  c, payload: RPCReturnPayload, asyncReturn: RPCAsyncContainer<any>) {
+  const asyncFn = asyncReturn.async;
   
-  if (isDefer(asyncReturn)) {
-    asyncReturn.resolve.apply(asyncReturn.resolve, payload.result);
-    return;
-  } else if (isRPCCallback(asyncReturn)) {
-    asyncReturn.apply(null, [null].concat(payload.result));
-    return;
+  switch (asyncReturn.type) {
+    case 'promise':
+      if (isDefer(asyncFn)) {
+        asyncFn.resolve.apply(asyncFn.resolve, payload.result);
+        return;
+      }
+      break;
+    
+    case 'nodeCallback':
+      if (isRPCNodeCallback(asyncFn)) {
+        asyncFn.apply(null, [null].concat(payload.result));
+        return;
+      }
+      break;
   }
   
   rangeError('fireSuccess: no async handler');
@@ -225,7 +244,7 @@ export function fireSuccess(
 
 export function returnPayload(c: RPCConfig, 
                               payload: RPCPayload,
-                              callbacks: Dictionary<RPCAsync<any>>, 
+                              callbacks: RPCAsyncContainerDictionary, 
                               uid: string) {
   if (!callbacks[uid]) {
     rangeError(`invokeReturn: no matching callback for ${uid}`);
@@ -323,8 +342,10 @@ export function promise(c: RPCConfig, payload: RPCPayload, uid: string) {
   }
 }
 
-export function on(sendAck: (c: RPCConfig, uid: string) => void, 
-  c: RPCConfig, callbacks: Dictionary<RPCAsync<any>>, id: string) {
+export function on(sendAck: (c: RPCConfig, uid: string) => void,
+                   c: RPCConfig, 
+                   callbacks: RPCAsyncContainerDictionary, 
+                   id: string) {
 
   return c.on((event) => {
       throwIfNotRPCEvent(event, 

@@ -1,7 +1,10 @@
 import { Promise } from 'es6-promise';
 import * as nOp from './network-over-post';
 import { defer } from './utils';
-import { Dictionary, RPCAsync } from './interfaces';
+import { 
+  RPCAsync, 
+  RPCAsyncContainerDictionary,
+} from './interfaces';
 
 import { 
   isRPCErrorPayload, 
@@ -107,7 +110,7 @@ describe('network over post functions', () => {
       const sendAck = (c, uid) => { didRun = true; };
        
       nOp.on(sendAck, config, {
-        test: noop
+        test:  { async: noop, type: 'nodeCallback' },
       }, 'id');
       
       emit(event);
@@ -124,7 +127,7 @@ describe('network over post functions', () => {
         const sendAck = (c, uid) => { didRun = true; };
 
         nOp.on(sendAck, config, {
-          test: noop
+          test:  { async: noop, type: 'nodeCallback' },
         }, 'id');
 
         emit(event);
@@ -138,7 +141,7 @@ describe('network over post functions', () => {
       const d = defer();
       
       event.payload = { error: { message: 'test' }};
-      nOp.fireError(config, event.payload, d);
+      nOp.fireError(config, event.payload, { async: d, type: 'promise' });
       
       d.promise
         .then((result) => {
@@ -155,8 +158,11 @@ describe('network over post functions', () => {
       let err;
       
       event.payload = { error: { message: 'test' }};
-      nOp.fireError(config, event.payload, (error) => { err = error; });
-      
+      nOp.fireError(config, event.payload, {
+        async: (error) => { err = error; },
+        type: 'nodeCallback',
+      });
+
       expect(err instanceof Error).toBe(true);
     });
     
@@ -174,7 +180,7 @@ describe('network over post functions', () => {
     it('should be able to process defers', (done) => {
       const d = defer();
       event.payload.result.push(true);
-      nOp.fireSuccess(config, event.payload, d);
+      nOp.fireSuccess(config, event.payload, { async: d, type: 'promise' });
 
       d.promise
         .then((result) => {
@@ -200,7 +206,7 @@ describe('network over post functions', () => {
       let res;
       event.payload.result.push(true);
       nOp.fireSuccess(config, event.payload, 
-        (err, result) => { res = result; });
+        { async: (err, result) => { res = result; }, type: 'nodeCallback' });
 
       expect(res).toBeTruthy();
     });
@@ -534,14 +540,14 @@ describe('network over post functions', () => {
     it('should throw an error if a payload is unexpected', () => {
       event.payload = { };
       expect(() => nOp.returnPayload(config, event.payload, {
-        test: noop,
+        test: { async: noop, type: 'nodeCallback' },
       }, 'test'))
         .toThrowError();
     });
 
     it('should delete callbacks if it processes an error', () => {
-      const callbacks: Dictionary<RPCAsync<any>> = {
-        test: noop,
+      const callbacks: RPCAsyncContainerDictionary = {
+        test: { async: noop, type: 'nodeCallback' },
       };
 
       event.payload = { error: { message: 'test' }};
@@ -555,8 +561,8 @@ describe('network over post functions', () => {
     });
 
     it('should delete callbacks if it processes a return value', () => {
-      const callbacks: Dictionary<RPCAsync<any>> = {
-        test: noop,
+      const callbacks: RPCAsyncContainerDictionary = {
+        test: { async: noop, type: 'nodeCallback' },
       };
 
       nOp.returnPayload(config, event.payload, callbacks, 'test');
