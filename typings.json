@@ -5,9 +5,5 @@
   },
   "globalDevDependencies": {
     "jasmine": "registry:dt/jasmine#2.2.0+20160505161446"
-  },
-  "globalDependencies": {
-    "socket.io": "registry:dt/socket.io#1.4.4+20160317120654",
-    "socket.io-client": "registry:dt/socket.io-client#1.4.4+20160317120654"
   }
 }

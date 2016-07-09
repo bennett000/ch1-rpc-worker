@@ -19,19 +19,27 @@ export interface Remote<T> extends Dictionary<Function|Object> { }
  * Specify async types on the remote
  */
 export interface RemoteDesc extends 
-  Dictionary<RPCDefaultAsync | Dictionary<RPCDefaultAsync>> {}
+  Dictionary<RPCAsyncType | Dictionary<RPCAsyncType>> {}
 
 /**
  * Async style function union
  */
-export type RPCAsync<T> = RPCDefer<T> | RPCNodeCallback<T> | RPCNotify<T>;
+export type RPCAsync<T> = RPCDefer<T> | 
+  RPCNodeCallback<T> | 
+  RPCNodeEventInternal | 
+  RPCNotify<T>;
 
 /**
  * Ensures correct async response
  */
 export interface RPCAsyncContainer<T> {
-  type: RPCDefaultAsync;
-  async: RPCAsync<T>;
+  type: RPCAsyncType;
+  async: RPCAsync<T> | Dictionary<RPCNodeEventInternal>;
+}
+
+export interface RPCNodeEventInternal {
+  listener: Function;
+  uid: string; 
 }
 
 export type RPCAsyncContainerDictionary = Dictionary<RPCAsyncContainer<any>>;
@@ -41,9 +49,56 @@ export interface RPCNodeCallback<T> {
   (error: Error, ...rest: any[]);
 }
 
-export type RPCDefaultAsync = 
+/**
+ * tl;dr these are used in `RemoteDesc` to describe given API functions
+ * 
+ * js-rpc uses these strings to identify types of "real world" functions that 
+ * it can interface with.
+ * 
+ * These types are actually used by consumers of the library since they are the
+ * specific strings enforced by `RemoteDesc`
+ * 
+ * - ### "nodeCallback"
+ * nodeCallback refers to JavaScript callback functions that strictly follow
+ * two rules:
+ *
+ *     - the _last_ parameter passed to a function is the callback
+ *     - a "Nullable Error" is the _first_ parameter passed to the callback
+ *     
+ *     Example:
+ *     
+ *     ```js
+ *     function add(a, b, callback) {
+ *       setTimeout(() => {
+ *         if (isNumber(a) && (isNumber(b)) {
+ *           callback(null, result);
+ *         } else {
+ *           callback(new TypeError('add is for numbers'));
+ *         }
+ *       }, 0);
+ *     }
+ *     
+ *     add(1, 2, (err, result) => expect(result).toBe(3);
+ *     add(1, 2, (err, result) => expect(error).toBeFalsey();
+ *     add('1', 2), (erro, result) => expect(error instanceof Error).toBe(true);
+ *     ```
+ * 
+ * - ### "nodeEvent"/"nodeEventInternal"
+ * nodeEvents are a _limited_ interface to * 
+ * [node EventEmitters](https://nodejs.org/api/events.html "docs")
+ * 
+ * - ### "observable"
+ * In this case observables refer to 
+ * [RxJS5](https://github.com/ReactiveX/rxjs, "RxJS")
+ * 
+ * - ### "promise"
+ * promises are es6 promises or any A+ promises that implement `.then` and 
+ * `.catch` along with the global `Promise`
+ */
+export type RPCAsyncType =
   'nodeCallback' |
-  'nodeOn' |
+  'nodeEvent' |
+  'nodeEventInternal' |
   'observable' |
   'promise';
 
@@ -68,8 +123,8 @@ export type RPCEventType =
   'nodeCallback' |
   'nodeOn' |
   'nodeRemoveListener' |
-  'removeEventListener' |
-  'observe' | 
+  'browserRemoveListener' |
+  'observe' |
   'promise' |
   'subscribe' |
   'subscribeReturn' | 
@@ -104,7 +159,7 @@ export interface ConfiguredRPCOn {
 }
 
 export interface RPCOptions {
-  defaultAsyncType?: RPCDefaultAsync;
+  defaultAsyncType?: RPCAsyncType;
   defaultCreateRetry?: number;
   defaultCreateRetryCurve?: number;
   defaultCreateWait?: number;

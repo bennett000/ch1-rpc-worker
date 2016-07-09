@@ -10,7 +10,7 @@ import {
   RPCAsyncContainerDictionary,
   RPCNodeCallback,
   RPCConfig,
-  RPCDefaultAsync,
+  RPCAsyncType,
   RPCDefer, 
   RPCEvent,
   RPCEventType,
@@ -25,41 +25,39 @@ import {
   typeError,
 } from './utils';
 
-export function registerDefer<T>(
-  callbacks: RPCAsyncContainerDictionary, defer: RPCDefer<T>, uid) {
-  
+export function validateRegistration<T>(callbacks: RPCAsyncContainerDictionary,
+                                        asyncFn: RPCAsync<T>,
+                                        type: RPCAsyncType,
+                                        uid: string) {
   if (callbacks[uid]) {
-    rangeError('Remote Procedure: callback uid already exists!');
+    rangeError('Remote Procedure: async uid already exists!');
   }
   
-  throwIfNotDefer(defer, 'Remote Procedure: expecting defer object');
-
-  callbacks[uid] = {
-    async: defer,
-    type: 'promise',
-  };
-
-  return defer.promise;
+  switch (type) {
+    case 'promise':
+      throwIfNotDefer(asyncFn);
+      break;
+    
+    case 'nodeCallback':
+      throwIfNotFunction(asyncFn);
+      break;
+    
+    case 'nodeEvent':
+      throwIfNotFunction(asyncFn);
+      break;
+  }
 }
 
-export function registerCallback<T>(
-  callbacks: RPCAsyncContainerDictionary, 
-  callback: RPCNotify<T> | RPCNodeCallback<T>, 
-  uid) {
-  
-  if (callbacks[uid]) {
-    rangeError('Remote Procedure: callback uid already exists!');
-  }
-  
-  throwIfNotFunction(callback, 'Remote Procedure: register callback: ' +
-    'expecting callback function');
+export function registerAsync<T>(callbacks: RPCAsyncContainerDictionary,
+                                  callback: RPCAsync<T>,
+                                  type: RPCAsyncType,
+                                  uid: string) {
+  validateRegistration(callbacks, callback, type, uid);
 
   callbacks[uid] = {
     async: callback,
-    type: 'nodeCallback',
+    type,
   };
-
-  return uid;
 }
 
 export function doPost(postMethod, type, remoteFunction: string, args: any[]) {
@@ -75,7 +73,7 @@ export function doPost(postMethod, type, remoteFunction: string, args: any[]) {
 
 export function callbackRemote(callbacks: RPCAsyncContainerDictionary,
                                postMethod: ConfiguredRPCEmit,
-                               type: RPCEventType,
+                               type: RPCAsyncType,
                                remoteFunction: string,
                                args) {
 
@@ -87,24 +85,27 @@ export function callbackRemote(callbacks: RPCAsyncContainerDictionary,
   const cb = args.pop();
   const event = doPost(postMethod, type, remoteFunction, args);
   
-  return registerCallback(callbacks, cb, event.uid);
+  registerAsync(callbacks, cb, type, event.uid);
 }
 
 export function promiseRemote(callbacks: RPCAsyncContainerDictionary,
                               postMethod: ConfiguredRPCEmit,
-                              type: RPCEventType,
+                              type: RPCAsyncType,
                               remoteFunction: string,
                               args) {
   const d = defer();
   const event = doPost(postMethod, type, remoteFunction, args);
   
-  return registerDefer(callbacks, d, event.uid);
+  registerAsync(callbacks, d, type, event.uid);
+  
+  return d.promise;
 }
 
 export function create(c: RPCConfig, 
                 callbacks: RPCAsyncContainerDictionary,
                 fullFnName: string,
-                fnType?: RPCDefaultAsync) {
+                fnType?: RPCAsyncType) {
+  
   switch (fnType) {
     case 'promise':
       return (...args) => promiseRemote(
@@ -113,9 +114,10 @@ export function create(c: RPCConfig,
     case 'nodeCallback':
       return (...args) => callbackRemote(callbacks, c.emit, 'nodeCallback', 
         fullFnName, args); 
-    //
-    // case 'nodeOn':
-    //   return (...args) => 
+    
+    case 'nodeEvent':
+      return (...args) => callbackRemote(callbacks, c.emit, 'nodeEvent', 
+        fullFnName, args);
     
     default:
       return create(c, callbacks, fullFnName, c.defaultAsyncType);

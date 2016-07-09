@@ -3,7 +3,7 @@ import { isFunction, noop } from './utils';
 
 import { 
   RPCAsyncContainerDictionary,
-  RPCDefaultAsync, 
+  RPCAsyncType, 
   RemoteDesc, 
   RPCAsync,
 } from './interfaces';
@@ -142,7 +142,7 @@ describe('Remote Object functions', () => {
       const remoteDesc: RemoteDesc = {
         test1: 'promise',
         test2: 'nodeCallback',
-        test3: <RPCDefaultAsync>'mwhahaha',
+        test3: <RPCAsyncType>'mwhahaha',
       };
 
       const test = remote.create<Test>(config, callbacks, remoteDesc);

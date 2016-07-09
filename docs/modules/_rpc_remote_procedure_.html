@@ -78,8 +78,8 @@
 								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-is-external"><a href="_rpc_remote_procedure_.html#create" class="tsd-kind-icon">create</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-is-external"><a href="_rpc_remote_procedure_.html#dopost" class="tsd-kind-icon">do<wbr>Post</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-is-external"><a href="_rpc_remote_procedure_.html#promiseremote" class="tsd-kind-icon">promise<wbr>Remote</a></li>
-								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-has-type-parameter tsd-is-external"><a href="_rpc_remote_procedure_.html#registercallback" class="tsd-kind-icon">register<wbr>Callback</a></li>
-								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-has-type-parameter tsd-is-external"><a href="_rpc_remote_procedure_.html#registerdefer" class="tsd-kind-icon">register<wbr>Defer</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-has-type-parameter tsd-is-external"><a href="_rpc_remote_procedure_.html#registerasync" class="tsd-kind-icon">register<wbr>Async</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-has-type-parameter tsd-is-external"><a href="_rpc_remote_procedure_.html#validateregistration" class="tsd-kind-icon">validate<wbr>Registration</a></li>
 							</ul>
 						</section>
 					</div>
@@ -91,25 +91,25 @@
 					<a name="callbackremote" class="tsd-anchor"></a>
 					<h3>callback<wbr>Remote</h3>
 					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">callback<wbr>Remote<span class="tsd-signature-symbol">(</span>callbacks<span class="tsd-signature-symbol">: </span><a href="../interfaces/_rpc_interfaces_.dictionary.html" class="tsd-signature-type">Dictionary</a><span class="tsd-signature-symbol">&lt;</span><a href="_rpc_interfaces_.html#rpcasync" class="tsd-signature-type">RPCAsync</a><span class="tsd-signature-symbol">&gt;</span>, postMethod<span class="tsd-signature-symbol">: </span><a href="../interfaces/_rpc_interfaces_.configuredrpcemit.html" class="tsd-signature-type">ConfiguredRPCEmit</a>, type<span class="tsd-signature-symbol">: </span><a href="_rpc_interfaces_.html#rpceventtype" class="tsd-signature-type">RPCEventType</a>, remoteFunction<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
+						<li class="tsd-signature tsd-kind-icon">callback<wbr>Remote<span class="tsd-signature-symbol">(</span>callbacks<span class="tsd-signature-symbol">: </span><a href="_rpc_interfaces_.html#rpcasynccontainerdictionary" class="tsd-signature-type">RPCAsyncContainerDictionary</a>, postMethod<span class="tsd-signature-symbol">: </span><a href="../interfaces/_rpc_interfaces_.configuredrpcemit.html" class="tsd-signature-type">ConfiguredRPCEmit</a>, type<span class="tsd-signature-symbol">: </span><a href="_rpc_interfaces_.html#rpcasynctype" class="tsd-signature-type">RPCAsyncType</a>, remoteFunction<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in rpc/remote-procedure.ts:70</li>
+									<li>Defined in rpc/remote-procedure.ts:74</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>callbacks: <a href="../interfaces/_rpc_interfaces_.dictionary.html" class="tsd-signature-type">Dictionary</a><span class="tsd-signature-symbol">&lt;</span><a href="_rpc_interfaces_.html#rpcasync" class="tsd-signature-type">RPCAsync</a><span class="tsd-signature-symbol">&gt;</span></h5>
+									<h5>callbacks: <a href="_rpc_interfaces_.html#rpcasynccontainerdictionary" class="tsd-signature-type">RPCAsyncContainerDictionary</a></h5>
 								</li>
 								<li>
 									<h5>postMethod: <a href="../interfaces/_rpc_interfaces_.configuredrpcemit.html" class="tsd-signature-type">ConfiguredRPCEmit</a></h5>
 								</li>
 								<li>
-									<h5>type: <a href="_rpc_interfaces_.html#rpceventtype" class="tsd-signature-type">RPCEventType</a></h5>
+									<h5>type: <a href="_rpc_interfaces_.html#rpcasynctype" class="tsd-signature-type">RPCAsyncType</a></h5>
 								</li>
 								<li>
 									<h5>remoteFunction: <span class="tsd-signature-type">string</span></h5>
@@ -118,7 +118,7 @@
 									<h5>args: <span class="tsd-signature-type">any</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -126,13 +126,13 @@
 					<a name="create" class="tsd-anchor"></a>
 					<h3>create</h3>
 					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">create<span class="tsd-signature-symbol">(</span>c<span class="tsd-signature-symbol">: </span><a href="../interfaces/_rpc_interfaces_.rpcconfig.html" class="tsd-signature-type">RPCConfig</a>, callbacks<span class="tsd-signature-symbol">: </span><a href="../interfaces/_rpc_interfaces_.dictionary.html" class="tsd-signature-type">Dictionary</a><span class="tsd-signature-symbol">&lt;</span><a href="_rpc_interfaces_.html#rpcasync" class="tsd-signature-type">RPCAsync</a><span class="tsd-signature-symbol">&gt;</span>, fullFnName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, fnType<span class="tsd-signature-symbol">?: </span><a href="_rpc_interfaces_.html#rpcdefaultasync" class="tsd-signature-type">RPCDefaultAsync</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
+						<li class="tsd-signature tsd-kind-icon">create<span class="tsd-signature-symbol">(</span>c<span class="tsd-signature-symbol">: </span><a href="../interfaces/_rpc_interfaces_.rpcconfig.html" class="tsd-signature-type">RPCConfig</a>, callbacks<span class="tsd-signature-symbol">: </span><a href="_rpc_interfaces_.html#rpcasynccontainerdictionary" class="tsd-signature-type">RPCAsyncContainerDictionary</a>, fullFnName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, fnType<span class="tsd-signature-symbol">?: </span><a href="_rpc_interfaces_.html#rpcasynctype" class="tsd-signature-type">RPCAsyncType</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in rpc/remote-procedure.ts:98</li>
+									<li>Defined in rpc/remote-procedure.ts:104</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -141,13 +141,13 @@
 									<h5>c: <a href="../interfaces/_rpc_interfaces_.rpcconfig.html" class="tsd-signature-type">RPCConfig</a></h5>
 								</li>
 								<li>
-									<h5>callbacks: <a href="../interfaces/_rpc_interfaces_.dictionary.html" class="tsd-signature-type">Dictionary</a><span class="tsd-signature-symbol">&lt;</span><a href="_rpc_interfaces_.html#rpcasync" class="tsd-signature-type">RPCAsync</a><span class="tsd-signature-symbol">&gt;</span></h5>
+									<h5>callbacks: <a href="_rpc_interfaces_.html#rpcasynccontainerdictionary" class="tsd-signature-type">RPCAsyncContainerDictionary</a></h5>
 								</li>
 								<li>
 									<h5>fullFnName: <span class="tsd-signature-type">string</span></h5>
 								</li>
 								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> fnType: <a href="_rpc_interfaces_.html#rpcdefaultasync" class="tsd-signature-type">RPCDefaultAsync</a></h5>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> fnType: <a href="_rpc_interfaces_.html#rpcasynctype" class="tsd-signature-type">RPCAsyncType</a></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
@@ -164,7 +164,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in rpc/remote-procedure.ts:59</li>
+									<li>Defined in rpc/remote-procedure.ts:63</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -190,25 +190,25 @@
 					<a name="promiseremote" class="tsd-anchor"></a>
 					<h3>promise<wbr>Remote</h3>
 					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">promise<wbr>Remote<span class="tsd-signature-symbol">(</span>callbacks<span class="tsd-signature-symbol">: </span><a href="../interfaces/_rpc_interfaces_.dictionary.html" class="tsd-signature-type">Dictionary</a><span class="tsd-signature-symbol">&lt;</span><a href="_rpc_interfaces_.html#rpcasync" class="tsd-signature-type">RPCAsync</a><span class="tsd-signature-symbol">&gt;</span>, postMethod<span class="tsd-signature-symbol">: </span><a href="../interfaces/_rpc_interfaces_.configuredrpcemit.html" class="tsd-signature-type">ConfiguredRPCEmit</a>, type<span class="tsd-signature-symbol">: </span><a href="_rpc_interfaces_.html#rpceventtype" class="tsd-signature-type">RPCEventType</a>, remoteFunction<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">unknown</span></li>
+						<li class="tsd-signature tsd-kind-icon">promise<wbr>Remote<span class="tsd-signature-symbol">(</span>callbacks<span class="tsd-signature-symbol">: </span><a href="_rpc_interfaces_.html#rpcasynccontainerdictionary" class="tsd-signature-type">RPCAsyncContainerDictionary</a>, postMethod<span class="tsd-signature-symbol">: </span><a href="../interfaces/_rpc_interfaces_.configuredrpcemit.html" class="tsd-signature-type">ConfiguredRPCEmit</a>, type<span class="tsd-signature-symbol">: </span><a href="_rpc_interfaces_.html#rpcasynctype" class="tsd-signature-type">RPCAsyncType</a>, remoteFunction<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">unknown</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in rpc/remote-procedure.ts:87</li>
+									<li>Defined in rpc/remote-procedure.ts:91</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>callbacks: <a href="../interfaces/_rpc_interfaces_.dictionary.html" class="tsd-signature-type">Dictionary</a><span class="tsd-signature-symbol">&lt;</span><a href="_rpc_interfaces_.html#rpcasync" class="tsd-signature-type">RPCAsync</a><span class="tsd-signature-symbol">&gt;</span></h5>
+									<h5>callbacks: <a href="_rpc_interfaces_.html#rpcasynccontainerdictionary" class="tsd-signature-type">RPCAsyncContainerDictionary</a></h5>
 								</li>
 								<li>
 									<h5>postMethod: <a href="../interfaces/_rpc_interfaces_.configuredrpcemit.html" class="tsd-signature-type">ConfiguredRPCEmit</a></h5>
 								</li>
 								<li>
-									<h5>type: <a href="_rpc_interfaces_.html#rpceventtype" class="tsd-signature-type">RPCEventType</a></h5>
+									<h5>type: <a href="_rpc_interfaces_.html#rpcasynctype" class="tsd-signature-type">RPCAsyncType</a></h5>
 								</li>
 								<li>
 									<h5>remoteFunction: <span class="tsd-signature-type">string</span></h5>
@@ -222,16 +222,16 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module tsd-has-type-parameter tsd-is-external">
-					<a name="registercallback" class="tsd-anchor"></a>
-					<h3>register<wbr>Callback</h3>
+					<a name="registerasync" class="tsd-anchor"></a>
+					<h3>register<wbr>Async</h3>
 					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module tsd-has-type-parameter tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">register<wbr>Callback&lt;T&gt;<span class="tsd-signature-symbol">(</span>callbacks<span class="tsd-signature-symbol">: </span><a href="../interfaces/_rpc_interfaces_.dictionary.html" class="tsd-signature-type">Dictionary</a><span class="tsd-signature-symbol">&lt;</span><a href="_rpc_interfaces_.html#rpcasync" class="tsd-signature-type">RPCAsync</a><span class="tsd-signature-symbol">&gt;</span>, callback<span class="tsd-signature-symbol">: </span><a href="../interfaces/_rpc_interfaces_.rpcnotify.html" class="tsd-signature-type">RPCNotify</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><a href="../interfaces/_rpc_interfaces_.rpccallback.html" class="tsd-signature-type">RPCCallback</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span>, uid<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
+						<li class="tsd-signature tsd-kind-icon">register<wbr>Async&lt;T&gt;<span class="tsd-signature-symbol">(</span>callbacks<span class="tsd-signature-symbol">: </span><a href="_rpc_interfaces_.html#rpcasynccontainerdictionary" class="tsd-signature-type">RPCAsyncContainerDictionary</a>, callback<span class="tsd-signature-symbol">: </span><a href="_rpc_interfaces_.html#rpcasync" class="tsd-signature-type">RPCAsync</a>, type<span class="tsd-signature-symbol">: </span><a href="_rpc_interfaces_.html#rpcasynctype" class="tsd-signature-type">RPCAsyncType</a>, uid<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in rpc/remote-procedure.ts:42</li>
+									<li>Defined in rpc/remote-procedure.ts:51</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -243,24 +243,27 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>callbacks: <a href="../interfaces/_rpc_interfaces_.dictionary.html" class="tsd-signature-type">Dictionary</a><span class="tsd-signature-symbol">&lt;</span><a href="_rpc_interfaces_.html#rpcasync" class="tsd-signature-type">RPCAsync</a><span class="tsd-signature-symbol">&gt;</span></h5>
+									<h5>callbacks: <a href="_rpc_interfaces_.html#rpcasynccontainerdictionary" class="tsd-signature-type">RPCAsyncContainerDictionary</a></h5>
 								</li>
 								<li>
-									<h5>callback: <a href="../interfaces/_rpc_interfaces_.rpcnotify.html" class="tsd-signature-type">RPCNotify</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><a href="../interfaces/_rpc_interfaces_.rpccallback.html" class="tsd-signature-type">RPCCallback</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h5>
+									<h5>callback: <a href="_rpc_interfaces_.html#rpcasync" class="tsd-signature-type">RPCAsync</a></h5>
 								</li>
 								<li>
-									<h5>uid: <span class="tsd-signature-type">any</span></h5>
+									<h5>type: <a href="_rpc_interfaces_.html#rpcasynctype" class="tsd-signature-type">RPCAsyncType</a></h5>
+								</li>
+								<li>
+									<h5>uid: <span class="tsd-signature-type">string</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module tsd-has-type-parameter tsd-is-external">
-					<a name="registerdefer" class="tsd-anchor"></a>
-					<h3>register<wbr>Defer</h3>
+					<a name="validateregistration" class="tsd-anchor"></a>
+					<h3>validate<wbr>Registration</h3>
 					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module tsd-has-type-parameter tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">register<wbr>Defer&lt;T&gt;<span class="tsd-signature-symbol">(</span>callbacks<span class="tsd-signature-symbol">: </span><a href="../interfaces/_rpc_interfaces_.dictionary.html" class="tsd-signature-type">Dictionary</a><span class="tsd-signature-symbol">&lt;</span><a href="_rpc_interfaces_.html#rpcasync" class="tsd-signature-type">RPCAsync</a><span class="tsd-signature-symbol">&gt;</span>, defer<span class="tsd-signature-symbol">: </span><a href="../interfaces/_rpc_interfaces_.rpcdefer.html" class="tsd-signature-type">RPCDefer</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span>, uid<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">unknown</span></li>
+						<li class="tsd-signature tsd-kind-icon">validate<wbr>Registration&lt;T&gt;<span class="tsd-signature-symbol">(</span>callbacks<span class="tsd-signature-symbol">: </span><a href="_rpc_interfaces_.html#rpcasynccontainerdictionary" class="tsd-signature-type">RPCAsyncContainerDictionary</a>, asyncFn<span class="tsd-signature-symbol">: </span><a href="_rpc_interfaces_.html#rpcasync" class="tsd-signature-type">RPCAsync</a>, type<span class="tsd-signature-symbol">: </span><a href="_rpc_interfaces_.html#rpcasynctype" class="tsd-signature-type">RPCAsyncType</a>, uid<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -278,16 +281,19 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>callbacks: <a href="../interfaces/_rpc_interfaces_.dictionary.html" class="tsd-signature-type">Dictionary</a><span class="tsd-signature-symbol">&lt;</span><a href="_rpc_interfaces_.html#rpcasync" class="tsd-signature-type">RPCAsync</a><span class="tsd-signature-symbol">&gt;</span></h5>
+									<h5>callbacks: <a href="_rpc_interfaces_.html#rpcasynccontainerdictionary" class="tsd-signature-type">RPCAsyncContainerDictionary</a></h5>
 								</li>
 								<li>
-									<h5>defer: <a href="../interfaces/_rpc_interfaces_.rpcdefer.html" class="tsd-signature-type">RPCDefer</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h5>
+									<h5>asyncFn: <a href="_rpc_interfaces_.html#rpcasync" class="tsd-signature-type">RPCAsync</a></h5>
 								</li>
 								<li>
-									<h5>uid: <span class="tsd-signature-type">any</span></h5>
+									<h5>type: <a href="_rpc_interfaces_.html#rpcasynctype" class="tsd-signature-type">RPCAsyncType</a></h5>
+								</li>
+								<li>
+									<h5>uid: <span class="tsd-signature-type">string</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">unknown</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -299,80 +305,8 @@
 					<li class="globals  ">
 						<a href="../globals.html"><em>Globals</em></a>
 					</li>
-					<li class="label tsd-is-external">
-						<span>Externals</span>
-					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="_rpc_constants_.html">"rpc/constants"</a>
-					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="_rpc_events_.html">"rpc/events"</a>
-					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="_rpc_events_spec_.html">"rpc/events.spec"</a>
-					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="_rpc_index_.html">"rpc/index"</a>
-					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="_rpc_interfaces_.html">"rpc/interfaces"</a>
-					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="_rpc_js_rpc_.html">"rpc/js-<wbr>rpc"</a>
-					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="_rpc_js_rpc_spec_.html">"rpc/js-<wbr>rpc.spec"</a>
-					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="_rpc_network_over_post_.html">"rpc/network-<wbr>over-<wbr>post"</a>
-					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="_rpc_network_over_post_spec_.html">"rpc/network-<wbr>over-<wbr>post.spec"</a>
-					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="_rpc_remote_.html">"rpc/remote"</a>
-					</li>
 					<li class="current tsd-kind-external-module tsd-is-external">
 						<a href="_rpc_remote_procedure_.html">"rpc/remote-<wbr>procedure"</a>
-					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="_rpc_remote_procedure_spec_.html">"rpc/remote-<wbr>procedure.spec"</a>
-					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="_rpc_remote_spec_.html">"rpc/remote.spec"</a>
-					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="_rpc_rpc_error_.html">"rpc/rpc-<wbr>error"</a>
-					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="_rpc_rpc_error_spec_.html">"rpc/rpc-<wbr>error.spec"</a>
-					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="_rpc_utils_.html">"rpc/utils"</a>
-					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="_rpc_utils_spec_.html">"rpc/utils.spec"</a>
-					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="_socket_io_index_.html">"socket-<wbr>io/index"</a>
-					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="_socket_io_socket_io_.html">"socket-<wbr>io/socket-<wbr>io"</a>
-					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="_socket_io_socket_io_spec_.html">"socket-<wbr>io/socket-<wbr>io.spec"</a>
-					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="_spec_entry_.html">"spec.entry"</a>
-					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="_web_worker_index_.html">"web-<wbr>worker/index"</a>
-					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="_web_worker_worker_.html">"web-<wbr>worker/worker"</a>
-					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="_web_worker_worker_spec_.html">"web-<wbr>worker/worker.spec"</a>
 					</li>
 				</ul>
 			</nav>
@@ -391,10 +325,10 @@
 						<a href="_rpc_remote_procedure_.html#promiseremote" class="tsd-kind-icon">promise<wbr>Remote</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-has-type-parameter tsd-is-external">
-						<a href="_rpc_remote_procedure_.html#registercallback" class="tsd-kind-icon">register<wbr>Callback</a>
+						<a href="_rpc_remote_procedure_.html#registerasync" class="tsd-kind-icon">register<wbr>Async</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-has-type-parameter tsd-is-external">
-						<a href="_rpc_remote_procedure_.html#registerdefer" class="tsd-kind-icon">register<wbr>Defer</a>
+						<a href="_rpc_remote_procedure_.html#validateregistration" class="tsd-kind-icon">validate<wbr>Registration</a>
 					</li>
 				</ul>
 			</nav>

@@ -4,8 +4,20 @@ import * as utils from './utils';
 describe('utils functions', () => {
   const resolver = (resolve, reject) => {};
 
-  describe('createEvent', () => {
-    it('should default to generating a unique id', () => {
+  describe('createNewFunctionFrom', () => {
+    it('should create a new function, the `new Function` way, but from a ' +
+      'given function', () => {
+      function test(a, b, c) { return a + b + c; }
+      const newFunc = utils.createNewFunctionFrom(test);
+      expect(newFunc instanceof Function).toBe(true);
+      expect(newFunc(1, 2, 3)).toBe(6);
+    });
+    
+    it('newly created functions should be distinct', () => {
+      function test(a, b, c) { return a + b + c; }
+      const newFuncA = utils.createNewFunctionFrom(test);
+      const newFuncB = utils.createNewFunctionFrom(test);
+      expect(newFuncA).not.toBe(newFuncB);
     });
   });
 

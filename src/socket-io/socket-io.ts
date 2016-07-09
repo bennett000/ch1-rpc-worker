@@ -1,5 +1,6 @@
 /**
  * This module uses a socket.io Socket and a message parameter to perform RPC
+ * [socket.io docs](http://socket.io/docs/ "socket.io docs")
  */
 
 import { DEFAULT_MESSAGE } from '../rpc/constants';
@@ -7,19 +8,26 @@ import { create as createRemote } from '../rpc/js-rpc';
 import { isString, isFunction, typeError } from '../rpc/utils';
 import { RPC, RPCAbstractConfig, RPCConfig } from '../rpc/interfaces';
 
-export interface Socket {
+export const DEFAULT_MESSAGE_INIT = `${DEFAULT_MESSAGE}_INIT`;
+
+export interface SocketClient {
   on(message: string, handler: (any) => any); 
   emit(message: string, ...args: any[]): any;
+  removeListener: (channel: string, listener: Function) => any;
+}
+
+export interface SocketServer {
+
 }
 
 /**
  * Worker RPC Config
  */
 export interface RPCSocketIoConfig extends RPCAbstractConfig {
-  socket?: Socket;
+  socket?: SocketClient;
 }
 
-export function isSocketIo(socket: any): socket is Socket {
+export function isSocketIo(socket: any): socket is SocketClient {
   if (!socket) {
     return false;
   }

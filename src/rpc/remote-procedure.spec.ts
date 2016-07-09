@@ -41,7 +41,7 @@ describe('remoteProcedure functions', () => {
       const dict: RPCAsyncContainerDictionary = {};
       const post = noop;
       expect(() => rp
-        .callbackRemote(dict, post, 'invoke', 'remote function', []))
+        .callbackRemote(dict, post, 'promise', 'remote function', []))
         .toThrowError();
     });
     
@@ -49,7 +49,7 @@ describe('remoteProcedure functions', () => {
       const dict: RPCAsyncContainerDictionary = {};
       const post = noop;
       const callback = noop;
-      rp.callbackRemote(dict, post, 'invoke', 'remote function', [
+      rp.callbackRemote(dict, post, 'nodeCallback', 'remote function', [
         'args', callback]);
       
       let found = false;
@@ -77,19 +77,19 @@ describe('remoteProcedure functions', () => {
     it('should register a new defer', () => {
       const dict: RPCAsyncContainerDictionary = {};
       const post = noop;
-      rp.promiseRemote(dict, post, 'invoke', 'remote function', [
+      rp.promiseRemote(dict, post, 'promise', 'remote function', [
         'args']);
 
       expectDeferIn(dict);
     });
   });
   
-  describe('registerDefer function', () => {
+  describe('registerAsync function', () => {
     it('should add a defer to a dictionary', () => {
       const dict: RPCAsyncContainerDictionary = {};
       const d = defer();
       const id = 'test';
-      rp.registerDefer(dict, d, id);
+      rp.registerAsync(dict, d, 'promise', id);
       
       expect(dict[id]).toBeTruthy();
     });
@@ -98,29 +98,10 @@ describe('remoteProcedure functions', () => {
       const dict: RPCAsyncContainerDictionary = {};
       const d = defer();
       const id = 'test';
-      rp.registerDefer(dict, d, id);
+      rp.registerAsync(dict, d, 'promise', id);
 
-      expect(() => rp.registerDefer(dict, d, id)).toThrowError();
-    });
-  });
-
-  describe('registerCallback function', () => {
-    it('should add a callback to a dictionary', () => {
-      const dict: RPCAsyncContainerDictionary = {};
-      const callback = noop;
-      const id = 'test';
-      rp.registerCallback(dict, callback, id);
-
-      expect(dict[id]).toBeTruthy();
-    });
-
-    it('should throw if registering the same uid', () => {
-      const dict: RPCAsyncContainerDictionary = {};
-      const callback = noop;
-      const id = 'test';
-      rp.registerCallback(dict, callback, id);
-
-      expect(() => rp.registerCallback(dict, callback, id)).toThrowError();
+      expect(() => rp.registerAsync(dict, d, 'promise', id))
+        .toThrowError();
     });
   });
 });

@@ -20,7 +20,7 @@
     "url": "https://michaeljbennett.info"
   },
   "contributors": [],
-  "license": "LGPL-3",
+  "license": "LGPL-3.0",
   "private": true,
   "repository": {
     "type": "git",
@@ -52,7 +52,7 @@
     "postinstall": "npm run typings",
     "test": "karma start --singleRun true",
     "test:watch": "karma start --singleRun false --restartOnFileChange true",
-    "tsc": "tsc --declaration --sourceRoot src/ --outDir dist --target es5",
+    "tsc": "tsc -p ./tsconfig.build.json",
     "typedoc": "typedoc --name 'js-rpc' --readme README-docs.md --includeDeclarations --externalPattern '!(src/**/*.ts)' --exclude '+(*.js|**/index.ts|node_modules/**/*|dist/**/*|dist/**/*|**/*.spec.*|**/*/spec*)' --ignoreCompilerErrors --target es6 --out docs ./src",
     "typings": "typings install",
     "webpack": "webpack"

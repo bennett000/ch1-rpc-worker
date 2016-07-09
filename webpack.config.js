@@ -39,13 +39,14 @@ module.exports = {
     loaders: [ loaders.ts ],
   },
   output: {
-    externals: {
-      Rx: 'RxJs',
-    },
     libraryTarget: 'umd',
     filename: path.normalize('/[name]/dist/[name].min.js'),
     path: path.join(__dirname, 'dist'),
   },
+  externals: [{
+    'es6-promise': 'umd',
+    'RxJs/Observable': 'umd',
+  }],
   plugins,
   resolve: {
     extensions: ['', '.webpack.js', '.web.js', '.ts', '.js'],

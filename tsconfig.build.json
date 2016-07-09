@@ -1,0 +1,21 @@
+{
+  "compileOnSave": false,
+  "buildOnSave": false,
+  "compilerOptions": {
+    "declaration": true,
+    "module": "commonjs",
+    "target": "es5",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "noImplicitAny": false,
+    "outDir": "dist",
+    "removeComments": false,
+    "noEmitHelpers": true
+  },
+  "exclude": [
+    "coverage",
+    "dist",
+    "lib",
+    "node_modules"
+  ]
+}

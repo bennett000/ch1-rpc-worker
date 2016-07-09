@@ -1,12 +1,12 @@
 /**
  * Project wide constants
  */
-import { RPCDefaultAsync } from './interfaces';
+import { RPCAsyncType } from './interfaces';
 
 /**
  * Dfault type of async function
  */
-export const DEFAULT_ASYNC_TYPE: RPCDefaultAsync = 'promise';
+export const DEFAULT_ASYNC_TYPE: RPCAsyncType = 'promise';
 
 /**
  * Default message used across postMessage

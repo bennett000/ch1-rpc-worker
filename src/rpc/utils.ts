@@ -5,7 +5,8 @@ import { Promise } from 'es6-promise';
 
 import {
   Dictionary,
-  RPCDefaultAsync,
+  RPC,
+  RPCAsyncType,
   RPCDefer,
   RPCNodeCallback,
   RPCEvent,
@@ -16,7 +17,50 @@ import {
   RPCReturnPayload,
 } from './interfaces';
 
-export const isRPCDefaultAsync = (arg): arg is RPCDefaultAsync => [
+/**
+ * This function is for creating new instances of functions.  This is handy for
+ * "enhancing" and enforcing correctness with certain event emitter libraries
+ * 
+ * __Note__ this function will likely not work with arrow functions
+ * 
+ * __Note__ this function uses `new Function`.  Consequently functions will be
+ * created in the global context.  In other words, make sure your function is
+ * pure and does not rely on external variables, unless those variables are 
+ * global.
+ */
+export function createNewFunctionFrom(func: Function): Function {
+  const rawFunctionString = func.toString();
+  /** Eliminate references to Istanbul code coverage */
+  const functionString = rawFunctionString.replace(/__cov_(.+?)\+\+;?/g, '');
+  // proceed with normal logic
+  const firstCurly = functionString.indexOf('{') + 1;
+  const lastCurly = functionString.lastIndexOf('}');
+  const firstBracket = functionString.indexOf('(') + 1;
+  const lastBracket = functionString.indexOf(')');
+  const functionContents = functionString.slice(firstCurly, lastCurly);
+  const args = functionString.slice(firstBracket, lastBracket)
+    .split(',')
+    .filter(Boolean)
+    .map((s) => s.trim());
+  
+  return new Function(...args, functionContents);
+}
+
+export function isRPC<T>(arg: any): arg is RPC<T> {
+  if (!arg) {
+    return false;
+  } 
+  if (!isFunction(arg.destroy)) {
+    return false;
+  }
+  if (!arg.remote) {
+    return false;
+  }
+  
+  return true;
+}
+
+export const isRPCDefaultAsync = (arg): arg is RPCAsyncType => [
   'promise', 'nodeCallback'
 ].indexOf(arg) !== -1;
 
@@ -257,4 +301,3 @@ export function throwIfNotObject(obj: any, message?: string) {
 export function typeError(message) {
   throw createTypeError(message);
 }
-

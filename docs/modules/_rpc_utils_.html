@@ -80,6 +80,7 @@
 						<section class="tsd-index-section tsd-is-external">
 							<h3>Functions</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-is-external"><a href="_rpc_utils_.html#createnewfunctionfrom" class="tsd-kind-icon">create<wbr>New<wbr>Function<wbr>From</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-is-external"><a href="_rpc_utils_.html#createrangeerror" class="tsd-kind-icon">create<wbr>Range<wbr>Error</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-is-external"><a href="_rpc_utils_.html#createtypeerror" class="tsd-kind-icon">create<wbr>Type<wbr>Error</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-is-external"><a href="_rpc_utils_.html#createuidgenerator" class="tsd-kind-icon">create<wbr>Uid<wbr>Generator</a></li>
@@ -90,12 +91,14 @@
 								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-is-external"><a href="_rpc_utils_.html#isfunction" class="tsd-kind-icon">is<wbr>Function</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-is-external"><a href="_rpc_utils_.html#isobject" class="tsd-kind-icon">is<wbr>Object</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-has-type-parameter tsd-is-external"><a href="_rpc_utils_.html#ispromise" class="tsd-kind-icon">is<wbr>Promise</a></li>
-								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-has-type-parameter tsd-is-external"><a href="_rpc_utils_.html#isrpccallback" class="tsd-kind-icon">isRPCCallback</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-has-type-parameter tsd-is-external"><a href="_rpc_utils_.html#isrpc" class="tsd-kind-icon">isRPC</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-is-external"><a href="_rpc_utils_.html#isrpcdefaultasync" class="tsd-kind-icon">isRPCDefault<wbr>Async</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-is-external"><a href="_rpc_utils_.html#isrpcerror" class="tsd-kind-icon">isRPCError</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-is-external"><a href="_rpc_utils_.html#isrpcerrorpayload" class="tsd-kind-icon">isRPCError<wbr>Payload</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-is-external"><a href="_rpc_utils_.html#isrpcevent" class="tsd-kind-icon">isRPCEvent</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-is-external"><a href="_rpc_utils_.html#isrpcinvocationpayload" class="tsd-kind-icon">isRPCInvocation<wbr>Payload</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-has-type-parameter tsd-is-external"><a href="_rpc_utils_.html#isrpcnodecallback" class="tsd-kind-icon">isRPCNode<wbr>Callback</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-has-type-parameter tsd-is-external"><a href="_rpc_utils_.html#isrpcnotify" class="tsd-kind-icon">isRPCNotify</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-is-external"><a href="_rpc_utils_.html#isrpcreturnpayload" class="tsd-kind-icon">isRPCReturn<wbr>Payload</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-is-external"><a href="_rpc_utils_.html#isstring" class="tsd-kind-icon">is<wbr>String</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-is-external"><a href="_rpc_utils_.html#noop" class="tsd-kind-icon">noop</a></li>
@@ -122,7 +125,7 @@
 					<div class="tsd-signature tsd-kind-icon">uid<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span><span class="tsd-signature-symbol"> =&nbsp;createUidGenerator()</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in rpc/utils.ts:22</li>
+							<li>Defined in rpc/utils.ts:67</li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -145,6 +148,40 @@
 			<section class="tsd-panel-group tsd-member-group tsd-is-external">
 				<h2>Functions</h2>
 				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
+					<a name="createnewfunctionfrom" class="tsd-anchor"></a>
+					<h3>create<wbr>New<wbr>Function<wbr>From</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">create<wbr>New<wbr>Function<wbr>From<span class="tsd-signature-symbol">(</span>func<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Function</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Function</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in rpc/utils.ts:31</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>This function is for creating new instances of functions.  This is handy for
+									&quot;enhancing&quot; and enforcing correctness with certain event emitter libraries</p>
+								</div>
+								<p><strong>Note</strong> this function will likely not work with arrow functions</p>
+								<p><strong>Note</strong> this function uses <code>new Function</code>.  Consequently functions will be
+									created in the global context.  In other words, make sure your function is
+									pure and does not rely on external variables, unless those variables are
+								global.</p>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>func: <span class="tsd-signature-type">Function</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Function</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
 					<a name="createrangeerror" class="tsd-anchor"></a>
 					<h3>create<wbr>Range<wbr>Error</h3>
 					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
@@ -154,7 +191,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in rpc/utils.ts:194</li>
+									<li>Defined in rpc/utils.ts:243</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -177,7 +214,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in rpc/utils.ts:198</li>
+									<li>Defined in rpc/utils.ts:247</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -200,7 +237,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in rpc/utils.ts:158</li>
+									<li>Defined in rpc/utils.ts:207</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">function</span></h4>
@@ -229,7 +266,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in rpc/utils.ts:178</li>
+									<li>Defined in rpc/utils.ts:227</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -252,7 +289,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in rpc/utils.ts:24</li>
+									<li>Defined in rpc/utils.ts:69</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -281,7 +318,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in rpc/utils.ts:61</li>
+									<li>Defined in rpc/utils.ts:106</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -310,7 +347,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in rpc/utils.ts:41</li>
+									<li>Defined in rpc/utils.ts:86</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -333,7 +370,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in rpc/utils.ts:45</li>
+									<li>Defined in rpc/utils.ts:90</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -356,7 +393,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in rpc/utils.ts:49</li>
+									<li>Defined in rpc/utils.ts:94</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -379,7 +416,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in rpc/utils.ts:65</li>
+									<li>Defined in rpc/utils.ts:110</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -399,16 +436,16 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module tsd-has-type-parameter tsd-is-external">
-					<a name="isrpccallback" class="tsd-anchor"></a>
-					<h3>isRPCCallback</h3>
+					<a name="isrpc" class="tsd-anchor"></a>
+					<h3>isRPC</h3>
 					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module tsd-has-type-parameter tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">isRPCCallback&lt;T&gt;<span class="tsd-signature-symbol">(</span>arg<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+						<li class="tsd-signature tsd-kind-icon">isRPC&lt;T&gt;<span class="tsd-signature-symbol">(</span>arg<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in rpc/utils.ts:81</li>
+									<li>Defined in rpc/utils.ts:49</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -437,7 +474,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in rpc/utils.ts:18</li>
+									<li>Defined in rpc/utils.ts:63</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -460,7 +497,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in rpc/utils.ts:107</li>
+									<li>Defined in rpc/utils.ts:156</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -483,7 +520,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in rpc/utils.ts:119</li>
+									<li>Defined in rpc/utils.ts:168</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -506,7 +543,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in rpc/utils.ts:85</li>
+									<li>Defined in rpc/utils.ts:134</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -529,13 +566,71 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in rpc/utils.ts:127</li>
+									<li>Defined in rpc/utils.ts:176</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
 									<h5>payload: <span class="tsd-signature-type">any</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module tsd-has-type-parameter tsd-is-external">
+					<a name="isrpcnodecallback" class="tsd-anchor"></a>
+					<h3>isRPCNode<wbr>Callback</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module tsd-has-type-parameter tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">isRPCNode<wbr>Callback&lt;T&gt;<span class="tsd-signature-symbol">(</span>arg<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in rpc/utils.ts:126</li>
+								</ul>
+							</aside>
+							<h4 class="tsd-type-parameters-title">Type parameters</h4>
+							<ul class="tsd-type-parameters">
+								<li>
+									<h4>T</h4>
+								</li>
+							</ul>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>arg: <span class="tsd-signature-type">any</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module tsd-has-type-parameter tsd-is-external">
+					<a name="isrpcnotify" class="tsd-anchor"></a>
+					<h3>isRPCNotify</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module tsd-has-type-parameter tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">isRPCNotify&lt;T&gt;<span class="tsd-signature-symbol">(</span>arg<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in rpc/utils.ts:130</li>
+								</ul>
+							</aside>
+							<h4 class="tsd-type-parameters-title">Type parameters</h4>
+							<ul class="tsd-type-parameters">
+								<li>
+									<h4>T</h4>
+								</li>
+							</ul>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>arg: <span class="tsd-signature-type">any</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
@@ -552,7 +647,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in rpc/utils.ts:145</li>
+									<li>Defined in rpc/utils.ts:194</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -575,7 +670,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in rpc/utils.ts:57</li>
+									<li>Defined in rpc/utils.ts:102</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -598,7 +693,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in rpc/utils.ts:153</li>
+									<li>Defined in rpc/utils.ts:202</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -615,7 +710,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in rpc/utils.ts:155</li>
+									<li>Defined in rpc/utils.ts:204</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">unknown</span></h4>
@@ -632,7 +727,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in rpc/utils.ts:202</li>
+									<li>Defined in rpc/utils.ts:251</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -655,7 +750,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in rpc/utils.ts:206</li>
+									<li>Defined in rpc/utils.ts:255</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -681,7 +776,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in rpc/utils.ts:214</li>
+									<li>Defined in rpc/utils.ts:263</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -707,7 +802,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in rpc/utils.ts:222</li>
+									<li>Defined in rpc/utils.ts:271</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -733,7 +828,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in rpc/utils.ts:228</li>
+									<li>Defined in rpc/utils.ts:277</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -759,7 +854,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in rpc/utils.ts:234</li>
+									<li>Defined in rpc/utils.ts:283</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -785,7 +880,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in rpc/utils.ts:246</li>
+									<li>Defined in rpc/utils.ts:295</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -811,7 +906,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in rpc/utils.ts:240</li>
+									<li>Defined in rpc/utils.ts:289</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -837,7 +932,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in rpc/utils.ts:252</li>
+									<li>Defined in rpc/utils.ts:301</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -858,80 +953,8 @@
 					<li class="globals  ">
 						<a href="../globals.html"><em>Globals</em></a>
 					</li>
-					<li class="label tsd-is-external">
-						<span>Externals</span>
-					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="_rpc_constants_.html">"rpc/constants"</a>
-					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="_rpc_events_.html">"rpc/events"</a>
-					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="_rpc_events_spec_.html">"rpc/events.spec"</a>
-					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="_rpc_index_.html">"rpc/index"</a>
-					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="_rpc_interfaces_.html">"rpc/interfaces"</a>
-					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="_rpc_js_rpc_.html">"rpc/js-<wbr>rpc"</a>
-					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="_rpc_js_rpc_spec_.html">"rpc/js-<wbr>rpc.spec"</a>
-					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="_rpc_network_over_post_.html">"rpc/network-<wbr>over-<wbr>post"</a>
-					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="_rpc_network_over_post_spec_.html">"rpc/network-<wbr>over-<wbr>post.spec"</a>
-					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="_rpc_remote_.html">"rpc/remote"</a>
-					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="_rpc_remote_procedure_.html">"rpc/remote-<wbr>procedure"</a>
-					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="_rpc_remote_procedure_spec_.html">"rpc/remote-<wbr>procedure.spec"</a>
-					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="_rpc_remote_spec_.html">"rpc/remote.spec"</a>
-					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="_rpc_rpc_error_.html">"rpc/rpc-<wbr>error"</a>
-					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="_rpc_rpc_error_spec_.html">"rpc/rpc-<wbr>error.spec"</a>
-					</li>
 					<li class="current tsd-kind-external-module tsd-is-external">
 						<a href="_rpc_utils_.html">"rpc/utils"</a>
-					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="_rpc_utils_spec_.html">"rpc/utils.spec"</a>
-					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="_socket_io_index_.html">"socket-<wbr>io/index"</a>
-					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="_socket_io_socket_io_.html">"socket-<wbr>io/socket-<wbr>io"</a>
-					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="_socket_io_socket_io_spec_.html">"socket-<wbr>io/socket-<wbr>io.spec"</a>
-					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="_spec_entry_.html">"spec.entry"</a>
-					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="_web_worker_index_.html">"web-<wbr>worker/index"</a>
-					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="_web_worker_worker_.html">"web-<wbr>worker/worker"</a>
-					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="_web_worker_worker_spec_.html">"web-<wbr>worker/worker.spec"</a>
 					</li>
 				</ul>
 			</nav>
@@ -939,6 +962,9 @@
 				<ul class="before-current">
 					<li class=" tsd-kind-variable tsd-parent-kind-external-module tsd-is-external">
 						<a href="_rpc_utils_.html#uid" class="tsd-kind-icon">uid</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
+						<a href="_rpc_utils_.html#createnewfunctionfrom" class="tsd-kind-icon">create<wbr>New<wbr>Function<wbr>From</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
 						<a href="_rpc_utils_.html#createrangeerror" class="tsd-kind-icon">create<wbr>Range<wbr>Error</a>
@@ -971,7 +997,7 @@
 						<a href="_rpc_utils_.html#ispromise" class="tsd-kind-icon">is<wbr>Promise</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-has-type-parameter tsd-is-external">
-						<a href="_rpc_utils_.html#isrpccallback" class="tsd-kind-icon">isRPCCallback</a>
+						<a href="_rpc_utils_.html#isrpc" class="tsd-kind-icon">isRPC</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
 						<a href="_rpc_utils_.html#isrpcdefaultasync" class="tsd-kind-icon">isRPCDefault<wbr>Async</a>
@@ -987,6 +1013,12 @@
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
 						<a href="_rpc_utils_.html#isrpcinvocationpayload" class="tsd-kind-icon">isRPCInvocation<wbr>Payload</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-has-type-parameter tsd-is-external">
+						<a href="_rpc_utils_.html#isrpcnodecallback" class="tsd-kind-icon">isRPCNode<wbr>Callback</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-has-type-parameter tsd-is-external">
+						<a href="_rpc_utils_.html#isrpcnotify" class="tsd-kind-icon">isRPCNotify</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
 						<a href="_rpc_utils_.html#isrpcreturnpayload" class="tsd-kind-icon">isRPCReturn<wbr>Payload</a>
