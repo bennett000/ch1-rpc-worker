@@ -1,7 +1,6 @@
 /**
  * Main module "really ties the project together"
  */
-import { Promise } from 'es6-promise';
 import { isObject, pnoop, typeError, throwIfNotFunction} from './utils';
 import { create as createRemote, createRemoteDescFrom } from './remote';
 import * as nOp from './network-over-post';

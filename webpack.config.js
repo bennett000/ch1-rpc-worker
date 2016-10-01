@@ -44,7 +44,6 @@ module.exports = {
     path: path.join(__dirname, 'dist'),
   },
   externals: [{
-    'es6-promise': 'umd',
     'RxJs/Observable': 'umd',
   }],
   plugins,

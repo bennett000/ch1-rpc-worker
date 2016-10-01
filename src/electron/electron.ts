@@ -4,14 +4,12 @@
  * [ipcRenderer](http://electron.atom.io/docs/api/ipc-renderer/ "Electron Docs")
  */
 
-import { Promise } from 'es6-promise';
 import { DEFAULT_MESSAGE } from '../rpc/constants';
 import { create as createRemote } from '../rpc/js-rpc';
 
 import { 
   isRPC,
-  isString, 
-  isFunction, 
+  isFunction,
   typeError,
   uid,
 } from '../rpc/utils';

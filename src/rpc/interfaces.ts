@@ -1,7 +1,6 @@
 /**
  * Project interfaces
  */
-import { Promise } from 'es6-promise';
 
 /**
  * Generic Dictionary

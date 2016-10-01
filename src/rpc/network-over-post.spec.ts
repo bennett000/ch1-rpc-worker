@@ -1,8 +1,6 @@
-import { Promise } from 'es6-promise';
 import * as nOp from './network-over-post';
 import { defer } from './utils';
 import { 
-  RPCAsync, 
   RPCAsyncContainerDictionary,
 } from './interfaces';
 

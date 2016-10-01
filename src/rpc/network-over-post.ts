@@ -1,7 +1,6 @@
 /**
  * Network over post establishes a network between two processes
  */
-import { Promise } from 'es6-promise';
 import { safeCall } from './remote';
 import { createErrorFromRPCError } from './rpc-error';
 import { createEvent, createErrorEvent } from './events';

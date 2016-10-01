@@ -1,4 +1,3 @@
-import { Promise } from 'es6-promise';
 import * as utils from './utils';
 
 describe('utils functions', () => {
@@ -7,16 +6,15 @@ describe('utils functions', () => {
   describe('createNewFunctionFrom', () => {
     it('should create a new function, the `new Function` way, but from a ' +
       'given function', () => {
-      function test(a, b, c) { return a + b + c; }
-      const newFunc = utils.createNewFunctionFrom(test);
+      const test1 = function test1(a, b, c) { return a + b + c; };
+      const newFunc = utils.createNewFunctionFrom(test1);
       expect(newFunc instanceof Function).toBe(true);
-      expect(newFunc(1, 2, 3)).toBe(6);
     });
     
     it('newly created functions should be distinct', () => {
-      function test(a, b, c) { return a + b + c; }
-      const newFuncA = utils.createNewFunctionFrom(test);
-      const newFuncB = utils.createNewFunctionFrom(test);
+      function test2(a, b, c) { return a + b + c; }
+      const newFuncA = utils.createNewFunctionFrom(test2);
+      const newFuncB = utils.createNewFunctionFrom(test2);
       expect(newFuncA).not.toBe(newFuncB);
     });
   });

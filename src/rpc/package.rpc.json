@@ -1,7 +1,6 @@
 {
   "name":"@rpc/rpc",
   "dependencies": {
-    "es6-promise": "^3.2.1"
   },
   "main": "lib/index.js",
   "peerDependencies": {

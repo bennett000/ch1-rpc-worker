@@ -1,4 +1,3 @@
-import { Promise } from 'es6-promise';
 import * as rpc from './js-rpc';
 import { DEFAULT_MESSAGE } from './constants';
 import { noop } from './utils';
