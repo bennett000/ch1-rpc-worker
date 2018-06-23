@@ -20,7 +20,9 @@ describe('electron IPC  rpc functions', () => {
     });
 
     it('should return false for items without a removeListener', () => {
-      expect(erpc.isElectronIpcRenderer({ send: noop, on: noop })).toBe(false);
+      expect(erpc.isElectronIpcRenderer({ send: noop, on: noop })).toBe(
+        false,
+      );
     });
 
     it('should return true for items with on/send/removeListener', () => {

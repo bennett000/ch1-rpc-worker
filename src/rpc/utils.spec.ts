@@ -8,7 +8,7 @@ describe('utils functions', () => {
       'should create a new function, the `new Function` way, but from a ' +
         'given function',
       () => {
-        const test1 = function test1(a, b, c) {
+        const test1 = function t1(a, b, c) {
           return a + b + c;
         };
         const newFunc = utils.createNewFunctionFrom(test1);
@@ -243,7 +243,9 @@ describe('utils functions', () => {
     });
 
     it('should optionally forward custom messages', () => {
-      expect(() => utils.throwIfNotError({}, 'test')).toThrowError(/.*test.*/);
+      expect(() => utils.throwIfNotError({}, 'test')).toThrowError(
+        /.*test.*/,
+      );
     });
 
     it('should *not* throw if given an error', () => {
@@ -299,7 +301,9 @@ describe('utils functions', () => {
     });
 
     it('should optionally forward custom messages', () => {
-      expect(() => utils.throwIfNotDefer({}, 'test')).toThrowError(/.*test.*/);
+      expect(() => utils.throwIfNotDefer({}, 'test')).toThrowError(
+        /.*test.*/,
+      );
     });
 
     it('should *not* throw if given a defer', () => {

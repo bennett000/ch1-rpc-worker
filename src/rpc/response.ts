@@ -35,9 +35,9 @@ import {
 const fnReturn = (
   c: RPCConfig,
   payload: RPCPayload,
-  uid: string,
+  id: string,
   callbacks: RPCAsyncContainerDictionary,
-) => returnPayload(c, payload, callbacks, uid);
+) => returnPayload(c, payload, callbacks, id);
 
 const responders = Object.freeze({
   ack,
@@ -116,7 +116,10 @@ export function createInitializationState(
   };
 }
 
-export function initialize(config: RPCConfig, initState): Promise<RemoteDesc> {
+export function initialize(
+  config: RPCConfig,
+  initState,
+): Promise<RemoteDesc> {
   const off = config.on((event: RPCEvent) => {
     const { payload } = event;
 
@@ -171,40 +174,40 @@ export function ack(c: RPCConfig, event: RPCEvent) {
   const payload = event.payload;
 
   if (isRPCReturnPayload(payload)) {
-    const uid = payload.result[0];
+    const id = payload.result[0];
 
-    if (!c.useAcks[uid]) {
-      typeError(`ack expecting to find ack timeout for: ${uid}`);
+    if (!c.useAcks[id]) {
+      typeError(`ack expecting to find ack timeout for: ${id}`);
     }
 
-    clearTimeout(c.useAcks[uid]);
-    delete c.useAcks[uid];
+    clearTimeout(c.useAcks[id]);
+    delete c.useAcks[id];
   } else {
     typeError('ack received invalid payload');
   }
 }
 
-export function sendAck(c: RPCConfig, uid: string) {
-  c.emit(createEvent('ack', { result: [uid] }));
+export function sendAck(c: RPCConfig, id: string) {
+  c.emit(createEvent('ack', { result: [id] }));
 }
 
-export function invoke(c: RPCConfig, payload: RPCPayload, uid: string) {
+export function invoke(c: RPCConfig, payload: RPCPayload, id: string) {
   if (isRPCInvocationPayload(payload)) {
     const result = safeCall(c, payload.fn, payload.args);
 
     if (result instanceof Error) {
-      c.emit(createErrorEvent(c, 'fnReturn', result, uid));
+      c.emit(createErrorEvent(c, 'fnReturn', result, id));
       return;
     }
 
-    c.emit(createEvent('fnReturn', { result: [result] }, uid));
+    c.emit(createEvent('fnReturn', { result: [result] }, id));
   } else {
     c.emit(
       createErrorEvent(
         c,
         'fnReturn',
         new TypeError('invoke: invalidPayload'),
-        uid,
+        id,
       ),
     );
   }
@@ -274,35 +277,35 @@ export function returnPayload(
   c: RPCConfig,
   payload: RPCPayload,
   callbacks: RPCAsyncContainerDictionary,
-  uid: string,
+  id: string,
 ) {
-  if (!callbacks[uid]) {
-    rangeError(`invokeReturn: no matching callback for ${uid}`);
+  if (!callbacks[id]) {
+    rangeError(`invokeReturn: no matching callback for ${id}`);
   }
 
   if (isRPCErrorPayload(payload)) {
-    fireError(c, payload, callbacks[uid]);
-    delete callbacks[uid];
+    fireError(c, payload, callbacks[id]);
+    delete callbacks[id];
     return;
   } else if (isRPCReturnPayload(payload)) {
-    fireSuccess(c, payload, callbacks[uid]);
-    delete callbacks[uid];
+    fireSuccess(c, payload, callbacks[id]);
+    delete callbacks[id];
     return;
   }
 
   typeError('returnPayload: unexpected payload for event: ' + event.type);
 }
 
-export function createNodeListener(emit, createEvent, uid) {
+export function createNodeListener(emit, makeEvent, id) {
   return (...args: any[]) => {
-    emit(createEvent('fnReturn', { result: args }, uid));
+    emit(makeEvent('fnReturn', { result: args }, id));
   };
 }
 
 export function nodeOn(
   c: RPCConfig,
   payload: RPCPayload,
-  uid: string,
+  id: string,
   callbacks: Object,
 ) {
   if (isRPCInvocationPayload(payload)) {
@@ -317,19 +320,19 @@ export function nodeOn(
       listeners = callbacks[payload.fn].async;
     }
 
-    if (listeners[uid]) {
+    if (listeners[id]) {
       rangeError('listener data already registered');
     }
 
     // create a new factory so we can get a new instance of a listener
     const factory = createNewFunctionFrom(createNodeListener);
     // hydrate the new listener since it is a pure function on global scope
-    const listener = factory(c.emit, createEvent, uid);
+    const listener = factory(c.emit, createEvent, id);
 
     // register it for future deletion
-    listeners[uid] = {
+    listeners[id] = {
       listener: <RPCNotify<any>>listener,
-      uid,
+      id,
     };
   } else {
     c.emit(
@@ -337,7 +340,7 @@ export function nodeOn(
         c,
         'fnReturn',
         new TypeError('nodeOn: invalidPayload'),
-        uid,
+        id,
       ),
     );
   }
@@ -346,7 +349,7 @@ export function nodeOn(
 function nodeRemoveListener(
   c: RPCConfig,
   payload: RPCPayload,
-  uid: string,
+  uuid: string,
   callbacks: Object,
   id: string,
 ) {
@@ -358,19 +361,19 @@ function nodeRemoveListener(
       listeners = callbacks[payload.fn].async;
     }
 
-    if (listeners[uid]) {
+    if (listeners[uuid]) {
       rangeError('listener data already registered');
     }
 
     // create a new factory so we can get a new instance of a listener
     const factory = createNewFunctionFrom(createNodeListener);
     // hydrate the new listener since it is a pure function on global scope
-    const listener = factory(c.emit, createEvent, uid);
+    const listener = factory(c.emit, createEvent, uuid);
 
     // register it for future deletion
-    listeners[uid] = {
+    listeners[uuid] = {
       listener: <RPCNotify<any>>listener,
-      uid,
+      uuid,
     };
   } else {
     c.emit(
@@ -378,26 +381,26 @@ function nodeRemoveListener(
         c,
         'fnReturn',
         new TypeError('nodeOn: invalidPayload'),
-        uid,
+        uuid,
       ),
     );
   }
 }
 
-export function nodeCallback(c: RPCConfig, payload: RPCPayload, uid: string) {
+export function nodeCallback(c: RPCConfig, payload: RPCPayload, id: string) {
   if (isRPCInvocationPayload(payload)) {
     payload.args.push((err, ...args) => {
       if (err) {
-        c.emit(createErrorEvent(c, 'fnReturn', err, uid));
+        c.emit(createErrorEvent(c, 'fnReturn', err, id));
       } else {
-        c.emit(createEvent('fnReturn', { result: args }, uid));
+        c.emit(createEvent('fnReturn', { result: args }, id));
       }
     });
 
     const result = safeCall(c, payload.fn, payload.args);
 
     if (result instanceof Error) {
-      c.emit(createErrorEvent(c, 'fnReturn', result, uid));
+      c.emit(createErrorEvent(c, 'fnReturn', result, id));
       return;
     }
   } else {
@@ -406,31 +409,33 @@ export function nodeCallback(c: RPCConfig, payload: RPCPayload, uid: string) {
         c,
         'fnReturn',
         new TypeError('nodeCallback: invalidPayload'),
-        uid,
+        id,
       ),
     );
   }
 }
 
-export function promise(c: RPCConfig, payload: RPCPayload, uid: string) {
+export function promise(c: RPCConfig, payload: RPCPayload, id: string) {
   if (isRPCInvocationPayload(payload)) {
     const result = safeCall(c, payload.fn, payload.args);
 
     if (result instanceof Error) {
-      c.emit(createErrorEvent(c, 'fnReturn', result, uid));
+      c.emit(createErrorEvent(c, 'fnReturn', result, id));
       return;
     }
 
     result
-      .then((...args) => c.emit(createEvent('fnReturn', { result: args }, uid)))
-      .catch(err => c.emit(createErrorEvent(c, 'fnReturn', err, uid)));
+      .then((...args) =>
+        c.emit(createEvent('fnReturn', { result: args }, id)),
+      )
+      .catch(err => c.emit(createErrorEvent(c, 'fnReturn', err, id)));
   } else {
     c.emit(
       createErrorEvent(
         c,
         'fnReturn',
         new TypeError('promise: invalidPayload'),
-        uid,
+        id,
       ),
     );
   }
@@ -447,7 +452,7 @@ function tryHandler(fn, args, event) {
 }
 
 export function on(
-  sendAck: (c: RPCConfig, uid: string) => void,
+  sendAckFn: (c: RPCConfig, id: string) => void,
   c: RPCConfig,
   callbacks: RPCAsyncContainerDictionary,
   id: string,
@@ -465,7 +470,7 @@ export function on(
     );
 
     if (event.useAcks && event.type !== 'ack') {
-      sendAck(c, event.uid);
+      sendAckFn(c, event.uid);
     }
   });
 }

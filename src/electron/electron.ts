@@ -116,7 +116,9 @@ export function createDictionaryEntry<T>(
   const localConfig = Object.assign({}, config);
   localConfig.message = message;
   localConfig.on = electronIpcOn(ipc, message);
-  localConfig.emit = electronIpcEmit(evt.sender.send.bind(evt.sender, message));
+  localConfig.emit = electronIpcEmit(
+    evt.sender.send.bind(evt.sender, message),
+  );
   const r = createRemote<T>(<RPCConfig>localConfig, remote, remoteDesc);
   const remoteDestroy = r.destroy;
 

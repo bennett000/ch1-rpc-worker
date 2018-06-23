@@ -12,7 +12,9 @@ describe('socket-io  rpc functions', () => {
     });
 
     it('should return false for items without an on', () => {
-      expect(srpc.isSocketIo({ emit: noop, removeListener: noop })).toBe(false);
+      expect(srpc.isSocketIo({ emit: noop, removeListener: noop })).toBe(
+        false,
+      );
     });
 
     it('should return false for items without a removeListener', () => {

@@ -64,17 +64,17 @@ export const isRPCDefaultAsync = (arg): arg is RPCAsyncType =>
 
 export const uid = createUidGenerator();
 
-export function isDefer<T>(defer: any): defer is RPCDefer<T> {
-  if (!defer) {
+export function isDefer<T>(thing: any): thing is RPCDefer<T> {
+  if (!thing) {
     return false;
   }
-  if (!isFunction(defer.resolve)) {
+  if (!isFunction(thing.resolve)) {
     return false;
   }
-  if (!isFunction(defer.reject)) {
+  if (!isFunction(thing.reject)) {
     return false;
   }
-  if (!isPromise(defer.promise)) {
+  if (!isPromise(thing.promise)) {
     return false;
   }
 
@@ -191,7 +191,9 @@ export function isRPCInvocationPayload(
   return true;
 }
 
-export function isRPCReturnPayload(payload: any): payload is RPCReturnPayload {
+export function isRPCReturnPayload(
+  payload: any,
+): payload is RPCReturnPayload {
   if (!payload) {
     return false;
   }

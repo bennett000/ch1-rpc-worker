@@ -58,7 +58,12 @@ export function registerAsync<T>(
   };
 }
 
-export function doPost(postMethod, type, remoteFunction: string, args: any[]) {
+export function doPost(
+  postMethod,
+  type,
+  remoteFunction: string,
+  args: any[],
+) {
   const event = createEvent(type, {
     args,
     fn: remoteFunction,

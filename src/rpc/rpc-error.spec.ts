@@ -100,7 +100,7 @@ describe('RPCError', () => {
   });
 
   describe('prefixStackWith function', () => {
-    it("should prefix the first arguments stack with the second's", () => {
+    it("gshould prefix the first arguments stack with the second's", () => {
       const a = { stack: 'hello', message: 'test' };
       const b = { stack: 'world', message: 'test' };
       const expected = b.stack + a.stack;

@@ -40,10 +40,12 @@ export function create<RemoteType>(
   const combinedDesc = createRemoteDescFrom(config, remote, remoteDesc);
   let destroy: () => Promise<void> = pnoop;
 
-  const isReady = nOp.create(config, callbacks, combinedDesc).then(network => {
-    createRemote<RemoteType>(config, callbacks, network.remoteDesc, local);
-    destroy = network.off;
-  });
+  const isReady = nOp
+    .create(config, callbacks, combinedDesc)
+    .then(network => {
+      createRemote<RemoteType>(config, callbacks, network.remoteDesc, local);
+      destroy = network.off;
+    });
 
   return <RPC<RemoteType>>{
     config,
@@ -71,7 +73,10 @@ export function validateRemote(r: Object): Remote<any> {
 
 export function validateConfig(c: RPCConfig, remote: Remote<any>): RPCConfig {
   throwIfNotFunction(c.on, 'validateConfig: config requires an on method');
-  throwIfNotFunction(c.emit, 'validateConfig: config requires an emit method');
+  throwIfNotFunction(
+    c.emit,
+    'validateConfig: config requires an emit method',
+  );
 
   c.defaultAsyncType = c.defaultAsyncType || DEFAULT_ASYNC_TYPE;
   c.defaultCreateRetry = c.defaultCreateRetry || DEFAULT_CREATE_RETRY;
