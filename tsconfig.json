@@ -4,23 +4,7 @@
   "compilerOptions": {
     "module": "commonjs",
     "target": "es6",
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "noImplicitAny": false,
-    "removeComments": false,
-    "sourceMap": false,
-    "inlineSourceMap": true,
-    "noEmitHelpers": true
+    "strict": true
   },
-  "awesomeTypescriptLoaderOptions": {
-    "useBabel": true,
-    "useCache": false,
-    "emitRequireType": false
-  },
-  "exclude": [
-    "coverage",
-    "dist",
-    "lib",
-    "node_modules"
-  ]
+  "exclude": ["coverage", "dist", "lib", "node_modules"]
 }

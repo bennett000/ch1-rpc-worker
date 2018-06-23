@@ -51,7 +51,7 @@
     "pretest": "rimraf coverage/ && yarn lint",
     "test": "jest",
     "test:watch": "jest --watch",
-    "tsc": "tsc -p ./tsconfig.build.json",
+    "tsc": "tsc",
     "typedoc": "typedoc --name 'js-rpc' --readme README-docs.md --includeDeclarations --externalPattern '!(src/**/*.ts)' --exclude '+(*.js|**/index.ts|node_modules/**/*|dist/**/*|dist/**/*|**/*.spec.*|**/*/spec*)' --ignoreCompilerErrors --target es6 --out docs ./src"
   },
   "devDependencies": {
