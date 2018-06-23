@@ -14,13 +14,14 @@ describe('RPCError', () => {
       remote: {},
     };
   });
-  
+
   describe('createRPCError functions', () => {
     it('should create a stack trace if configured to do so', () => {
       config.enableStackTrace = true;
 
-      expect(rpcError.createRPCError(config, new Error('test')).stack)
-        .toBeTruthy();
+      expect(
+        rpcError.createRPCError(config, new Error('test')).stack,
+      ).toBeTruthy();
     });
 
     it('should detect TypeErrors', () => {
@@ -31,35 +32,41 @@ describe('RPCError', () => {
 
   describe('createErrorFromRPCError function', () => {
     it('should default to generic Error type errors', () => {
-      class MyError extends Error { constructor(msg) { super(msg); } }
-      const rpcErr = rpcError.createRPCError(config, new MyError('test')); 
+      class MyError extends Error {
+        constructor(msg) {
+          super(msg);
+        }
+      }
+      const rpcErr = rpcError.createRPCError(config, new MyError('test'));
       const err = rpcError.createErrorFromRPCError(config, rpcErr);
-      
+
       expect(err instanceof Error).toBe(true);
     });
-    
+
     it('should support EvalError type errors', () => {
       const rpcErr = rpcError.createRPCError(config, new EvalError('test'));
       const err = rpcError.createErrorFromRPCError(config, rpcErr);
 
       expect(err instanceof Error).toBe(true);
     });
-    
+
     it('should support RangeError type errors', () => {
       const rpcErr = rpcError.createRPCError(config, new RangeError('test'));
       const err = rpcError.createErrorFromRPCError(config, rpcErr);
 
       expect(err instanceof Error).toBe(true);
     });
-    
+
     it('should support ReferenceError type errors', () => {
-      const rpcErr = rpcError
-        .createRPCError(config, new ReferenceError('test'));
+      const rpcErr = rpcError.createRPCError(
+        config,
+        new ReferenceError('test'),
+      );
       const err = rpcError.createErrorFromRPCError(config, rpcErr);
 
       expect(err instanceof Error).toBe(true);
     });
-    
+
     it('should support SyntaxError type errors', () => {
       const rpcErr = rpcError.createRPCError(config, new SyntaxError('test'));
       const err = rpcError.createErrorFromRPCError(config, rpcErr);
@@ -80,11 +87,11 @@ describe('RPCError', () => {
 
       expect(err instanceof Error).toBe(true);
     });
-    
+
     it('should support numeric error codes', () => {
       const err: CodedError = new URIError('test');
       err.code = 5;
-      
+
       const rpcErr = rpcError.createRPCError(config, err);
       const test = rpcError.createErrorFromRPCError(config, rpcErr);
 
@@ -93,12 +100,12 @@ describe('RPCError', () => {
   });
 
   describe('prefixStackWith function', () => {
-    it('should prefix the first arguments stack with the second\'s', () => {
+    it("should prefix the first arguments stack with the second's", () => {
       const a = { stack: 'hello', message: 'test' };
       const b = { stack: 'world', message: 'test' };
       const expected = b.stack + a.stack;
       rpcError.prefixStackWith(a, b);
-      
+
       expect(a.stack).toBe(expected);
     });
   });

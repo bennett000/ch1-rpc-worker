@@ -34,9 +34,11 @@ export function prefixStackWith(a, b) {
 }
 
 export function createErrorFromRPCError(
-  c: RPCConfig, error: RPCError): CodedError {
+  c: RPCConfig,
+  error: RPCError,
+): CodedError {
   let err: CodedError;
-  
+
   switch (error.type) {
     case 'EvalError':
       err = new EvalError(error.message);
@@ -45,34 +47,33 @@ export function createErrorFromRPCError(
     case 'RangeError':
       err = new RangeError(error.message);
       break;
-    
+
     case 'ReferenceError':
       err = new ReferenceError(error.message);
       break;
-    
+
     case 'SyntaxError':
       err = new SyntaxError(error.message);
       break;
-    
+
     case 'TypeError':
       err = new TypeError(error.message);
       break;
-    
+
     case 'URIError':
       err = new URIError(error.message);
       break;
-      
+
     default:
       err = new Error(error.message);
       break;
   }
-  
+
   prefixStackWith(err, error);
-  
+
   if (error.code) {
-    err.code = error.code;   
+    err.code = error.code;
   }
-  
+
   return err;
 }
-

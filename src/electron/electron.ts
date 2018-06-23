@@ -7,20 +7,15 @@
 import { DEFAULT_MESSAGE } from '../rpc/constants';
 import { create as createRemote } from '../rpc/js-rpc';
 
-import { 
-  isRPC,
-  isFunction,
-  typeError,
-  uid,
-} from '../rpc/utils';
+import { isRPC, isFunction, typeError, uid } from '../rpc/utils';
 
-import { 
+import {
   Dictionary,
   Remote,
   RemoteDesc,
-  RPC, 
-  RPCAbstractConfig, 
-  RPCConfig, 
+  RPC,
+  RPCAbstractConfig,
+  RPCConfig,
 } from '../rpc/interfaces';
 
 interface ObjectCtor extends ObjectConstructor {
@@ -36,7 +31,7 @@ export interface ElectronMainEvent {
 }
 
 export interface IpcRenderer {
-  on(message: string, handler: (evt: any, arg: any) => any); 
+  on(message: string, handler: (evt: any, arg: any) => any);
   send(message: string, ...args: any[]): any;
   removeListener: (channel: string, listener: Function) => any;
 }
@@ -51,7 +46,6 @@ export type Ipc = IpcMain | IpcRenderer;
 export interface IpcDictionary<T> extends Dictionary<RPC<T> | Function> {
   destroy: () => Promise<void>;
 }
-
 
 /**
  * Worker RPC Config
@@ -69,7 +63,7 @@ function hasOnAndRemoveListener(ipc: Ipc) {
   if (!isFunction(ipc.removeListener)) {
     return false;
   }
-  
+
   return true;
 }
 
@@ -77,7 +71,7 @@ export function isElectronIpcRenderer(ipc: any): ipc is IpcRenderer {
   if (!ipc) {
     return false;
   }
-  
+
   if (!isFunction(ipc.send)) {
     return false;
   }
@@ -94,7 +88,6 @@ export function isElectronIpcMain(ipc: any): ipc is IpcMain {
 }
 
 export function electronIpcOn(ipc, message) {
-  
   function listenerActual(listener) {
     ipc.on(message, (evt, args) => listener(args));
     // must return a destroy function
@@ -102,21 +95,23 @@ export function electronIpcOn(ipc, message) {
     // not seem to work :/
     return () => ipc.removeAllListeners(message);
   }
-  
+
   return listenerActual;
 }
 
 export function electronIpcEmit(postMessage) {
-  return (data) => postMessage(data);
+  return data => postMessage(data);
 }
 
-export function createDictionaryEntry<T>(dict: IpcDictionary<T>,
-                                         config: RPCElectronConfig, 
-                                         ipc: IpcMain, 
-                                         remote: Remote<T>,
-                                         remoteDesc: RemoteDesc,
-                                         evt: ElectronMainEvent,
-                                         message: string) {
+export function createDictionaryEntry<T>(
+  dict: IpcDictionary<T>,
+  config: RPCElectronConfig,
+  ipc: IpcMain,
+  remote: Remote<T>,
+  remoteDesc: RemoteDesc,
+  evt: ElectronMainEvent,
+  message: string,
+) {
   const id = uid();
   const localConfig = Object.assign({}, config);
   localConfig.message = message;
@@ -124,25 +119,30 @@ export function createDictionaryEntry<T>(dict: IpcDictionary<T>,
   localConfig.emit = electronIpcEmit(evt.sender.send.bind(evt.sender, message));
   const r = createRemote<T>(<RPCConfig>localConfig, remote, remoteDesc);
   const remoteDestroy = r.destroy;
-  
-  r.destroy = () => remoteDestroy()
-    .then(() => { delete dict[id]; })
-    .catch(() => { delete dict[id]; }); 
-  
+
+  r.destroy = () =>
+    remoteDestroy()
+      .then(() => {
+        delete dict[id];
+      })
+      .catch(() => {
+        delete dict[id];
+      });
+
   dict[id] = r;
 }
 
 export function create<T>(
   config: RPCElectronConfig,
   remote?: Remote<T>,
-  remoteDesc?: RemoteDesc): IpcDictionary<T> | RPC<T> {
-
+  remoteDesc?: RemoteDesc,
+): IpcDictionary<T> | RPC<T> {
   if (!isElectronIpcRenderer(config.ipc) && !isElectronIpcMain(config.ipc)) {
-    typeError('create: expecting ipcRenderer or ipcMain'); 
+    typeError('create: expecting ipcRenderer or ipcMain');
   }
   const ipc = config.ipc;
   const messageInit = config.messageInit || DEFAULT_MESSAGE_INIT;
-  
+
   /** make sure to check for IPCRenderer *first* since it *has* a send method */
   if (isElectronIpcRenderer(ipc)) {
     const message = uid();
@@ -153,36 +153,43 @@ export function create<T>(
     /** Let the main process know we're ready */
     ipc.send(messageInit, message);
     return r;
-  } 
-  
+  }
+
   if (isElectronIpcMain(ipc)) {
     const dict = <IpcDictionary<T>>Object.create(null, {
       destroy: {
         enumerable: false,
         configurable: true,
         writable: true,
-        value: () => Promise.all(Object.keys(dict)
-          .map((key) => { 
-            const rpc = dict[key];
-            if (isRPC<T>(rpc)) {
-              rpc.destroy();
-            }
-            delete dict[key];
-          }))
-          .then(() => ipc.removeListener(messageInit, listener))
-      }
+        value: () =>
+          Promise.all(
+            Object.keys(dict).map(key => {
+              const rpc = dict[key];
+              if (isRPC<T>(rpc)) {
+                rpc.destroy();
+              }
+              delete dict[key];
+            }),
+          ).then(() => ipc.removeListener(messageInit, listener)),
+      },
     });
-    
+
     function listener(evt, message) {
       createDictionaryEntry(
-        dict, config, ipc, remote, remoteDesc, evt, message);
+        dict,
+        config,
+        ipc,
+        remote,
+        remoteDesc,
+        evt,
+        message,
+      );
     }
 
     ipc.on(messageInit, listener);
-    
-    return dict;
-  } 
-  
-  typeError('Ipc object is invalid: ' + Object.keys(ipc).join(', ')); 
-}
 
+    return dict;
+  }
+
+  typeError('Ipc object is invalid: ' + Object.keys(ipc).join(', '));
+}

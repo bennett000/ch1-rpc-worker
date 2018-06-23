@@ -9,7 +9,7 @@ import {
   RPCNodeCallback,
   RPCEvent,
   RPCError,
-  RPCErrorPayload, 
+  RPCErrorPayload,
   RPCInvocationPayload,
   RPCNotify,
   RPCReturnPayload,
@@ -18,12 +18,12 @@ import {
 /**
  * This function is for creating new instances of functions.  This is handy for
  * "enhancing" and enforcing correctness with certain event emitter libraries
- * 
+ *
  * __Note__ this function will likely not work with arrow functions
- * 
+ *
  * __Note__ this function uses `new Function`.  Consequently functions will be
  * created in the global context.  In other words, make sure your function is
- * pure and does not rely on external variables, unless those variables are 
+ * pure and does not rely on external variables, unless those variables are
  * global.
  */
 export function createNewFunctionFrom(func: Function): Function {
@@ -36,31 +36,31 @@ export function createNewFunctionFrom(func: Function): Function {
   const firstBracket = functionString.indexOf('(') + 1;
   const lastBracket = functionString.indexOf(')');
   const functionContents = functionString.slice(firstCurly, lastCurly);
-  const args = functionString.slice(firstBracket, lastBracket)
+  const args = functionString
+    .slice(firstBracket, lastBracket)
     .split(',')
     .filter(Boolean)
-    .map((s) => s.trim());
-  
+    .map(s => s.trim());
+
   return new Function(...args, functionContents);
 }
 
 export function isRPC<T>(arg: any): arg is RPC<T> {
   if (!arg) {
     return false;
-  } 
+  }
   if (!isFunction(arg.destroy)) {
     return false;
   }
   if (!arg.remote) {
     return false;
   }
-  
+
   return true;
 }
 
-export const isRPCDefaultAsync = (arg): arg is RPCAsyncType => [
-  'promise', 'nodeCallback'
-].indexOf(arg) !== -1;
+export const isRPCDefaultAsync = (arg): arg is RPCAsyncType =>
+  ['promise', 'nodeCallback'].indexOf(arg) !== -1;
 
 export const uid = createUidGenerator();
 
@@ -77,7 +77,7 @@ export function isDefer<T>(defer: any): defer is RPCDefer<T> {
   if (!isPromise(defer.promise)) {
     return false;
   }
-  
+
   return true;
 }
 
@@ -93,61 +93,63 @@ export function isObject(obj: any): obj is Object {
   if (!obj) {
     return false;
   }
-  
+
   return typeof obj === 'object';
 }
 
 export function isString(arg: any): arg is string {
-  return typeof arg === 'string'; 
+  return typeof arg === 'string';
 }
 
 export function isDictionary<T>(dict: any): dict is Dictionary<T> {
   return isObject(dict);
 }
 
-export function isPromise<T>(promise: any): promise is Promise<T>  {
+export function isPromise<T>(promise: any): promise is Promise<T> {
   if (!promise) {
     return false;
   }
-  
+
   if (!isFunction(promise.then)) {
     return false;
-  } 
-  
+  }
+
   if (!isFunction(promise.catch)) {
     return false;
   }
-  
+
   return true;
 }
 
 export function isRPCNodeCallback<T>(arg: any): arg is RPCNodeCallback<T> {
-  return isFunction(arg); 
+  return isFunction(arg);
 }
 
 export function isRPCNotify<T>(arg: any): arg is RPCNotify<T> {
-  return isFunction(arg); 
+  return isFunction(arg);
 }
 
-export function isRPCEvent(event: any): event is RPCEvent  {
+export function isRPCEvent(event: any): event is RPCEvent {
   if (!event) {
     return false;
   }
-  
+
   if (typeof event.uid !== 'string') {
     return false;
   }
-  
+
   if (typeof event.type !== 'string') {
     return false;
   }
-  
-  if (isRPCErrorPayload(event.payload) || 
-    isRPCInvocationPayload(event.payload) || 
-    isRPCReturnPayload(event.payload)) {
-    return true; 
+
+  if (
+    isRPCErrorPayload(event.payload) ||
+    isRPCInvocationPayload(event.payload) ||
+    isRPCReturnPayload(event.payload)
+  ) {
+    return true;
   }
-  
+
   return false;
 }
 
@@ -155,11 +157,11 @@ export function isRPCError(error: any): error is RPCError {
   if (!error) {
     return false;
   }
-  
+
   if (!error.message) {
     return false;
   }
-  
+
   return true;
 }
 
@@ -167,25 +169,25 @@ export function isRPCErrorPayload(payload: any): payload is RPCErrorPayload {
   if (!payload) {
     return false;
   }
-  
+
   return isRPCError(payload.error);
 }
 
 export function isRPCInvocationPayload(
-  payload: any): payload is RPCInvocationPayload {
-  
+  payload: any,
+): payload is RPCInvocationPayload {
   if (!payload) {
-    return false; 
-  } 
+    return false;
+  }
 
   if (!Array.isArray(payload.args)) {
     return false;
   }
-  
+
   if (typeof payload.fn !== 'string') {
     return false;
   }
-  
+
   return true;
 }
 
@@ -193,14 +195,14 @@ export function isRPCReturnPayload(payload: any): payload is RPCReturnPayload {
   if (!payload) {
     return false;
   }
-  
+
   return Array.isArray(payload.result);
 }
 
 export function noop(): void {}
 
-export const pnoop: () => Promise<void> = 
-  () => new Promise<void>((resolve) => resolve());
+export const pnoop: () => Promise<void> = () =>
+  new Promise<void>(resolve => resolve());
 
 export function createUidGenerator(): () => string {
   let uidCount = 0;
@@ -217,7 +219,7 @@ export function createUidGenerator(): () => string {
       'u',
       Date.now().toString(16),
       uidCount,
-      Math.floor(Math.random() * 100000).toString(32)
+      Math.floor(Math.random() * 100000).toString(32),
     ].join('-');
   };
 }
@@ -225,12 +227,12 @@ export function createUidGenerator(): () => string {
 export function defer<T>(): RPCDefer<T> {
   let pass = noop;
   let fail = noop;
-  
+
   const promise = new Promise<T>((resolve, reject) => {
     pass = resolve;
     fail = reject;
-  }); 
-  
+  });
+
   return {
     promise,
     reject: fail,
@@ -252,7 +254,7 @@ export function rangeError(message) {
 
 export function safeInstantiate(fn: Function, args: any[]) {
   try {
-    return new (Function.prototype.bind.apply(fn, arguments));
+    return new (Function.prototype.bind.apply(fn, arguments))();
   } catch (err) {
     return err;
   }
@@ -274,8 +276,8 @@ export function throwIfNotDefer(d: any, message?: string) {
 
 export function throwIfNotError(err: any, message?: string) {
   if (!isError(err)) {
-    typeError(message || 'given value is not an Error'); 
-  } 
+    typeError(message || 'given value is not an Error');
+  }
 }
 
 export function throwIfNotFunction(fn: any, message?: string) {

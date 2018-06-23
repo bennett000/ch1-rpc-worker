@@ -3,7 +3,7 @@ import { noop } from './utils';
 
 describe('event functions', () => {
   let config;
-  
+
   beforeEach(() => {
     config = {
       emit: noop,
@@ -16,11 +16,13 @@ describe('event functions', () => {
 
   describe('createErrorEvent function', () => {
     it('should run create a serializable error', () => {
-      const event = events
-        .createErrorEvent(config, 'invoke', new Error('test'));
+      const event = events.createErrorEvent(
+        config,
+        'invoke',
+        new Error('test'),
+      );
 
       expect(typeof JSON.stringify(event)).toBe('string');
     });
   });
-
 });

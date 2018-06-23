@@ -1,10 +1,10 @@
-import * as nOp from "./response";
-import { defer } from "./utils";
-import { RPCAsyncContainerDictionary } from "./interfaces";
+import * as nOp from './response';
+import { defer } from './utils';
+import { RPCAsyncContainerDictionary } from './interfaces';
 
-import { isRPCErrorPayload, isRPCReturnPayload, noop } from "./utils";
+import { isRPCErrorPayload, isRPCReturnPayload, noop } from './utils';
 
-describe("network over post functions", () => {
+describe('network over post functions', () => {
   let config;
   let event;
 
@@ -12,22 +12,22 @@ describe("network over post functions", () => {
     config = {
       emit: noop,
       enableStackTrace: false,
-      message: "",
+      message: '',
       on: () => noop,
-      remote: {}
+      remote: {},
     };
 
     event = {
       payload: {
-        result: []
+        result: [],
       },
-      type: "fnReturn",
-      uid: "test"
+      type: 'fnReturn',
+      uid: 'test',
     };
   });
 
-  describe("ack function", () => {
-    it("should throw if useAcks is false", () => {
+  describe('ack function', () => {
+    it('should throw if useAcks is false', () => {
       expect(() => nOp.ack(config, event)).toThrowError();
     });
 
@@ -40,14 +40,14 @@ describe("network over post functions", () => {
       config.useAcks = {};
       event.payload = {
         error: {
-          message: "test"
-        }
+          message: 'test',
+        },
       };
       expect(() => nOp.ack(config, event)).toThrowError();
     });
 
-    it("should clean the timeout waiting", () => {
-      event.payload.result.push("test");
+    it('should clean the timeout waiting', () => {
+      event.payload.result.push('test');
       config.useAcks = { test: 12345 };
       nOp.ack(config, event);
 
@@ -55,34 +55,34 @@ describe("network over post functions", () => {
     });
   });
 
-  describe("invoke function", () => {
-    it("should emit an error", () => {
+  describe('invoke function', () => {
+    it('should emit an error', () => {
       config.remote = {};
 
       config.emit = arg => {
         expect(isRPCErrorPayload(arg.payload)).toBe(true);
       };
 
-      nOp.invoke(config, { error: { message: "hi" } }, "testId");
+      nOp.invoke(config, { error: { message: 'hi' } }, 'testId');
     });
 
-    it("should emit RPCReturnPayloads if the function passes", () => {
+    it('should emit RPCReturnPayloads if the function passes', () => {
       let result;
 
       config.remote = {
-        test: arg => (result = arg)
+        test: arg => (result = arg),
       };
 
       config.emit = arg => {
         expect(isRPCReturnPayload(arg.payload)).toBe(true);
       };
 
-      nOp.invoke(config, { fn: "test", args: [1] }, "testId");
+      nOp.invoke(config, { fn: 'test', args: [1] }, 'testId');
 
       expect(result).toBe(1);
     });
 
-    it("should emit RPCErrorPayload if the function fails", () => {
+    it('should emit RPCErrorPayload if the function fails', () => {
       // trigger an error by wiping remotes
       config.remote = {};
 
@@ -90,12 +90,12 @@ describe("network over post functions", () => {
         expect(isRPCErrorPayload(arg.payload)).toBe(true);
       };
 
-      nOp.invoke(config, { fn: "test", args: [1] }, "testId");
+      nOp.invoke(config, { fn: 'test', args: [1] }, 'testId');
     });
   });
 
-  describe("on function", () => {
-    it("should not sendAcks by default", () => {
+  describe('on function', () => {
+    it('should not sendAcks by default', () => {
       let didRun = false;
       let emit;
       config.on = trigger => {
@@ -109,9 +109,9 @@ describe("network over post functions", () => {
         sendAck,
         config,
         {
-          test: { async: noop, type: "nodeCallback" }
+          test: { async: noop, type: 'nodeCallback' },
         },
-        "id"
+        'id',
       );
 
       emit(event);
@@ -119,7 +119,7 @@ describe("network over post functions", () => {
       expect(didRun).toBe(false);
     });
 
-    it("should sendAcks if useAcks is true *and* the event is not an ack", () => {
+    it('should sendAcks if useAcks is true *and* the event is not an ack', () => {
       let didRun = true;
       let emit;
       config.on = trigger => {
@@ -134,9 +134,9 @@ describe("network over post functions", () => {
         sendAck,
         config,
         {
-          test: { async: noop, type: "nodeCallback" }
+          test: { async: noop, type: 'nodeCallback' },
         },
-        "id"
+        'id',
       );
 
       emit(event);
@@ -145,16 +145,16 @@ describe("network over post functions", () => {
     });
   });
 
-  describe("fireError function", () => {
-    it("should be able to process defers", done => {
+  describe('fireError function', () => {
+    it('should be able to process defers', done => {
       const d = defer();
 
-      event.payload = { error: { message: "test" } };
-      nOp.fireError(config, event.payload, { async: d, type: "promise" });
+      event.payload = { error: { message: 'test' } };
+      nOp.fireError(config, event.payload, { async: d, type: 'promise' });
 
       d.promise
         .then(result => {
-          expect(result).toBe("this should not happen");
+          expect(result).toBe('this should not happen');
           done();
         })
         .catch(error => {
@@ -163,34 +163,34 @@ describe("network over post functions", () => {
         });
     });
 
-    it("should be able to process callbacks", () => {
+    it('should be able to process callbacks', () => {
       let err;
 
-      event.payload = { error: { message: "test" } };
+      event.payload = { error: { message: 'test' } };
       nOp.fireError(config, event.payload, {
         async: error => {
           err = error;
         },
-        type: "nodeCallback"
+        type: 'nodeCallback',
       });
 
       expect(err instanceof Error).toBe(true);
     });
 
-    it("should throw if given async is invalid", () => {
-      event.payload = { error: { message: "uh oh" } };
+    it('should throw if given async is invalid', () => {
+      event.payload = { error: { message: 'uh oh' } };
 
       expect(() =>
-        nOp.fireError(config, event.payload, <any>{ iDoNothing: () => {} })
+        nOp.fireError(config, event.payload, <any>{ iDoNothing: () => {} }),
       ).toThrowError();
     });
   });
 
-  describe("fireSuccess function", () => {
-    it("should be able to process defers", done => {
+  describe('fireSuccess function', () => {
+    it('should be able to process defers', done => {
       const d = defer();
       event.payload.result.push(true);
-      nOp.fireSuccess(config, event.payload, { async: d, type: "promise" });
+      nOp.fireSuccess(config, event.payload, { async: d, type: 'promise' });
 
       d.promise
         .then(result => {
@@ -203,50 +203,50 @@ describe("network over post functions", () => {
         });
     });
 
-    it("should throw if given async is invalid", () => {
-      event.payload = { "something else": noop };
+    it('should throw if given async is invalid', () => {
+      event.payload = { 'something else': noop };
 
       expect(() =>
-        nOp.fireSuccess(config, event.payload, <any>{ iDoNothing: () => {} })
+        nOp.fireSuccess(config, event.payload, <any>{ iDoNothing: () => {} }),
       ).toThrowError();
     });
 
-    it("should be able to process callbacks", () => {
+    it('should be able to process callbacks', () => {
       let res;
       event.payload.result.push(true);
       nOp.fireSuccess(config, event.payload, {
         async: (err, result) => {
           res = result;
         },
-        type: "nodeCallback"
+        type: 'nodeCallback',
       });
 
       expect(res).toBeTruthy();
     });
   });
 
-  describe("createInitializationState", () => {
-    it("should have a working defer", done => {
-      const state = nOp.createInitializationState(config, {}, "testId");
+  describe('createInitializationState', () => {
+    it('should have a working defer', done => {
+      const state = nOp.createInitializationState(config, {}, 'testId');
       state.defer.promise.then(test => {
-        expect(test).toBe("testing");
+        expect(test).toBe('testing');
         done();
       });
-      state.defer.resolve("testing");
+      state.defer.resolve('testing');
     });
 
-    it("should time out if its defer is not satisfied", done => {
+    it('should time out if its defer is not satisfied', done => {
       config.defaultCreateWait = 5;
-      const state = nOp.createInitializationState(config, {}, "testId");
+      const state = nOp.createInitializationState(config, {}, 'testId');
       state.defer.promise.catch(err => {
         expect(err instanceof Error).toBe(true);
         done();
       });
     });
 
-    it("clean should stop timeouts from happening", done => {
+    it('clean should stop timeouts from happening', done => {
       config.defaultCreateWait = 5;
-      const state = nOp.createInitializationState(config, {}, "testId");
+      const state = nOp.createInitializationState(config, {}, 'testId');
       let didErr = false;
 
       state.defer.promise.catch(err => {
@@ -294,7 +294,7 @@ describe("network over post functions", () => {
     // });
   });
 
-  describe("initialize function", () => {
+  describe('initialize function', () => {
     let init;
     let initState;
 
@@ -305,7 +305,7 @@ describe("network over post functions", () => {
       initState = {
         clean: () => {},
         defer: defer(),
-        stopCreateSpam: () => {}
+        stopCreateSpam: () => {},
       };
     }
 
@@ -314,113 +314,113 @@ describe("network over post functions", () => {
       nOp.initialize(config, initState);
     });
 
-    it("should throw if given an error payload", () => {
+    it('should throw if given an error payload', () => {
       expect(() =>
         init({
-          uid: "test",
+          uid: 'test',
           payload: {
-            error: { message: "test-error" }
-          }
-        })
-      ).toThrowError("test-error");
+            error: { message: 'test-error' },
+          },
+        }),
+      ).toThrowError('test-error');
     });
 
-    it("should throw if given an non RPCReturnPayload", () => {
+    it('should throw if given an non RPCReturnPayload', () => {
       expect(() =>
         init({
-          uid: "test",
+          uid: 'test',
           invoke: {
-            fn: "test",
-            args: []
-          }
-        })
+            fn: 'test',
+            args: [],
+          },
+        }),
       ).toThrowError();
     });
 
-    it("should throw if not given a create or createReturn event", () => {
+    it('should throw if not given a create or createReturn event', () => {
       expect(() =>
         init({
-          uid: "test",
-          type: "promise",
+          uid: 'test',
+          type: 'promise',
           payload: {
-            result: []
-          }
-        })
+            result: [],
+          },
+        }),
       ).toThrowError();
     });
 
-    describe("create event", () => {
-      it("should setLocalRemote state if create is called", () => {
+    describe('create event', () => {
+      it('should setLocalRemote state if create is called', () => {
         init({
-          uid: "test",
-          type: "create",
+          uid: 'test',
+          type: 'create',
           payload: {
-            result: [{ test: "object" }]
-          }
+            result: [{ test: 'object' }],
+          },
         });
         expect(initState.localRemoteDesc).toBeTruthy();
         expect(initState.localRemoteDesc.test).toBeTruthy();
-        expect(initState.localRemoteDesc.test).toBe("object");
+        expect(initState.localRemoteDesc.test).toBe('object');
       });
 
-      it("should set hasCreated", () => {
-        init({ uid: "test", type: "create", payload: { result: [] } });
+      it('should set hasCreated', () => {
+        init({ uid: 'test', type: 'create', payload: { result: [] } });
         expect(initState.hasCreated).toBe(true);
       });
 
-      it("should set hasCreated only once", () => {
+      it('should set hasCreated only once', () => {
         init({
-          uid: "test",
-          type: "create",
+          uid: 'test',
+          type: 'create',
           payload: {
-            result: ["test"]
-          }
+            result: ['test'],
+          },
         });
-        expect(initState.localRemoteDesc).toBe("test");
-        initState.localRemoteDesc = "something else";
+        expect(initState.localRemoteDesc).toBe('test');
+        initState.localRemoteDesc = 'something else';
         init({
-          uid: "test",
-          type: "create",
+          uid: 'test',
+          type: 'create',
           payload: {
-            result: ["test"]
-          }
+            result: ['test'],
+          },
         });
-        expect(initState.localRemoteDesc).toBe("something else");
+        expect(initState.localRemoteDesc).toBe('something else');
       });
 
-      it("should emit a createReturn event", () => {
+      it('should emit a createReturn event', () => {
         let evt;
         config.emit = e => {
           evt = e;
         };
-        init({ uid: "test", type: "create", payload: { result: [] } });
-        expect(evt.type).toBe("createReturn");
+        init({ uid: 'test', type: 'create', payload: { result: [] } });
+        expect(evt.type).toBe('createReturn');
       });
     });
 
-    describe("createReturn event", () => {
-      it("should set isCreated", () => {
-        init({ uid: "test", type: "createReturn", payload: { result: [] } });
+    describe('createReturn event', () => {
+      it('should set isCreated', () => {
+        init({ uid: 'test', type: 'createReturn', payload: { result: [] } });
         expect(initState.isCreated).toBe(true);
       });
 
-      it("should set isCreated only once", () => {
+      it('should set isCreated only once', () => {
         let callCount = 0;
         initState.stopCreateSpam = () => callCount++;
-        init({ uid: "test", type: "createReturn", payload: { result: [] } });
+        init({ uid: 'test', type: 'createReturn', payload: { result: [] } });
         expect(callCount).toBe(1);
-        init({ uid: "test", type: "createReturn", payload: { result: [] } });
+        init({ uid: 'test', type: 'createReturn', payload: { result: [] } });
         expect(callCount).toBe(1);
       });
 
-      it("should stopCreateSpam", () => {
-        spyOn(initState, "stopCreateSpam");
-        init({ uid: "test", type: "createReturn", payload: { result: [] } });
+      it('should stopCreateSpam', () => {
+        spyOn(initState, 'stopCreateSpam');
+        init({ uid: 'test', type: 'createReturn', payload: { result: [] } });
         expect(initState.stopCreateSpam).toHaveBeenCalled();
       });
     });
 
-    describe("detect completing", () => {
+    describe('detect completing', () => {
       let isCleaned;
 
       beforeEach(() => {
@@ -437,209 +437,209 @@ describe("network over post functions", () => {
         nOp.initialize(config, initState);
       });
 
-      it("should clean its listeners", () => {
+      it('should clean its listeners', () => {
         initState.hasCreated = true;
-        init({ uid: "test", type: "createReturn", payload: { result: [] } });
+        init({ uid: 'test', type: 'createReturn', payload: { result: [] } });
         expect(initState.isCreated).toBe(true);
       });
 
-      it("should clean its state", () => {
+      it('should clean its state', () => {
         initState.isCreated = true;
-        spyOn(initState, "clean");
-        init({ uid: "test", type: "create", payload: { result: [] } });
+        spyOn(initState, 'clean');
+        init({ uid: 'test', type: 'create', payload: { result: [] } });
         expect(initState.clean).toHaveBeenCalled();
       });
 
       it("should resolve state's defer with the localRemoteDesc", done => {
         initState.hasCreated = true;
-        initState.localRemoteDesc = "test-it!";
-        init({ uid: "test", type: "createReturn", payload: { result: [] } });
+        initState.localRemoteDesc = 'test-it!';
+        init({ uid: 'test', type: 'createReturn', payload: { result: [] } });
         initState.defer.promise.then(lrd => {
-          expect(lrd).toBe("test-it!");
+          expect(lrd).toBe('test-it!');
           done();
         });
       });
     });
   });
 
-  describe("nodeCallback", () => {
-    it("should emit an error", () => {
+  describe('nodeCallback', () => {
+    it('should emit an error', () => {
       config.remote = {};
 
       config.emit = arg => {
         expect(isRPCErrorPayload(arg.payload)).toBe(true);
       };
 
-      nOp.nodeCallback(config, { error: { message: "hi" } }, "testId");
+      nOp.nodeCallback(config, { error: { message: 'hi' } }, 'testId');
     });
 
-    it("should emit RPCErrorPayload if the function fails", () => {
+    it('should emit RPCErrorPayload if the function fails', () => {
       // trigger an error by wiping remotes
       config.remote = {
         test: () => {
-          throw new Error("test");
-        }
+          throw new Error('test');
+        },
       };
 
       config.emit = arg => {
         expect(isRPCErrorPayload(arg.payload)).toBe(true);
       };
 
-      nOp.nodeCallback(config, { fn: "test", args: [1] }, "testId");
+      nOp.nodeCallback(config, { fn: 'test', args: [1] }, 'testId');
     });
 
-    it("should emit RPCReturnPayloads if the function passes", () => {
+    it('should emit RPCReturnPayloads if the function passes', () => {
       config.remote = {
         test: (arg, callback) => {
-          callback(null, "test-this");
-        }
+          callback(null, 'test-this');
+        },
       };
 
       config.emit = arg => {
-        if (arg.type !== "nodeCallback") {
+        if (arg.type !== 'nodeCallback') {
           return;
         }
         expect(isRPCReturnPayload(arg.payload)).toBe(true);
-        expect(arg.payload.result[0]).toBe("test-this");
+        expect(arg.payload.result[0]).toBe('test-this');
       };
 
-      nOp.nodeCallback(config, { fn: "test", args: [1] }, "testId");
+      nOp.nodeCallback(config, { fn: 'test', args: [1] }, 'testId');
     });
 
-    it("should emit RPCErrorPayload if the function fails", () => {
+    it('should emit RPCErrorPayload if the function fails', () => {
       // trigger an error by wiping remotes
       config.remote = {
-        test: (arg, callback) => callback(new Error("test"))
+        test: (arg, callback) => callback(new Error('test')),
       };
 
       config.emit = arg => {
-        if (arg.type !== "nodeCallback") {
+        if (arg.type !== 'nodeCallback') {
           return;
         }
         expect(isRPCErrorPayload(arg.payload)).toBe(true);
       };
 
-      nOp.nodeCallback(config, { fn: "test", args: [1] }, "testId");
+      nOp.nodeCallback(config, { fn: 'test', args: [1] }, 'testId');
     });
   });
 
-  describe("promise", () => {
-    it("should emit an error", () => {
+  describe('promise', () => {
+    it('should emit an error', () => {
       config.remote = {};
 
       config.emit = arg => {
         expect(isRPCErrorPayload(arg.payload)).toBe(true);
       };
 
-      nOp.promise(config, { error: { message: "hi" } }, "testId");
+      nOp.promise(config, { error: { message: 'hi' } }, 'testId');
     });
 
-    it("should emit RPCErrorPayload if the function fails", () => {
+    it('should emit RPCErrorPayload if the function fails', () => {
       // trigger an error by wiping remotes
       config.remote = {
         test: () => {
-          throw new Error("test");
-        }
+          throw new Error('test');
+        },
       };
 
       config.emit = arg => {
         expect(isRPCErrorPayload(arg.payload)).toBe(true);
       };
 
-      nOp.promise(config, { fn: "test", args: [1] }, "testId");
+      nOp.promise(config, { fn: 'test', args: [1] }, 'testId');
     });
 
-    it("should emit RPCReturnPayloads if the function passes", () => {
+    it('should emit RPCReturnPayloads if the function passes', () => {
       config.remote = {
-        test: (arg, callback) => new Promise(resolve => resolve("test-this"))
+        test: (arg, callback) => new Promise(resolve => resolve('test-this')),
       };
 
       config.emit = arg => {
-        if (arg.type !== "promise") {
+        if (arg.type !== 'promise') {
           return;
         }
         expect(isRPCReturnPayload(arg.payload)).toBe(true);
-        expect(arg.payload.result[0]).toBe("test-this");
+        expect(arg.payload.result[0]).toBe('test-this');
       };
 
-      nOp.promise(config, { fn: "test", args: [1] }, "testId");
+      nOp.promise(config, { fn: 'test', args: [1] }, 'testId');
     });
 
-    it("should emit RPCErrorPayload if the function fails", () => {
+    it('should emit RPCErrorPayload if the function fails', () => {
       // trigger an error by wiping remotes
       config.remote = {
         test: (arg, callback) =>
-          new Promise((resolve, reject) => reject(new Error("test-this")))
+          new Promise((resolve, reject) => reject(new Error('test-this'))),
       };
 
       config.emit = arg => {
-        if (arg.type !== "nodeCallback") {
+        if (arg.type !== 'nodeCallback') {
           return;
         }
         expect(isRPCErrorPayload(arg.payload)).toBe(true);
       };
 
-      nOp.promise(config, { fn: "test", args: [1] }, "testId");
+      nOp.promise(config, { fn: 'test', args: [1] }, 'testId');
     });
   });
 
-  describe("returnPayload function", () => {
-    it("should throw an error if a callback is missing", () => {
+  describe('returnPayload function', () => {
+    it('should throw an error if a callback is missing', () => {
       expect(() =>
-        nOp.returnPayload(config, event.payload, {}, "test")
+        nOp.returnPayload(config, event.payload, {}, 'test'),
       ).toThrowError();
     });
 
-    it("should throw an error if a payload is unexpected", () => {
+    it('should throw an error if a payload is unexpected', () => {
       event.payload = {};
       expect(() =>
         nOp.returnPayload(
           config,
           event.payload,
           {
-            test: { async: noop, type: "nodeCallback" }
+            test: { async: noop, type: 'nodeCallback' },
           },
-          "test"
-        )
+          'test',
+        ),
       ).toThrowError();
     });
 
-    it("should delete callbacks if it processes an error", () => {
+    it('should delete callbacks if it processes an error', () => {
       const callbacks: RPCAsyncContainerDictionary = {
-        test: { async: noop, type: "nodeCallback" }
+        test: { async: noop, type: 'nodeCallback' },
       };
 
-      event.payload = { error: { message: "test" } };
+      event.payload = { error: { message: 'test' } };
 
-      nOp.returnPayload(config, event.payload, callbacks, "test");
+      nOp.returnPayload(config, event.payload, callbacks, 'test');
 
       /* tslint:disable no-string-literal */
-      const test: any = <any>callbacks["test"];
+      const test: any = <any>callbacks['test'];
 
       expect(test).toBeUndefined();
     });
 
-    it("should delete callbacks if it processes a return value", () => {
+    it('should delete callbacks if it processes a return value', () => {
       const callbacks: RPCAsyncContainerDictionary = {
-        test: { async: noop, type: "nodeCallback" }
+        test: { async: noop, type: 'nodeCallback' },
       };
 
-      nOp.returnPayload(config, event.payload, callbacks, "test");
+      nOp.returnPayload(config, event.payload, callbacks, 'test');
 
       /* tslint:disable no-string-literal */
-      const test: any = <any>callbacks["test"];
+      const test: any = <any>callbacks['test'];
 
       expect(test).toBeUndefined();
     });
   });
 
-  describe("sendAck", () => {
-    it("should emit an RPCResultPayload with the given uid", () => {
+  describe('sendAck', () => {
+    it('should emit an RPCResultPayload with the given uid', () => {
       let evt;
       config.emit = e => (evt = e);
 
-      nOp.sendAck(config, "test-uid");
-      expect(evt.payload.result[0]).toBe("test-uid");
+      nOp.sendAck(config, 'test-uid');
+      expect(evt.payload.result[0]).toBe('test-uid');
     });
   });
 });

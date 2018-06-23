@@ -11,14 +11,12 @@ import { RPC, RPCAbstractConfig, RPCConfig } from '../rpc/interfaces';
 export const DEFAULT_MESSAGE_INIT = `${DEFAULT_MESSAGE}_INIT`;
 
 export interface SocketClient {
-  on(message: string, handler: (any) => any); 
+  on(message: string, handler: (any) => any);
   emit(message: string, ...args: any[]): any;
   removeListener: (channel: string, listener: Function) => any;
 }
 
-export interface SocketServer {
-
-}
+export interface SocketServer {}
 
 /**
  * Worker RPC Config
@@ -31,15 +29,15 @@ export function isSocketIo(socket: any): socket is SocketClient {
   if (!socket) {
     return false;
   }
-  
+
   if (!isFunction(socket.emit)) {
     return false;
   }
-  
+
   if (!isFunction(socket.on)) {
     return false;
   }
-  
+
   if (!isFunction(socket.removeListener)) {
     return false;
   }
@@ -48,7 +46,7 @@ export function isSocketIo(socket: any): socket is SocketClient {
 }
 
 export function socketOn(socket, message) {
-  return (listener) => {
+  return listener => {
     socket.on(message, listener);
     // must return a destroy function
     return () => socket.removeListener(message, listener);
@@ -56,22 +54,20 @@ export function socketOn(socket, message) {
 }
 
 export function socketEmit(postMessage) {
-  return (data) => postMessage(data);
+  return data => postMessage(data);
 }
-
 
 export function create<T>(config: RPCSocketIoConfig) {
   if (!isSocketIo(config.socket)) {
-    typeError('create: expecting socket'); 
+    typeError('create: expecting socket');
   }
   const socket = config.socket;
   const message = config.message || DEFAULT_MESSAGE;
-  
+
   config.on = socketOn(socket, message);
-  
+
   config.emit = socketEmit(socket.emit.bind(socket, message));
 
   /** @todo handle termination ! who likes memory leaks? */
   return createRemote<T>(<RPCConfig>config);
 }
-

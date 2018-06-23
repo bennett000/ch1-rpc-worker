@@ -1,25 +1,25 @@
 /**
  * Main module "really ties the project together"
  */
-import { isObject, pnoop, typeError, throwIfNotFunction } from "./utils";
-import { create as createRemote, createRemoteDescFrom } from "./remote";
-import * as nOp from "./response";
+import { isObject, pnoop, typeError, throwIfNotFunction } from './utils';
+import { create as createRemote, createRemoteDescFrom } from './remote';
+import * as nOp from './response';
 
 import {
   Remote,
   RemoteDesc,
   RPC,
   RPCAsyncContainerDictionary,
-  RPCConfig
-} from "./interfaces";
+  RPCConfig,
+} from './interfaces';
 
 import {
   DEFAULT_ASYNC_TYPE,
   DEFAULT_MESSAGE,
   DEFAULT_CREATE_RETRY,
   DEFAULT_CREATE_RETRY_CURVE,
-  DEFAULT_CREATE_WAIT
-} from "./constants";
+  DEFAULT_CREATE_WAIT,
+} from './constants';
 
 /**
  * Where `RemoteType` is the description of the interface you _expect_ to be
@@ -30,7 +30,7 @@ import {
 export function create<RemoteType>(
   config: RPCConfig,
   remote?: Remote<any>,
-  remoteDesc?: RemoteDesc
+  remoteDesc?: RemoteDesc,
 ): RPC<RemoteType> {
   remote = validateRemote(remote);
   config = validateConfig(config, remote);
@@ -55,7 +55,7 @@ export function create<RemoteType>(
       });
     },
     ready: isReady,
-    remote: local
+    remote: local,
   };
 }
 
@@ -63,15 +63,15 @@ export function validateRemote(r: Object): Remote<any> {
   r = r || Object.create(null);
 
   if (!isObject(r)) {
-    typeError("validateRemote: remote must be an object");
+    typeError('validateRemote: remote must be an object');
   }
 
   return <Remote<any>>r;
 }
 
 export function validateConfig(c: RPCConfig, remote: Remote<any>): RPCConfig {
-  throwIfNotFunction(c.on, "validateConfig: config requires an on method");
-  throwIfNotFunction(c.emit, "validateConfig: config requires an emit method");
+  throwIfNotFunction(c.on, 'validateConfig: config requires an on method');
+  throwIfNotFunction(c.emit, 'validateConfig: config requires an emit method');
 
   c.defaultAsyncType = c.defaultAsyncType || DEFAULT_ASYNC_TYPE;
   c.defaultCreateRetry = c.defaultCreateRetry || DEFAULT_CREATE_RETRY;
