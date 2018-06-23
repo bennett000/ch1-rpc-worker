@@ -11,7 +11,7 @@
 
 import { create as createRemote } from '../rpc/js-rpc';
 import { isString, noop } from '../rpc/utils';
-import { RPC, RPCAbstractConfig, RPCConfig } from '../rpc/interfaces';
+import { RPCAbstractConfig, RPCConfig } from '../rpc/interfaces';
 
 export interface PostMessageListener {
   (payload: { data: string }): any;
