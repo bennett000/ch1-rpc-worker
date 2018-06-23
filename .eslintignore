@@ -1,9 +1,0 @@
-bin/**
-dist/**
-docs/
-build/**
-tmp/**
-coverage/**
-node_modules/**
-lib/**
-spec/**
