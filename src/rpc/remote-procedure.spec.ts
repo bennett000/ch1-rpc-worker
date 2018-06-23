@@ -1,4 +1,8 @@
-import { RPCAsyncContainerDictionary } from './interfaces';
+import {
+  RPCAsyncContainerDictionary,
+  RPCAsyncType,
+  RPCEventType,
+} from './interfaces';
 import { defer, isDefer, isFunction, noop } from './utils';
 import * as rp from './remote-procedure';
 
@@ -18,54 +22,60 @@ describe('remoteProcedure functions', () => {
   describe('create function', () => {
     it('should call  promise remote if given a promise', () => {
       const dict = Object.create(null);
-      rp.create(config, dict, 'some func', 'promise')('arg');
+      rp.create(config, dict, 'some func', RPCAsyncType.promise)('arg');
       expectDeferIn(dict);
     });
 
-    it('should call callbackRemote if given a nodeCallback', () => {
-      const dict = Object.create(null);
-      rp.create(config, dict, 'some func', 'nodeCallback')('arg', noop);
-      expectFunctionIn(dict);
-    });
+    // it('should call callbackRemote if given a nodeCallback', () => {
+    //   const dict = Object.create(null);
+    //   rp.create(config, dict, 'some func', 'nodeCallback')('arg', noop);
+    //   expectFunctionIn(dict);
+    // });
 
     it('should default to config', () => {
       const dict = Object.create(null);
-      config.defaultAsyncType = 'promise';
+      config.defaultAsyncType = RPCAsyncType.promise;
       rp.create(config, dict, 'some func')();
       expectDeferIn(dict);
     });
   });
 
-  describe('callbackRemote', () => {
-    it('should throw if not given a callback', () => {
-      const dict: RPCAsyncContainerDictionary = {};
-      const post = noop;
-      expect(() =>
-        rp.callbackRemote(dict, post, 'promise', 'remote function', []),
-      ).toThrowError();
-    });
+  // describe('callbackRemote', () => {
+  //   it('should throw if not given a callback', () => {
+  //     const dict: RPCAsyncContainerDictionary = {};
+  //     const post = noop;
+  //     expect(() =>
+  //       rp.callbackRemote(
+  //         dict,
+  //         post,
+  //         RPCAsyncType.promise,
+  //         'remote function',
+  //         [],
+  //       ),
+  //     ).toThrowError();
+  //   });
 
-    it('should register the last argument as a callback', () => {
-      const dict: RPCAsyncContainerDictionary = {};
-      const post = noop;
-      const callback = noop;
-      rp.callbackRemote(dict, post, 'nodeCallback', 'remote function', [
-        'args',
-        callback,
-      ]);
+  // it('should register the last argument as a callback', () => {
+  //   const dict: RPCAsyncContainerDictionary = {};
+  //   const post = noop;
+  //   const callback = noop;
+  //   rp.callbackRemote(dict, post, 'nodeCallback', 'remote function', [
+  //     'args',
+  //     callback,
+  //   ]);
 
-      let found = false;
+  //   let found = false;
 
-      /** tslint:disable-next-line:for-in */
-      for (let i in dict) {
-        if (dict[i].async === callback) {
-          found = true;
-        }
-      }
+  //   /** tslint:disable-next-line:for-in */
+  //   for (let i in dict) {
+  //     if (dict[i].async === callback) {
+  //       found = true;
+  //     }
+  //   }
 
-      expect(found).toBe(true);
-    });
-  });
+  //   expect(found).toBe(true);
+  // });
+  // });
 
   describe('doPost function', () => {
     it('should call the given post method', () => {
@@ -74,7 +84,7 @@ describe('remoteProcedure functions', () => {
         isDone = true;
       };
 
-      rp.doPost(post, 'invoke', 'remote', ['some', 'args']);
+      rp.doPost(post, RPCEventType.invoke, 'remote', ['some', 'args']);
     });
   });
 
@@ -82,7 +92,14 @@ describe('remoteProcedure functions', () => {
     it('should register a new defer', () => {
       const dict: RPCAsyncContainerDictionary = {};
       const post = noop;
-      rp.promiseRemote(dict, post, 'promise', 'remote function', ['args']);
+      rp.promiseRemote(
+        dict,
+        post,
+        RPCEventType.promise,
+        RPCAsyncType.promise,
+        'remote function',
+        ['args'],
+      );
 
       expectDeferIn(dict);
     });
@@ -93,7 +110,7 @@ describe('remoteProcedure functions', () => {
       const dict: RPCAsyncContainerDictionary = {};
       const d = defer();
       const id = 'test';
-      rp.registerAsync(dict, d, 'promise', id);
+      rp.registerAsync(dict, d, RPCAsyncType.promise, id);
 
       expect(dict[id]).toBeTruthy();
     });
@@ -102,9 +119,11 @@ describe('remoteProcedure functions', () => {
       const dict: RPCAsyncContainerDictionary = {};
       const d = defer();
       const id = 'test';
-      rp.registerAsync(dict, d, 'promise', id);
+      rp.registerAsync(dict, d, RPCAsyncType.promise, id);
 
-      expect(() => rp.registerAsync(dict, d, 'promise', id)).toThrowError();
+      expect(() =>
+        rp.registerAsync(dict, d, RPCAsyncType.promise, id),
+      ).toThrowError();
     });
   });
 });

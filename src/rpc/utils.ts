@@ -59,8 +59,12 @@ export function isRPC<T>(arg: any): arg is RPC<T> {
   return true;
 }
 
-export const isRPCDefaultAsync = (arg): arg is RPCAsyncType =>
-  ['promise', 'nodeCallback'].indexOf(arg) !== -1;
+export const isRPCDefaultAsync = (arg): arg is RPCAsyncType => {
+  if (RPCAsyncType[arg]) {
+    return true;
+  }
+  return false;
+};
 
 export const uid = createUidGenerator();
 
@@ -138,7 +142,7 @@ export function isRPCEvent(event: any): event is RPCEvent {
     return false;
   }
 
-  if (typeof event.type !== 'string') {
+  if (typeof event.type !== 'number') {
     return false;
   }
 

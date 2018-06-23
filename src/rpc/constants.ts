@@ -6,7 +6,7 @@ import { RPCAsyncType } from './interfaces';
 /**
  * Dfault type of async function
  */
-export const DEFAULT_ASYNC_TYPE: RPCAsyncType = 'promise';
+export const DEFAULT_ASYNC_TYPE: RPCAsyncType = RPCAsyncType.promise;
 
 /**
  * Default message used across postMessage

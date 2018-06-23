@@ -9,15 +9,10 @@ import {
   RPCAsyncContainerDictionary,
   RPCConfig,
   RPCAsyncType,
+  RPCEventType,
 } from './interfaces';
 
-import {
-  defer,
-  rangeError,
-  throwIfNotDefer,
-  throwIfNotFunction,
-  typeError,
-} from './utils';
+import { defer, rangeError, throwIfNotDefer } from './utils';
 
 export function validateRegistration<T>(
   callbacks: RPCAsyncContainerDictionary,
@@ -30,17 +25,17 @@ export function validateRegistration<T>(
   }
 
   switch (type) {
-    case 'promise':
+    case RPCAsyncType.promise:
       throwIfNotDefer(asyncFn);
       break;
 
-    case 'nodeCallback':
-      throwIfNotFunction(asyncFn);
-      break;
+    // case 'nodeCallback':
+    //   throwIfNotFunction(asyncFn);
+    //   break;
 
-    case 'nodeEvent':
-      throwIfNotFunction(asyncFn);
-      break;
+    // case 'nodeEvent':
+    //   throwIfNotFunction(asyncFn);
+    //   break;
   }
 }
 
@@ -60,7 +55,7 @@ export function registerAsync<T>(
 
 export function doPost(
   postMethod,
-  type,
+  type: RPCEventType,
   remoteFunction: string,
   args: any[],
 ) {
@@ -74,34 +69,35 @@ export function doPost(
   return event;
 }
 
-export function callbackRemote(
-  callbacks: RPCAsyncContainerDictionary,
-  postMethod: ConfiguredRPCEmit,
-  type: RPCAsyncType,
-  remoteFunction: string,
-  args,
-) {
-  if (args.length === 0) {
-    typeError('RPC: Invalid Invocation: Callback required!');
-  }
+// export function callbackRemote(
+//   callbacks: RPCAsyncContainerDictionary,
+//   postMethod: ConfiguredRPCEmit,
+//   type: RPCAsyncType,
+//   remoteFunction: string,
+//   args,
+// ) {
+//   if (args.length === 0) {
+//     typeError('RPC: Invalid Invocation: Callback required!');
+//   }
 
-  const cb = args.pop();
-  const event = doPost(postMethod, type, remoteFunction, args);
+//   const cb = args.pop();
+//   const event = doPost(postMethod, type, remoteFunction, args);
 
-  registerAsync(callbacks, cb, type, event.uid);
-}
+//   registerAsync(callbacks, cb, type, event.uid);
+// }
 
 export function promiseRemote(
   callbacks: RPCAsyncContainerDictionary,
   postMethod: ConfiguredRPCEmit,
-  type: RPCAsyncType,
+  eventType: RPCEventType,
+  asyncType: RPCAsyncType,
   remoteFunction: string,
   args,
 ) {
   const d = defer();
-  const event = doPost(postMethod, type, remoteFunction, args);
+  const event = doPost(postMethod, eventType, remoteFunction, args);
 
-  registerAsync(callbacks, d, type, event.uid);
+  registerAsync(callbacks, d, asyncType, event.uid);
 
   return d.promise;
 }
@@ -113,19 +109,31 @@ export function create(
   fnType?: RPCAsyncType,
 ) {
   switch (fnType) {
-    case 'promise':
+    case RPCAsyncType.promise:
       return (...args) =>
-        promiseRemote(callbacks, c.emit, 'promise', fullFnName, args);
+        promiseRemote(
+          callbacks,
+          c.emit,
+          RPCEventType.promise,
+          RPCAsyncType.promise,
+          fullFnName,
+          args,
+        );
 
-    case 'nodeCallback':
-      return (...args) =>
-        callbackRemote(callbacks, c.emit, 'nodeCallback', fullFnName, args);
+    // case 'nodeCallback':
+    //   return (...args) =>
+    //     callbackRemote(callbacks, c.emit, 'nodeCallback', fullFnName, args);
 
-    case 'nodeEvent':
-      return (...args) =>
-        callbackRemote(callbacks, c.emit, 'nodeEvent', fullFnName, args);
+    // case 'nodeEvent':
+    //   return (...args) =>
+    //     callbackRemote(callbacks, c.emit, 'nodeEvent', fullFnName, args);
 
     default:
+      if (fnType) {
+        throw new Error(
+          'remote-procedure: Unsupported function type ' + fnType,
+        );
+      }
       return create(c, callbacks, fullFnName, c.defaultAsyncType);
   }
 }

@@ -95,12 +95,17 @@ export interface RPCNodeCallback<T> {
  * promises are es6 promises or any A+ promises that implement `.then` and
  * `.catch` along with the global `Promise`
  */
-export type RPCAsyncType =
-  | 'nodeCallback'
-  | 'nodeEvent'
-  | 'nodeEventInternal'
-  | 'observable'
-  | 'promise';
+// export type RPCAsyncType =
+//   | 'nodeCallback'
+//   | 'nodeEvent'
+//   | 'nodeEventInternal'
+//   | 'observable'
+//   | 'promise';
+
+export enum RPCAsyncType {
+  observable = 100,
+  promise = 200,
+}
 
 export interface RPCDefer<T> {
   resolve: (any) => any;
@@ -111,24 +116,37 @@ export interface RPCDefer<T> {
 /**
  * The Different Types of RPC Events
  */
-export type RPCEventType =
-  | 'ack'
-  | 'addEventListener'
-  | 'create'
-  | 'createReturn'
-  | 'destroy'
-  | 'destroyReturn'
-  | 'fnReturn'
-  | 'invoke'
-  | 'nodeCallback'
-  | 'nodeOn'
-  | 'nodeRemoveListener'
-  | 'browserRemoveListener'
-  | 'observe'
-  | 'promise'
-  | 'subscribe'
-  | 'subscribeReturn'
-  | 'unSubscribeReturn';
+// export type RPCEventType =
+//   | 'ack'
+//   | 'addEventListener'
+//   | 'create'
+//   | 'createReturn'
+//   | 'destroy'
+//   | 'destroyReturn'
+//   | 'fnReturn'
+//   | 'invoke'
+//   | 'nodeCallback'
+//   | 'nodeOn'
+//   | 'nodeRemoveListener'
+//   | 'browserRemoveListener'
+//   | 'observe'
+//   | 'promise'
+//   | 'subscribe'
+//   | 'subscribeReturn'
+//   | 'unSubscribeReturn';
+
+export enum RPCEventType {
+  ack = 1,
+  create = 2,
+  createReturn = 3,
+  destroy = 4,
+  destroyReturn = 5,
+  fnReturn = 6,
+  invoke = 7,
+  promise = 9,
+  subscribe = 10,
+  unsubscribe = 11,
+}
 
 export interface RPCEmit {
   (message: string, payload: RPCEvent): any;

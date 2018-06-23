@@ -5,7 +5,6 @@ import {
   RPCAsyncContainerDictionary,
   RPCAsyncType,
   RemoteDesc,
-  RPCAsync,
 } from './interfaces';
 
 describe('Remote Object functions', () => {
@@ -118,7 +117,7 @@ describe('Remote Object functions', () => {
 
   describe('create function', () => {
     beforeEach(() => {
-      config.defaultAsyncType = 'promise';
+      config.defaultAsyncType = RPCAsyncType.promise;
     });
 
     it('should map a simple remoteDesc to a new object', () => {
@@ -131,13 +130,13 @@ describe('Remote Object functions', () => {
         config,
         {},
         {
-          test1: 'promise',
-          test2: 'nodeCallback',
+          test1: RPCAsyncType.promise,
+          // test2: 'nodeCallback',
         },
       );
 
       expect(isFunction(test.test1)).toBe(true);
-      expect(isFunction(test.test2)).toBe(true);
+      // expect(isFunction(test.test2)).toBe(true);
     });
 
     it('should skip unknown entries', () => {
@@ -150,9 +149,9 @@ describe('Remote Object functions', () => {
       const callbacks: RPCAsyncContainerDictionary = {};
 
       const remoteDesc: RemoteDesc = {
-        test1: 'promise',
-        test2: 'nodeCallback',
-        test3: <RPCAsyncType>'mwhahaha',
+        test1: RPCAsyncType.promise,
+        // test2: 'nodeCallback',
+        test3: 'mwhahaha' as any,
       };
 
       const test = remote.create<Test>(config, callbacks, remoteDesc);
@@ -175,10 +174,10 @@ describe('Remote Object functions', () => {
         config,
         {},
         {
-          test1: 'promise',
-          test2: 'nodeCallback',
+          test1: RPCAsyncType.promise,
+          test2: RPCAsyncType.promise,
           nest: {
-            test3: 'promise',
+            test3: RPCAsyncType.promise,
           },
         },
       );
@@ -189,7 +188,7 @@ describe('Remote Object functions', () => {
 
   describe('createRemoteDesc from', () => {
     beforeEach(() => {
-      config.defaultAsyncType = 'promise';
+      config.defaultAsyncType = RPCAsyncType.promise;
     });
 
     it('should build a desc using defaults', () => {
@@ -198,8 +197,8 @@ describe('Remote Object functions', () => {
         test2: noop,
       });
 
-      expect(desc.test1).toBe('promise');
-      expect(desc.test2).toBe('promise');
+      expect(desc.test1).toBe(RPCAsyncType.promise);
+      expect(desc.test2).toBe(RPCAsyncType.promise);
     });
 
     it('should build a nested desc using defaults', () => {
@@ -211,7 +210,7 @@ describe('Remote Object functions', () => {
         },
       });
 
-      expect(desc.nest.test3).toBe('promise');
+      expect(desc.nest.test3).toBe(RPCAsyncType.promise);
     });
 
     it('should build a desc using specifics', () => {
@@ -222,11 +221,11 @@ describe('Remote Object functions', () => {
           test2: noop,
         },
         {
-          test1: 'nodeCallback',
+          test1: RPCAsyncType.promise,
         },
       );
 
-      expect(desc.test1).toBe('nodeCallback');
+      expect(desc.test1).toBe(RPCAsyncType.promise);
     });
 
     it('should build a nested desc using specifics', () => {
@@ -241,12 +240,12 @@ describe('Remote Object functions', () => {
         },
         {
           nest: {
-            test3: 'nodeCallback',
+            test3: RPCAsyncType.promise,
           },
         },
       );
 
-      expect(desc.nest.test3).toBe('nodeCallback');
+      expect(desc.nest.test3).toBe(RPCAsyncType.promise);
     });
   });
 });

@@ -1,4 +1,5 @@
 import * as utils from './utils';
+import { RPCEventType } from './interfaces';
 
 describe('utils functions', () => {
   const resolver = (resolve, reject) => {};
@@ -96,7 +97,7 @@ describe('utils functions', () => {
     it('should type check for an rpc event', () => {
       expect(
         utils.isRPCEvent({
-          type: 'invoke',
+          type: RPCEventType.invoke,
           uid: 'test',
           payload: { error: { message: 'test' } },
         }),
@@ -110,14 +111,14 @@ describe('utils functions', () => {
       ).toBe(false);
       expect(
         utils.isRPCEvent({
-          type: 'invoke',
+          type: RPCEventType.invoke,
           uid: 'test',
           payload: { error: 'fakes' },
         }),
       ).toBe(false);
       expect(
         utils.isRPCEvent({
-          type: 'invoke',
+          type: RPCEventType.invoke,
           uid: 'test',
           payload: { result: 'seven' },
         }),
@@ -283,7 +284,7 @@ describe('utils functions', () => {
     it('should *not* throw if given an RPCEvent', () => {
       expect(() =>
         utils.throwIfNotRPCEvent({
-          type: 'invoke',
+          type: RPCEventType.invoke,
           payload: {
             error: {
               message: 'test',
