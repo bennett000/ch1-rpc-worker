@@ -92,3 +92,5 @@ export function validateConfig(c: RPCConfig, remote: Remote<any>): RPCConfig {
 
   return Object.freeze(c);
 }
+
+export function extend() {}

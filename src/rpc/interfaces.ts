@@ -199,6 +199,17 @@ export interface RPCConfig extends RPCAbstractConfig {
   on: ConfiguredRPCOn;
 }
 
+export type RPCEventRegistry = {
+  [key in RPCEventType]?: (args: any[]) => any
+};
+export type RPCAsyncRegistry = {
+  [key in RPCAsyncType]?: (args: any[]) => any
+};
+
+export type RPCRegister = (
+  key: number,
+  value: (...args: any[]) => any,
+) => void;
 /**
  * JavaScript error with a code number
  */
