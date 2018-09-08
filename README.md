@@ -1,25 +1,48 @@
-# JS RPC
+# CH1 RPC
 
-Remote Procedure Call library for JavaScript: [Documentation](./docs/index.html "JS RPC Documentation")
+[![CircleCI](https://circleci.com/gh/bennett000/ch1-rpc.svg?style=svg)](https://circleci.com/gh/bennett000/ch1-rpc)
+
+_This is not well maintained_
+
+_This is not traditional RPC, but it is like it_
+
+_This library ships only es6 modules with \*.d.ts files, beware_
+
+## Installation
+
+`yarn add @ch1/rpc-worker`
+
+## Usage
+
+Slightly easier API than in the raw [`@ch1/rpc`](https://github.com/bennett000/ch1-rpc 'CH1 RPC')
+
+Main JS Script
+
+```ts
+import * as wrpc from '@ch1/rpc-worker';
+
+const w = new Worker(TEST_FILE);
+const rpc = wrpc.create({ worker: w });
+
+rpc.ready
+  .then(() => rpc.remote.foo())
+  .then(result => {
+    expect(result).toBe(7);
+    done();
+  })
+  .catch(done);
+```
+
+Worker JS
+
+```ts
+import * as wrpc from '@ch1/rpc-worker';
+
+wrpc.create(undefined, {
+  foo: () => new Promise(resolve => resolve(7)),
+});
+```
 
 ## License
 
-[![LGPLv3 License Logo and Local Text][licenseImage]][licenseText]
-
-[licenseImage]: https://www.gnu.org/graphics/lgplv3-147x51.png "LGPLv3 logo"
-[licenseText]: ./LICENSE "LGPLv3 Full Text"
-
-Copyright (c) 2016 Michael Bennett
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+[LGPL](./LICENSE 'Lesser GNU Public License')

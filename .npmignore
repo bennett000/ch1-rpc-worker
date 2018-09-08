@@ -1,0 +1,10 @@
+./.git
+./.gitignore
+./.circleci
+tsconfig*
+tslint*
+yarn*
+node_modules
+coverage/
+dist/
+intermediate/
