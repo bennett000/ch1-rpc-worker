@@ -18,4 +18,3 @@ coverage
 # distribution
 dist/
 intermediate/
-spec/test-worker.js
