@@ -3,8 +3,9 @@
 ./.circleci
 tsconfig*
 tslint*
+karma*
+rollup*
 yarn*
 node_modules
 coverage/
-dist/
 intermediate/
