@@ -84,5 +84,19 @@ describe('web worker rpc functions', () => {
         })
         .catch(done);
     });
+
+    it('gracefully destroy a worker', done => {
+      const w = new Worker(TEST_FILE);
+      const rpc = wrpc.create({ worker: w });
+
+      rpc.onDestroy(() => {
+        // this is a bit of a garbage test
+        // more of a shallow smoke test
+        expect(true).toBe(true);
+        done();
+      });
+
+      rpc.ready.then(() => rpc.destroy()).catch(done);
+    });
   });
 });
