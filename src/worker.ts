@@ -73,6 +73,18 @@ export function create<T>(
 
   config.emit = workerEmit(worker.postMessage.bind(worker));
 
+  const rpc = createRemote<T>(<RPCConfig>config, remote, remoteDesc);
+
+  if (worker instanceof Worker) {
+    (worker as any).onerror = (error: Error) =>
+      rpc.destroy('rpc-worker: worker error: ' + error.message);
+    const oldDestroy = rpc.destroy;
+    (rpc as any).destroy = (reason?: string) => {
+      (worker as any).terminate();
+      oldDestroy(reason);
+    };
+  }
+
   /** @todo handle termination ! who likes memory leaks? */
-  return createRemote<T>(<RPCConfig>config, remote, remoteDesc);
+  return rpc;
 }
